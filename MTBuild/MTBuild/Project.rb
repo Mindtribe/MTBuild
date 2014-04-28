@@ -1,6 +1,7 @@
 module MTBuild
 
 	class Project
+
     attr_reader :name
 
 		def initialize(project_name, &configuration_block)

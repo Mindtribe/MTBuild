@@ -3,6 +3,8 @@ require 'MTBuild/Utils'
 
 module MTBuild
 
+  require 'rake/clean'
+
 	class StaticLibraryProject < Project
 
     private
@@ -60,7 +62,6 @@ module MTBuild
       return library_file
     end
 
-    include Rake::DSL
 	end
 
 end

@@ -4,8 +4,6 @@ module MTBuild
 
 	class ApplicationProject < Project
 
-    include Rake::DSL
-
     private
 
     def create_configuration_tasks(configuration_name, configuration)

@@ -7,7 +7,8 @@ static_library_project :ExampleLibrary do |lib|
 		sources: ['src/**/*.c'],
 		api_headers: 'include',
 		toolchain: arm_none_eabi_gcc(
-			cpu: 'cortex-m4'
+			cpu: 'cortex-m4',
+			include_paths: ['src']
 		)
 
 	lib.add_configuration :Configuration2,
@@ -15,6 +16,7 @@ static_library_project :ExampleLibrary do |lib|
 		sources: ['src/**/*.c'],
 		api_headers: 'include',
 		toolchain: arm_none_eabi_gcc(
-			cpu: 'cortex-m4'
+			cpu: 'cortex-m4',
+			include_paths: ['src']
 		)
 end

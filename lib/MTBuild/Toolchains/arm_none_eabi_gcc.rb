@@ -1,6 +1,6 @@
-require 'MTBuild/Toolchain'
-
 module MTBuild
+  require 'MTBuild/Toolchain'
+  require 'rake/clean'
 
 	class ToolchainArmNoneEabiGcc < Toolchain
 

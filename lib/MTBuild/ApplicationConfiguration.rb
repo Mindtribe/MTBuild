@@ -10,7 +10,7 @@ module MTBuild
     def configure_tasks
       super
       object_files = @toolchain.create_compile_tasks(source_files)
-      executable_file = @toolchain.create_executable_tasks(object_files, @name)
+      executable_file = @toolchain.create_executable_tasks(object_files, @project_name)
       depends = @dependencies+[executable_file]
       new_task = application_task @configuration_name => depends do |t|
         puts "built application #{t.name}."

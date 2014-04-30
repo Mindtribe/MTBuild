@@ -6,23 +6,26 @@ module MTBuild
 
     attr_accessor :cpu, :linker_script
 
-		def initialize(configuration_hash)
+		def initialize(configuration)
       super
 		end
 
     def create_compile_tasks(source_files)
       object_files = []
 
-      source_files.each do |source|
-        input_file = source.first
-        output_folder = source.last
-        object_file = File.join(output_folder, input_file.pathmap('%n.o'))
-        dependency_file = File.join(output_folder, input_file.pathmap('%n.d'))
+      source_files.each do |source_file|
+
+        relative_source_location = Utils::path_difference(@project_folder, File.dirname(source_file))
+        fail "Source file #{source_file} must be within #{@project_folder}." if relative_source_location.nil?
+        output_folder = File.join(@output_folder, relative_source_location)
+
+        object_file = File.join(output_folder, source_file.pathmap('%n.o'))
+        dependency_file = File.join(output_folder, source_file.pathmap('%n.d'))
 
         object_files << object_file
         CLEAN.include(object_file)
         CLEAN.include(dependency_file)
-        file object_file => [input_file] do |t|
+        file object_file => [source_file] do |t|
           puts "#{t.name}"
           #sh "~/MTTools/OSX/bin/arm-none-eabi-gcc #{t.prerequisites.join(' ')} -I#{includeFolders.join(' -I')} -MMD -c -o #{t.name}"
         end

@@ -13,9 +13,9 @@ module MTBuild
 		def initialize(configuration)
       @output_folder = ''
       @project_folder = ''
-      @include_objects = Set.new()
-      @include_paths = Set.new()
-      @library_paths = Set.new()
+      @include_objects = []
+      @include_paths = []
+      @library_paths = []
 
       add_include_paths(expand_project_relative_paths(configuration.fetch(:include_paths, [])))
       add_include_objects(expand_project_relative_paths(configuration.fetch(:include_paths, [])))
@@ -27,7 +27,7 @@ module MTBuild
         if include_object.respond_to? :to_ary
           add_include_objects(*include_object.to_ary)
         else
-          @include_objects << include_object
+          @include_objects << include_object if !include_objects.include?include_object
         end
       end
     end
@@ -37,7 +37,7 @@ module MTBuild
         if include_path.respond_to? :to_ary
           add_include_paths(*include_path.to_ary)
         else
-          @include_paths << include_path
+          @include_paths << include_path if !include_paths.include?include_paths
         end
       end
     end
@@ -47,7 +47,7 @@ module MTBuild
         if library_path.respond_to? :to_ary
           add_library_paths(*library_path.to_ary)
         else
-          @library_paths << library_path
+          @library_paths << library_path if !library_paths.include?library_path
         end
       end
     end

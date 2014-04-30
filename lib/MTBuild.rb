@@ -1,4 +1,7 @@
+require 'rake'
+
 require "MTBuild/ApplicationProject"
+require "MTBuild/ApplicationTask"
 require "MTBuild/DSL"
 require "MTBuild/MTBuild"
 require "MTBuild/StaticLibraryTask"

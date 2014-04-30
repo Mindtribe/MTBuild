@@ -1,8 +1,8 @@
-static_library_project :MyLibrary do |lib|
+static_library_project :ExampleLibrary do |lib|
 
 	current_folder = File.dirname(__FILE__)
 
-	lib.add_configuration :Kira,
+	lib.add_configuration :Configuration1,
 		project_folder: current_folder,
 		sources: ['src/**/*.c'],
 		api_headers: 'include',
@@ -10,7 +10,7 @@ static_library_project :MyLibrary do |lib|
 			cpu: 'cortex-m4'
 		)
 
-	lib.add_configuration :Tiva_Launchpad,
+	lib.add_configuration :Configuration2,
 		project_folder: current_folder,
 		sources: ['src/**/*.c'],
 		api_headers: 'include',

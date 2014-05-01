@@ -1,6 +1,7 @@
 module MTBuild
 
 	class Workspace
+    require 'rake/clean'
 
     attr_reader :name
 
@@ -12,6 +13,8 @@ module MTBuild
       @projects.each do |project|
         require project
       end
+
+      CLOBBER.include(MTBuild.build_folder)
 
       task :all do
         puts "built workspace #{@name}"

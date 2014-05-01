@@ -57,7 +57,7 @@ module MTBuild
       library_folder = @output_folder
       directory library_folder
       CLOBBER.include(library_folder)
-      CLEAN.include(library_file)
+      CLOBBER.include(library_file)
 
       file library_file => objects do |t|
         #puts "#{t.name}"
@@ -71,7 +71,7 @@ module MTBuild
       executable_folder = @output_folder
       directory executable_folder
       CLOBBER.include(executable_folder)
-      CLEAN.include(executable_file)
+      CLOBBER.include(executable_file)
 
       linker_script = File.join(@project_folder,@linker_script)
 

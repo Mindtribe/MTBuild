@@ -18,7 +18,7 @@ module MTBuild
       @library_paths = []
 
       add_include_paths(expand_project_relative_paths(configuration.fetch(:include_paths, [])))
-      add_include_objects(expand_project_relative_paths(configuration.fetch(:include_paths, [])))
+      add_include_objects(expand_project_relative_paths(configuration.fetch(:include_objects, [])))
       add_library_paths(expand_project_relative_paths(configuration.fetch(:library_paths, [])))
 		end
 
@@ -27,7 +27,7 @@ module MTBuild
         if include_object.respond_to? :to_ary
           add_include_objects(*include_object.to_ary)
         else
-          @include_objects << include_object if !include_objects.include?include_object
+          @include_objects << include_object unless @include_objects.include?include_object
         end
       end
     end
@@ -37,7 +37,7 @@ module MTBuild
         if include_path.respond_to? :to_ary
           add_include_paths(*include_path.to_ary)
         else
-          @include_paths << include_path if !include_paths.include?include_paths
+          @include_paths << include_path unless @include_paths.include?include_paths
         end
       end
     end
@@ -47,7 +47,7 @@ module MTBuild
         if library_path.respond_to? :to_ary
           add_library_paths(*library_path.to_ary)
         else
-          @library_paths << library_path if !library_paths.include?library_path
+          @library_paths << library_path unless @library_paths.include?library_path
         end
       end
     end
@@ -70,6 +70,10 @@ module MTBuild
 
     def create_static_library_tasks(objects, library_name)
       fail "Toolchain didn't provide create_static_library_tasks"
+    end
+
+    def create_application_tasks(objects, executable_name)
+      fail "Toolchain didn't provide create_executable_tasks"
     end
 
     include Rake::DSL

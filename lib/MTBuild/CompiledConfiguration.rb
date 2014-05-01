@@ -64,8 +64,8 @@ module MTBuild
           if task_dependency.respond_to? :api_headers
             @toolchain.add_include_paths(task_dependency.api_headers)
           end
-          if task_dependency.respond_to? :library_binary
-            @toolchain.add_include_objects(task_dependency.library_binary)
+          if task_dependency.respond_to? :library_files
+            @toolchain.add_include_objects(task_dependency.library_files)
           end
         end
       end

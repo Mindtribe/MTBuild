@@ -3,12 +3,12 @@ require 'rake'
 module Rake
 
   class StaticLibraryTask < Task
-    attr_accessor :api_headers, :library_binary
+    attr_accessor :api_headers, :library_files
 
     def initialize(task_name, app)
       super
       @api_headers = ''
-      @library_binary = ''
+      @library_files = ''
     end
 
   end

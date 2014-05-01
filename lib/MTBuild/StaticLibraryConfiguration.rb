@@ -12,13 +12,15 @@ module MTBuild
 
     def configure_tasks
       super
-      object_files = @toolchain.create_compile_tasks(source_files)
-      library_file = @toolchain.create_static_library_tasks(object_files, @project_name)
-      new_task = static_library_task @configuration_name => library_file do |t|
+      @toolchain.add_include_paths(@api_headers)
+      object_files, object_folders = @toolchain.create_compile_tasks(source_files)
+      library_files, library_folders = @toolchain.create_static_library_tasks(object_files, @project_name)
+      dependencies = @dependencies+object_folders+library_folders+library_files
+      new_task = static_library_task @configuration_name => dependencies do |t|
         puts "built library #{t.name}."
       end
       new_task.api_headers = @api_headers
-      new_task.library_binary = library_file
+      new_task.library_files = library_files
     end
 
     private

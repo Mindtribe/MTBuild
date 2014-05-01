@@ -16,7 +16,7 @@
 int main(void)
 {
     hardware_init();
-    Library_init();
+    Library_Init();
     return 0;
 }
 

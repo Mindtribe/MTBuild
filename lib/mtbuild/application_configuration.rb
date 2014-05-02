@@ -1,5 +1,5 @@
 module MTBuild
-  require 'MTBuild/CompiledConfiguration'
+  require 'mtbuild/compiled_configuration'
 
 	class ApplicationConfiguration < CompiledConfiguration
 

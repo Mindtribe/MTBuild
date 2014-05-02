@@ -1,8 +1,8 @@
-require 'pathname'
-
 module MTBuild
 
   module Utils
+
+    require 'pathname'
 
     def self.path_difference(root, subdir)
       root_path = Pathname.new(root)

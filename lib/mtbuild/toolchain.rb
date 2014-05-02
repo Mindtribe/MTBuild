@@ -2,8 +2,6 @@ module MTBuild
 
 	class Toolchain
 
-    require 'set'
-
     attr_accessor :output_folder
     attr_accessor :project_folder
     attr_reader :include_objects

@@ -1,6 +1,6 @@
 module MTBuild
-  require "MTBuild/ApplicationConfiguration"
-  require 'MTBuild/Project'
+  require "mtbuild/application_configuration"
+  require 'mtbuild/project'
 
 	class ApplicationProject < Project
 

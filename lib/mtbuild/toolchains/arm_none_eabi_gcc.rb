@@ -1,5 +1,6 @@
 module MTBuild
-  require 'MTBuild/Toolchain'
+  require 'mtbuild/toolchain'
+  require 'mtbuild/utils'
   require 'rake/clean'
   require 'rake/loaders/makefile'
 

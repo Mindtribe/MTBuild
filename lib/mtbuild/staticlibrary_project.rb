@@ -1,9 +1,6 @@
-require 'MTBuild/Project'
-require 'MTBuild/Utils'
-
 module MTBuild
-  require "MTBuild/StaticLibraryConfiguration"
-  require 'MTBuild/Project'
+  require "mtbuild/staticlibrary_configuration"
+  require 'mtbuild/project'
 
 	class StaticLibraryProject < Project
 

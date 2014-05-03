@@ -31,7 +31,7 @@ module MTBuild
           new_projects << project_rakefile
         end
       end
-      MTBuild.logger.warn "Could not find a valid project at '#{project_location}'. Ignored." if new_projects.empty?
+      $stderr.puts "Could not find a valid project at '#{project_location}'. Ignored." if new_projects.empty?
       @projects += new_projects
     end
 

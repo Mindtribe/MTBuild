@@ -74,6 +74,46 @@ module MTBuild
       fail "Toolchain didn't provide create_executable_tasks"
     end
 
+    def build_flag_list(flags)
+      flags = [flags] unless flags.is_a? Array
+
+      flag_list = ''
+      flags.each do |f|
+        if f.respond_to? :keys
+          new_flag_list = build_flag_list_from_hash(f, flag_list)
+          flag_list = "#{flag_list}#{new_flag_list}"
+        else
+          flag_list = "#{flag_list} #{f.to_s}" if f.to_s
+        end
+      end
+      return flag_list
+    end
+
+    def build_flag_list_from_hash(flag_hash, previous_flag_list)
+      flag_list = ''
+      flag_hash.keys.each do |k|
+        flag_string = get_flag(k.to_sym)
+        if flag_string.nil?
+          $stderr.puts "Warning: ignoring unknown flag '#{k}'"
+        else
+          flag_options = get_options_for_flag(k.to_sym)
+          selected_option = flag_hash[k]
+          if flag_options.respond_to? :call
+            flag_option_string = flag_options.call(self, selected_option)
+          else
+            flag_option_string = flag_options[selected_option.to_sym]
+            fail "Error: invalid option '#{selected_option}' for '#{flag_string}'. Valid options are: #{flag_options.keys.join(', ')}" if flag_option_string.nil?
+          end
+          flag = "#{flag_string}#{flag_option_string}"
+          if flag
+            $stderr.puts "Warning: duplicated option '#{flag}'" if flag_list.include? flag
+            flag_list += " #{flag}"
+          end
+        end
+      end
+      return flag_list
+    end
+
     include Rake::DSL
 	end
 

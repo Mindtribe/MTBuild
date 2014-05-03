@@ -67,7 +67,9 @@ module MTBuild
 
       file library_file => objects do |t|
         #puts "#{t.name}"
-        sh "#{archiver} rcs #{t.name} #{t.prerequisites.join(' ')}"
+        #sh "#{archiver} rcs #{t.name} #{t.prerequisites.join(' ')}"
+        command_line = construct_archive_command(t.prerequisites, t.name)
+        sh command_line
       end
       return [library_file], [library_folder]
     end
@@ -95,52 +97,13 @@ module MTBuild
       return "#{compiler}#{flags} #{prerequisites.join(' ')} -I#{include_paths.join(' -I')} -MMD -c -o #{output_name}"
     end
 
-    def construct_archive_command
+    def construct_archive_command(prerequisites, output_name)
+      return "#{archiver} rcs #{output_name} #{prerequisites.join(' ')}"
     end
 
     def construct_link_command(prerequisites, output_name)
       flags = build_flag_list([@ldflags, @cflags, @cppflags, '-Wl,--gc-sections'])
       return "#{compiler}#{flags} #{prerequisites.join(' ')} -o #{output_name}"
-    end
-
-    def build_flag_list(flags)
-      flags = [flags] unless flags.is_a? Array
-
-      flag_list = ''
-      flags.each do |f|
-        if f.respond_to? :keys
-          new_flag_list = build_flag_list_from_hash(f, flag_list)
-          flag_list = "#{flag_list}#{new_flag_list}"
-        else
-          flag_list = "#{flag_list} #{f.to_s}" if f.to_s
-        end
-      end
-      return flag_list
-    end
-
-    def build_flag_list_from_hash(flag_hash, previous_flag_list)
-      flag_list = ''
-      flag_hash.keys.each do |k|
-        flag_string = get_flag(k.to_sym)
-        if flag_string.nil?
-          $stderr.puts "Warning: ignoring unknown flag '#{k}'"
-        else
-          flag_options = get_options_for_flag(k.to_sym)
-          selected_option = flag_hash[k]
-          if flag_options.respond_to? :call
-            flag_option_string = flag_options.call(self, selected_option)
-          else
-            flag_option_string = flag_options[selected_option.to_sym]
-            fail "Error: invalid option '#{selected_option}' for '#{flag_string}'. Valid options are: #{flag_options.keys.join(', ')}" if flag_option_string.nil?
-          end
-          flag = "#{flag_string}#{flag_option_string}"
-          if flag
-            $stderr.puts "Warning: duplicated option '#{flag}'" if flag_list.include? flag
-            flag_list += " #{flag}"
-          end
-        end
-      end
-      return flag_list
     end
 
     def compiler
@@ -155,14 +118,103 @@ module MTBuild
       return 'gcc'
     end
 
+    @gcc_standards = {
+      c90: 'c90',
+      c89: 'c89',
+      iso9899_1990: 'iso9899:1990',
+      iso9899_199409: 'iso9899:199409',
+      c99: 'c99',
+      c9x: 'c9x',
+      iso9899_1999: 'iso9899:1999',
+      iso9899_199x: 'iso9899:199x',
+      c11: 'c11',
+      c1x: 'c1x',
+      iso9899_2011: 'iso9899:2011',
+      gnu90: 'gnu90',
+      gnu89: 'gnu89',
+      gnu99: 'gnu99',
+      gnu9x: 'gnu9x',
+      gnu11: 'gnu11',
+      gnu1x: 'gnu1x',
+      cpp98: 'c++98',
+      cpp03: 'c++03',
+      gnupp98: 'gnu++98',
+      gnupp03: 'gnu++03',
+      cpp11: 'c++11',
+      cpp0x: 'c++0x',
+      gnupp11: 'gnu++11',
+      gnupp0x: 'gnu++0x',
+      cpp1y: 'c++1y',
+      gnupp1y: 'gnu++1y'
+    }
+
     @gcc_flags = {
+      #overall compile options
+      pipe: '',
+      #c dialect compile options
+      ansi: '',
+      std: '',
+      gnu89_inline: '',
+      allow_parameterless_variadic_functions: '',
+      no_asm: '',
+      no_builtin: '',
+      no_builtins: '',
+      hosted: '',
+
+      #link options
       linker_script: '-Wl,-T',
-      entry: '-Wl,--entry,'
+      entry: '-Wl,--entry,',
+      libraries: '',
+      objc: '',
+      startfiles: '',
+      defaultlibs: '',
+      stdlib: '',
+      pie: '',
+      rdynamic: '',
+      static: '',
+      shared: '',
+      libgcc: '',
+      libasan: '',
+      libtsan: '',
+      liblsan: '',
+      libubsan: '',
+      libstdcplusplus: '',
+      symbolic: ''
     }
 
     @gcc_options = {
-      linker_script: lambda {|tc, o| File.join(tc.project_folder,o)},
-      entry: lambda {|tc, o| o}
+      #overall compile options
+      pipe: { yes:'-pipe', no:''},
+      #c dialect compile options
+      ansi: { yes:'-ansi', no:''},
+      std: @gcc_standards,
+      gnu89_inline: { yes:'-fgnu89-inline', no:''},
+      allow_parameterless_variadic_functions: { yes:'-fallow-parameterless-variadic-functions', no:''},
+      no_asm: { yes:'-fno-asm', no:''},
+      no_builtin: { yes:'-fno-builtin', no:''},
+      no_builtins: lambda { |tc, o| "-fno-builtin-#{[o].flatten.join(' -fno-builtin-')}" },
+      hosted: { yes:'-fhosted', no:''},
+
+
+      #link options
+      linker_script: lambda { |tc, o| File.join(tc.project_folder,o) },
+      entry: lambda { |tc, o| o },
+      libraries: lambda { |tc, o| "-l#{[o].flatten.join(' -l')}" },
+      objc: { yes:'-lobjc', no:''},
+      startfiles: { yes:'', no:'-nostartfiles' },
+      defaultlibs: { yes:'', no:'-nodefaultlibs' },
+      stdlib: { yes:'', no:'-nostdlib' },
+      pie: { yes:'-pie', no:'' },
+      rdynamic: { yes:'-rdynamic', no:'' },
+      static: { yes:'-static', no:'' },
+      shared: { yes:'-shared', no:'' },
+      libgcc: { shared:'-shared-libgcc', static:'-static-libgcc' },
+      libasan: { shared: '', static:'-static-libasan' },
+      libtsan: { shared: '', static:'-static-libtsan' },
+      liblsan: { shared: '', static:'-static-liblsan' },
+      libubsan: { shared: '', static:'-static-libubsan' },
+      libstdcplusplus: { shared: '', static:'-static-libstdc++' },
+      symbolic: { yes:'-symbolic', no:'' },
     }
 
     def self.gcc_flags

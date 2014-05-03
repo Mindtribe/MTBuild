@@ -51,7 +51,7 @@ module MTBuild
         file_type = get_file_type(source_file)
 
         file object_file => [source_file] do |t|
-          command_line = construct_compile_command(file_type, t.prerequisites, @include_paths, t.name)
+          command_line = construct_compile_command(file_type, [source_file], @include_paths, t.name)
           sh command_line
         end
         Rake::MakefileLoader.new.load(dependency_file) if File.file?(dependency_file)

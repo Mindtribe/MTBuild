@@ -1,8 +1,8 @@
 /*  ----------------------------------------------------------------------------
-    Copyright (c) 2013, MindTribe Product Engineering, Inc.
+    Copyright (c) 2014, MindTribe Product Engineering, Inc.
     All Rights Reserved.
 
-    Author(s):  Ian Macartney <ian@mindtribe.com>
+    Author(s):  Jerry Ryle <jerry@mindtribe.com>
 
     Target(s):  ISO/IEC 9899:1999 (C99)
     ------------------------------------------------------------------------- */

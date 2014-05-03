@@ -7,7 +7,13 @@ static_library_project :ExampleLibrary do |lib|
 		sources: ['src/**/*.c'],
 		api_headers: 'include',
 		toolchain: arm_none_eabi_gcc(
-			cpu: 'cortex-m4',
+			cflags: {
+				cpu: 'cortex_m4',
+				mode: :thumb,
+				endianness: :little_endian,
+				fpu: 'fpv4_sp_d16',
+				float_abi: :hard
+			},
 			include_paths: ['src']
 		)
 
@@ -16,7 +22,13 @@ static_library_project :ExampleLibrary do |lib|
 		sources: ['src/**/*.c'],
 		api_headers: 'include',
 		toolchain: arm_none_eabi_gcc(
-			cpu: 'cortex-m4',
+			cflags: {
+				cpu: 'cortex_m4',
+				mode: :thumb,
+				endianness: :little_endian,
+				fpu: 'fpv4_sp_d16',
+				float_abi: :hard
+			},
 			include_paths: ['src']
 		)
 end

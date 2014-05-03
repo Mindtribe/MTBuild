@@ -2,12 +2,12 @@
 
 mtbuild_path = File.join(File.dirname(__FILE__),'..','lib')
 mtbuild_path_expanded = File.expand_path(mtbuild_path)
-mtbuild_file_path = File.join(mtbuild_path_expanded,'MTBuild.rb')
+mtbuild_file_path = File.join(mtbuild_path_expanded,'mtbuild.rb')
 
 if File.file?(mtbuild_file_path)
   $:.unshift(File.expand_path(mtbuild_path_expanded)) unless $:.include?(mtbuild_path) || $:.include?(mtbuild_path_expanded)
 end
 
-require 'MTBuild'
+require 'mtbuild'
 
 Rake.application.run

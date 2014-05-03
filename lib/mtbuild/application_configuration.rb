@@ -15,6 +15,7 @@ module MTBuild
       new_task = application_task @configuration_name => dependencies do |t|
         puts "built application #{t.name}."
       end
+      new_task.add_description("Build application '#{@project_name}' with configuration '#{@configuration_name}'")
     end
 
 	end

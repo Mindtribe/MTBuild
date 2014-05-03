@@ -40,19 +40,16 @@ module MTBuild
 
     def expand_sources(sources, excludes)
       source_files = FileList.new()
-      # Sources is a string or an array of strings. These could represent one file or
-      # a file pattern. Use FileList to expand these into files.
-      sources = [sources] if sources.is_a?(String)
-      sources.each do |source|
-        source_files.include(File.join(@project_folder,source))
-      end
 
-      excludes = [excludes] if excludes.is_a? String
-      excludes.each do |exclude|
-        source_files.exclude(File.join(@project_folder,exclude))
-      end
+      sources = [sources] unless sources.respond_to?(:to_ary)
+      sources = sources.collect {|s| File.join(@project_folder,s)}
+      source_files.include(sources)
 
-      return source_files.to_ary.map {|s| File.expand_path(s)}
+      excludes = [excludes] unless excludes.respond_to?(:to_ary)
+      excludes = excludes.collect {|e| File.join(@project_folder,e)}
+      source_files.exclude(excludes)
+
+      return source_files.to_ary.collect {|s| File.expand_path(s)}
     end
 
     def add_framework_dependencies_to_toolchain(*dependencies)
@@ -61,12 +58,8 @@ module MTBuild
           add_framework_dependencies_to_toolchain(*dependency.to_ary)
         else
           task_dependency = Rake.application.lookup(dependency)
-          if task_dependency.respond_to? :api_headers
-            @toolchain.add_include_paths(task_dependency.api_headers)
-          end
-          if task_dependency.respond_to? :library_files
-            @toolchain.add_include_objects(task_dependency.library_files)
-          end
+          @toolchain.add_include_paths(task_dependency.api_headers) if task_dependency.respond_to? :api_headers
+          @toolchain.add_include_objects(task_dependency.library_files) if task_dependency.respond_to? :library_files
         end
       end
     end

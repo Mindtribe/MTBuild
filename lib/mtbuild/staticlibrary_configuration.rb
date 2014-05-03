@@ -19,6 +19,7 @@ module MTBuild
       new_task = static_library_task @configuration_name => dependencies do |t|
         puts "built library #{t.name}."
       end
+      new_task.add_description("Build library '#{@project_name}' with configuration '#{@configuration_name}'")
       new_task.api_headers = @api_headers
       new_task.library_files = library_files
     end

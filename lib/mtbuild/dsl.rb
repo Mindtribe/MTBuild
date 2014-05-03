@@ -14,6 +14,10 @@ module MTBuild
       MTBuild::StaticLibraryProject.new(library_name, project_folder, &configuration_block)
     end
 
+    def test_application_project(application_name, project_folder, &configuration_block)
+      MTBuild::TestApplicationProject.new(application_name, project_folder, &configuration_block)
+    end
+
   end
 
 end

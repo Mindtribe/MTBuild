@@ -12,7 +12,8 @@ module MTBuild
       super
 
       begin
-        toolchain_test_output=%x[#{compiler} --version] ; toolchain_test_passed=$?.success?
+        toolchain_test_output=%x{#{compiler} --version 2>&1}
+        toolchain_test_passed=$?.success?
       rescue
         toolchain_test_passed = false
       end
@@ -84,7 +85,7 @@ module MTBuild
         command_line = construct_link_command(t.prerequisites, t.name)
         sh command_line
       end
-      return [executable_file], [executable_folder]
+      return executable_file, [], [executable_folder]
     end
 
     private
@@ -101,6 +102,8 @@ module MTBuild
       include_paths_s = include_paths.empty? ? '' : " -I#{include_paths.join(' -I')}"
       cppflags_s = @cppflags.empty? ? '' : " #{@cppflags}"
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
+      cxxflags_s = @cxxflags.empty? ? '' : " #{@cxxflags}"
+      asflags_s = @asflags.empty? ? '' : " #{@asflags}"
       return "#{compiler}#{cppflags_s}#{cflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :c
       return "#{compiler}#{cppflags_s}#{cxxflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :cplusplus
       return "#{compiler}#{cppflags_s}#{asflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :asm

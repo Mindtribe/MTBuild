@@ -6,7 +6,7 @@ module MTBuild
 
 	class ToolchainGcc < Toolchain
 
-    attr_accessor :cppflags, :cflags, :cxxflags, :asflags, :ldflags
+    attr_accessor :cppflags, :cflags, :cxxflags, :asflags, :ldflags, :linker_script
 
 		def initialize(configuration)
       super
@@ -23,6 +23,7 @@ module MTBuild
       @cxxflags = configuration.fetch(:cxxflags, '')
       @asflags = configuration.fetch(:asflags, '')
       @ldflags = configuration.fetch(:ldflags, '')
+      @linker_script = configuration.fetch(:linker_script, '')
 		end
 
     def create_compile_tasks(source_files)
@@ -47,10 +48,10 @@ module MTBuild
         CLEAN.include(object_file)
         CLEAN.include(dependency_file)
 
+        file_type = get_file_type(source_file)
+
         file object_file => [source_file] do |t|
-          #puts "#{t.name}"
-          #sh "#{compiler} -std=c99 -Dgcc -Wall -Werror -Wextra -pedantic-errors -ffunction-sections -fdata-sections -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb-interwork #{t.prerequisites.join(' ')} -I#{@include_paths.join(' -I')} -MMD -c -o #{t.name}"
-          command_line = construct_compile_command(t.prerequisites, @include_paths, t.name)
+          command_line = construct_compile_command(file_type, t.prerequisites, @include_paths, t.name)
           sh command_line
         end
         Rake::MakefileLoader.new.load(dependency_file) if File.file?(dependency_file)
@@ -66,8 +67,6 @@ module MTBuild
       CLOBBER.include(library_file)
 
       file library_file => objects do |t|
-        #puts "#{t.name}"
-        #sh "#{archiver} rcs #{t.name} #{t.prerequisites.join(' ')}"
         command_line = construct_archive_command(t.prerequisites, t.name)
         sh command_line
       end
@@ -82,8 +81,6 @@ module MTBuild
       CLOBBER.include(executable_file)
 
       file executable_file => objects+@include_objects do |t|
-        #puts "#{t.name}"
-        #sh "#{compiler} -std=c99 -Dgcc -Wall -Werror -Wextra -pedantic-errors -ffunction-sections -fdata-sections -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb-interwork #{t.prerequisites.join(' ')} -I#{@include_paths.join(' -I')} -Wl,--entry,ResetISR -Wl,--gc-sections -Wl,-T#{linker_script} -o #{t.name}"
         command_line = construct_link_command(t.prerequisites, t.name)
         sh command_line
       end
@@ -92,18 +89,35 @@ module MTBuild
 
     private
 
-    def construct_compile_command(prerequisites, include_paths, output_name)
-      flags = build_flag_list(@cflags)
-      return "#{compiler}#{flags} #{prerequisites.join(' ')} -I#{include_paths.join(' -I')} -MMD -c -o #{output_name}"
+    def get_file_type(source_file)
+      file_extension = File.extname(source_file)
+      return :cplusplus if ['.cc', '.cp', '.cxx', '.cpp', '.CPP', '.c++', '.C'].include? file_extension
+      return :asm if ['.s', '.S', '.sx'].include? file_extension
+      return :c
+    end
+
+    def construct_compile_command(file_type, prerequisites, include_paths, output_name)
+      prerequisites_s = prerequisites.empty? ? '' : " #{prerequisites.join(' ')}"
+      include_paths_s = include_paths.empty? ? '' : " -I#{include_paths.join(' -I')}"
+      cppflags_s = @cppflags.empty? ? '' : " #{@cppflags}"
+      cflags_s = @cflags.empty? ? '' : " #{@cflags}"
+      return "#{compiler}#{cppflags_s}#{cflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :c
+      return "#{compiler}#{cppflags_s}#{cxxflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :cplusplus
+      return "#{compiler}#{cppflags_s}#{asflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :asm
     end
 
     def construct_archive_command(prerequisites, output_name)
-      return "#{archiver} rcs #{output_name} #{prerequisites.join(' ')}"
+      prerequisites_s = prerequisites.empty? ? '' : " #{prerequisites.join(' ')}"
+      return "#{archiver} rcs #{output_name} #{prerequisites_s}"
     end
 
     def construct_link_command(prerequisites, output_name)
-      flags = build_flag_list([@ldflags, @cflags, @cppflags, '-Wl,--gc-sections'])
-      return "#{compiler}#{flags} #{prerequisites.join(' ')} -o #{output_name}"
+      prerequisites_s = prerequisites.empty? ? '' : " #{prerequisites.join(' ')}"
+      cppflags_s = @cppflags.empty? ? '' : " #{@cppflags}"
+      cflags_s = @cflags.empty? ? '' : " #{@cflags}"
+      ldflags_s = @ldflags.empty? ? '' : " #{@ldflags}"
+      linker_script_s = @linker_script.empty? ? '' : " -Wl,-T#{File.join(@project_folder,@linker_script)}"
+      return "#{compiler}#{cppflags_s}#{cflags_s}#{ldflags_s}#{linker_script_s}#{prerequisites_s} -o #{output_name}"
     end
 
     def compiler
@@ -116,121 +130,6 @@ module MTBuild
 
     def linker
       return 'gcc'
-    end
-
-    @gcc_standards = {
-      c90: 'c90',
-      c89: 'c89',
-      iso9899_1990: 'iso9899:1990',
-      iso9899_199409: 'iso9899:199409',
-      c99: 'c99',
-      c9x: 'c9x',
-      iso9899_1999: 'iso9899:1999',
-      iso9899_199x: 'iso9899:199x',
-      c11: 'c11',
-      c1x: 'c1x',
-      iso9899_2011: 'iso9899:2011',
-      gnu90: 'gnu90',
-      gnu89: 'gnu89',
-      gnu99: 'gnu99',
-      gnu9x: 'gnu9x',
-      gnu11: 'gnu11',
-      gnu1x: 'gnu1x',
-      cpp98: 'c++98',
-      cpp03: 'c++03',
-      gnupp98: 'gnu++98',
-      gnupp03: 'gnu++03',
-      cpp11: 'c++11',
-      cpp0x: 'c++0x',
-      gnupp11: 'gnu++11',
-      gnupp0x: 'gnu++0x',
-      cpp1y: 'c++1y',
-      gnupp1y: 'gnu++1y'
-    }
-
-    @gcc_flags = {
-      #overall compile options
-      pipe: '',
-      #c dialect compile options
-      ansi: '',
-      std: '',
-      gnu89_inline: '',
-      allow_parameterless_variadic_functions: '',
-      no_asm: '',
-      no_builtin: '',
-      no_builtins: '',
-      hosted: '',
-
-      #link options
-      linker_script: '-Wl,-T',
-      entry: '-Wl,--entry,',
-      libraries: '',
-      objc: '',
-      startfiles: '',
-      defaultlibs: '',
-      stdlib: '',
-      pie: '',
-      rdynamic: '',
-      static: '',
-      shared: '',
-      libgcc: '',
-      libasan: '',
-      libtsan: '',
-      liblsan: '',
-      libubsan: '',
-      libstdcplusplus: '',
-      symbolic: ''
-    }
-
-    @gcc_options = {
-      #overall compile options
-      pipe: { yes:'-pipe', no:''},
-      #c dialect compile options
-      ansi: { yes:'-ansi', no:''},
-      std: @gcc_standards,
-      gnu89_inline: { yes:'-fgnu89-inline', no:''},
-      allow_parameterless_variadic_functions: { yes:'-fallow-parameterless-variadic-functions', no:''},
-      no_asm: { yes:'-fno-asm', no:''},
-      no_builtin: { yes:'-fno-builtin', no:''},
-      no_builtins: lambda { |tc, o| "-fno-builtin-#{[o].flatten.join(' -fno-builtin-')}" },
-      hosted: { yes:'-fhosted', no:''},
-
-
-      #link options
-      linker_script: lambda { |tc, o| File.join(tc.project_folder,o) },
-      entry: lambda { |tc, o| o },
-      libraries: lambda { |tc, o| "-l#{[o].flatten.join(' -l')}" },
-      objc: { yes:'-lobjc', no:''},
-      startfiles: { yes:'', no:'-nostartfiles' },
-      defaultlibs: { yes:'', no:'-nodefaultlibs' },
-      stdlib: { yes:'', no:'-nostdlib' },
-      pie: { yes:'-pie', no:'' },
-      rdynamic: { yes:'-rdynamic', no:'' },
-      static: { yes:'-static', no:'' },
-      shared: { yes:'-shared', no:'' },
-      libgcc: { shared:'-shared-libgcc', static:'-static-libgcc' },
-      libasan: { shared: '', static:'-static-libasan' },
-      libtsan: { shared: '', static:'-static-libtsan' },
-      liblsan: { shared: '', static:'-static-liblsan' },
-      libubsan: { shared: '', static:'-static-libubsan' },
-      libstdcplusplus: { shared: '', static:'-static-libstdc++' },
-      symbolic: { yes:'-symbolic', no:'' },
-    }
-
-    def self.gcc_flags
-      return @gcc_flags
-    end
-
-    def self.gcc_options
-      return @gcc_options
-    end
-
-    def get_flag(flagIdentifier)
-      return ToolchainGcc.gcc_flags.fetch(flagIdentifier, nil)
-    end
-
-    def get_options_for_flag(flagIdentifier)
-      return ToolchainGcc.gcc_options.fetch(flagIdentifier, nil)
     end
 
 	end

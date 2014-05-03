@@ -7,13 +7,9 @@ static_library_project :ExampleLibrary do |lib|
 		sources: ['src/**/*.c'],
 		api_headers: 'include',
 		toolchain: arm_none_eabi_gcc(
-			cflags: {
-				cpu: 'cortex_m4',
-				mode: :thumb,
-				endianness: :little_endian,
-				fpu: 'fpv4_sp_d16',
-				float_abi: :hard
-			},
+			cppflags: "-Dgcc",
+			cflags: '-std=c99 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
+			cxxflags: '-mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
 			include_paths: ['src']
 		)
 
@@ -22,13 +18,9 @@ static_library_project :ExampleLibrary do |lib|
 		sources: ['src/**/*.c'],
 		api_headers: 'include',
 		toolchain: arm_none_eabi_gcc(
-			cflags: {
-				cpu: 'cortex_m4',
-				mode: :thumb,
-				endianness: :little_endian,
-				fpu: 'fpv4_sp_d16',
-				float_abi: :hard
-			},
+			cppflags: "-Dgcc",
+			cflags: '-std=c99 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
+			cxxflags: '-mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
 			include_paths: ['src']
 		)
 end

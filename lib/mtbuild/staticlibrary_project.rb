@@ -5,7 +5,7 @@ module MTBuild
 	class StaticLibraryProject < Project
 
     def add_configuration(configuration_name, configuration)
-      @configurations << StaticLibraryConfiguration.new(@name,configuration_name,configuration)
+      @configurations << StaticLibraryConfiguration.new(@project_name, @project_folder, configuration_name, configuration)
     end
 
 	end

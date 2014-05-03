@@ -2,14 +2,15 @@ module MTBuild
 
 	class Project
 
-    attr_reader :name
+    attr_reader :project_name, :project_folder
 
-		def initialize(project_name, &configuration_block)
+		def initialize(project_name, project_folder, &configuration_block)
       @configurations = []
-      @name = project_name
+      @project_name = project_name
+      @project_folder = project_folder
 			configuration_block.call(self) if configuration_block
 
-      namespace @name do
+      namespace @project_name do
         @configurations.each do |configuration|
           configuration.configure_tasks()
         end

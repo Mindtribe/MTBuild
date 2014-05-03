@@ -5,7 +5,7 @@ module MTBuild
 	class ApplicationProject < Project
 
     def add_configuration(configuration_name, configuration)
-      @configurations << ApplicationConfiguration.new(@name,configuration_name,configuration)
+      @configurations << ApplicationConfiguration.new(@project_name, @project_folder, configuration_name, configuration)
     end
 
 	end

@@ -3,7 +3,7 @@ module MTBuild
 
 	class ApplicationConfiguration < CompiledConfiguration
 
-    def initialize(project_name, configuration_name, configuration)
+    def initialize(project_name, project_folder, configuration_name, configuration)
       super
     end
 

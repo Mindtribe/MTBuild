@@ -10,14 +10,13 @@ module MTBuild
     attr_reader :source_files
     attr_reader :toolchain
 
-		def initialize(project_name, configuration_name, configuration)
+		def initialize(project_name, project_folder, configuration_name, configuration)
       super
       check_configuration(configuration)
 
       @dependencies = configuration.fetch(:dependencies, [])
       @include_paths = configuration.fetch(:include_paths, [])
       @output_folder = File.expand_path(File.join(MTBuild.build_folder, @project_name.to_s, @configuration_name.to_s))
-      @project_folder = File.expand_path(configuration[:project_folder])
       @source_files = expand_sources(configuration.fetch(:sources, []), configuration.fetch(:excludes, []))
 
       @toolchain = configuration[:toolchain]
@@ -34,7 +33,6 @@ module MTBuild
     private
 
     def check_configuration(configuration)
-      fail "No project folder specified for #{@project_name}:#{@configuration_name}" if configuration.fetch(:project_folder, nil).nil?
       fail "No toolchain specified for #{@project_name}:#{@configuration_name}" if configuration.fetch(:toolchain, nil).nil?
     end
 

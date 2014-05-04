@@ -1,6 +1,6 @@
 #include "hardware.h"
 
-void hardware_init(void)
+void Hardware_Init(void)
 {
 
 }

@@ -20,46 +20,22 @@ module MTBuild
       add_library_paths(expand_project_relative_paths(configuration.fetch(:library_paths, [])))
 		end
 
-    def add_include_objects(*include_objects)
-      include_objects.each do |include_object|
-        if include_object.respond_to? :to_ary
-          add_include_objects(*include_object.to_ary)
-        else
-          @include_objects << include_object unless @include_objects.include?include_object
-        end
-      end
+    def add_include_objects(include_objects)
+      include_objects = [include_objects] if include_objects.is_a?(String)
+      include_objects = include_objects.to_a.flatten
+      @include_objects |= include_objects
     end
 
-    def add_include_paths(*include_paths)
-      include_paths.each do |include_path|
-        if include_path.respond_to? :to_ary
-          add_include_paths(*include_path.to_ary)
-        else
-          @include_paths << include_path unless @include_paths.include?include_paths
-        end
-      end
+    def add_include_paths(include_paths)
+      include_paths = [include_paths] if include_paths.is_a?(String)
+      include_paths = include_paths.to_a.flatten
+      @include_paths |= include_paths
     end
 
-    def add_library_paths(*library_paths)
-      library_paths.each do |library_path|
-        if library_path.respond_to? :to_ary
-          add_library_paths(*library_path.to_ary)
-        else
-          @library_paths << library_path unless @library_paths.include?library_path
-        end
-      end
-    end
-
-    def expand_project_relative_paths(*paths)
-      expanded_paths = []
-      paths.each do |path|
-        if path.respond_to? :to_ary
-          expanded_paths += expand_project_relative_paths(*path.to_ary)
-        else
-          expanded_paths << File.expand_path(File.join(@project_folder, path))
-        end
-      end
-      return expanded_paths
+    def add_library_paths(library_paths)
+      library_paths = [library_paths] if library_paths.is_a?(String)
+      library_paths = library_paths.to_a.flatten
+      @library_paths |= library_paths
     end
 
     def create_compile_tasks(source_files)
@@ -72,6 +48,14 @@ module MTBuild
 
     def create_application_tasks(objects, executable_name)
       fail "Toolchain didn't provide create_executable_tasks"
+    end
+
+    private
+
+    def expand_project_relative_paths(paths)
+      paths = [paths] if paths.is_a?(String)
+      paths = paths.to_a.flatten
+      return paths.collect { |p| File.expand_path(File.join(@project_folder, p))}
     end
 
     include Rake::DSL

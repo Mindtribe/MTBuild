@@ -15,19 +15,27 @@ module MTBuild
       check_configuration(configuration)
 
       @dependencies = configuration.fetch(:dependencies, [])
-      @include_paths = configuration.fetch(:include_paths, [])
       @output_folder = File.expand_path(File.join(MTBuild.build_folder, @project_name.to_s, @configuration_name.to_s))
-      @source_files = expand_sources(configuration.fetch(:sources, []), configuration.fetch(:excludes, []))
+      @default_toolchain = configuration[:toolchain]
 
-      @toolchain = configuration[:toolchain]
-      @toolchain.output_folder = @output_folder
-      @toolchain.project_folder = @project_folder
-      @toolchain.add_include_paths(@include_paths)
-
-      add_framework_dependencies_to_toolchain(dependencies)
+      source_files = expand_sources(configuration.fetch(:sources, []), configuration.fetch(:excludes, []))
+      @toolchains = {@default_toolchain => source_files}
 		end
 
+    def add_sources(sources, excludes=[], toolchain)
+      toolchain_sources = []
+      toolchain_sources = @toolchains[toolchain] if @toolchains.has_key?toolchain
+      toolchain_sources |= expand_sources(sources, excludes)
+      @toolchains[toolchain] = toolchain_sources
+    end
+
     def configure_tasks
+      super
+      @toolchains.each do |toolchain, sources|
+        toolchain.output_folder = @output_folder
+        toolchain.project_folder = @project_folder
+        CompiledConfiguration.add_framework_dependencies_to_toolchain(toolchain, @dependencies)
+      end
     end
 
     private
@@ -50,14 +58,14 @@ module MTBuild
       return source_files.to_ary.collect {|s| File.expand_path(s)}
     end
 
-    def add_framework_dependencies_to_toolchain(*dependencies)
+    def self.add_framework_dependencies_to_toolchain(toolchain, *dependencies)
       dependencies.each do |dependency|
         if dependency.respond_to? :to_ary
-          add_framework_dependencies_to_toolchain(*dependency.to_ary)
+          CompiledConfiguration.add_framework_dependencies_to_toolchain(toolchain, *dependency.to_ary)
         else
           task_dependency = Rake.application.lookup(dependency)
-          @toolchain.add_include_paths(task_dependency.api_headers) if task_dependency.respond_to? :api_headers
-          @toolchain.add_include_objects(task_dependency.library_files) if task_dependency.respond_to? :library_files
+          toolchain.add_include_paths(task_dependency.api_headers) if task_dependency.respond_to? :api_headers
+          toolchain.add_include_objects(task_dependency.library_files) if task_dependency.respond_to? :library_files
         end
       end
     end

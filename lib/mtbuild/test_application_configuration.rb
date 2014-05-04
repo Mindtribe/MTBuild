@@ -9,9 +9,16 @@ module MTBuild
 
     def configure_tasks
       super
-      object_files, object_folders = @toolchain.create_compile_tasks(source_files)
-      application_binary, application_files, application_folders = @toolchain.create_application_tasks(object_files, @project_name)
-      dependencies = @dependencies+object_folders+application_folders+application_files+[application_binary]
+      all_object_files = []
+      all_object_folders = []
+      @toolchains.each do |toolchain, sources|
+        object_files, object_folders = toolchain.create_compile_tasks(sources)
+        all_object_files |= object_files
+        all_object_folders |= object_folders
+      end
+
+      application_binary, application_files, application_folders = @default_toolchain.create_application_tasks(all_object_files, @project_name)
+      dependencies = @dependencies+all_object_folders+application_folders+application_files+[application_binary]
       new_task = application_task @configuration_name => dependencies do |t|
         puts "built test application #{t.name}."
         sh application_binary

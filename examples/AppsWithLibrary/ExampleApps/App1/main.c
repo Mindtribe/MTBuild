@@ -12,10 +12,12 @@
 
 #include "Library/Library.h"
 #include "hardware.h"
+#include "special.h"
 
 int main(void)
 {
     Hardware_Init();
+    Special_Init();
     Library_Init();
     return 0;
 }

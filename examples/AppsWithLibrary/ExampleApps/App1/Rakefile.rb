@@ -38,4 +38,4 @@ application_project :App1, File.dirname(__FILE__) do |app|
 
 end
 
-task :all => ['App1:Configuration1', 'App1:Configuration2']
+MTBuild::Workspace.add_default_tasks(['App1:Configuration1', 'App1:Configuration2'])

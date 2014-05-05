@@ -4,9 +4,6 @@ module MTBuild
 
     attr_accessor :output_folder
     attr_accessor :project_folder
-    attr_reader :include_objects
-    attr_reader :include_paths
-    attr_reader :library_paths
 
 		def initialize(configuration)
       @output_folder = ''
@@ -19,6 +16,18 @@ module MTBuild
       add_include_objects(expand_project_relative_paths(configuration.fetch(:include_objects, [])))
       add_library_paths(expand_project_relative_paths(configuration.fetch(:library_paths, [])))
 		end
+
+    def get_include_objects
+      @include_objects.collect {|i| File.expand_path(i.gsub('$(PROJECT_DIR)', @project_folder))}
+    end
+
+    def get_include_paths
+      @include_paths.collect {|i| File.expand_path(i.gsub('$(PROJECT_DIR)', @project_folder))}
+    end
+
+    def get_library_paths
+      @library_paths.collect {|i| File.expand_path(i.gsub('$(PROJECT_DIR)', @project_folder))}
+    end
 
     def add_include_objects(include_objects)
       include_objects = [include_objects] if include_objects.is_a?(String)
@@ -55,7 +64,7 @@ module MTBuild
     def expand_project_relative_paths(paths)
       paths = [paths] if paths.is_a?(String)
       paths = paths.to_a.flatten
-      return paths.collect { |p| File.expand_path(File.join(@project_folder, p))}
+      return paths.collect { |p| (File.join('$(PROJECT_DIR)', p))}
     end
 
     include Rake::DSL

@@ -52,7 +52,7 @@ module MTBuild
         file_type = get_file_type(source_file)
 
         file object_file => [source_file] do |t|
-          command_line = construct_compile_command(file_type, [source_file], @include_paths, t.name)
+          command_line = construct_compile_command(file_type, [source_file], get_include_paths, t.name)
           sh command_line
         end
         Rake::MakefileLoader.new.load(dependency_file) if File.file?(dependency_file)
@@ -81,7 +81,7 @@ module MTBuild
       CLOBBER.include(executable_folder)
       CLOBBER.include(executable_file)
 
-      file executable_file => objects+@include_objects do |t|
+      file executable_file => objects+get_include_objects do |t|
         command_line = construct_link_command(t.prerequisites, t.name)
         sh command_line
       end

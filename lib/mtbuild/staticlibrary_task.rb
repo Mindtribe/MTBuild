@@ -1,6 +1,6 @@
-require 'rake'
-
 module Rake
+
+  require 'rake'
 
   class StaticLibraryTask < Task
     attr_accessor :api_headers, :library_files

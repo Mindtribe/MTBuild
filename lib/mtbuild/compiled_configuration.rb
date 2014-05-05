@@ -9,6 +9,7 @@ module MTBuild
     attr_reader :project_folder
     attr_reader :source_files
     attr_reader :toolchain
+    attr_reader :tests
 
 		def initialize(project_name, project_folder, configuration_name, configuration)
       super
@@ -20,6 +21,8 @@ module MTBuild
 
       source_files = expand_sources(configuration.fetch(:sources, []), configuration.fetch(:excludes, []))
       @toolchains = {@default_toolchain => source_files}
+
+      @tests = expand_tests(configuration.fetch(:tests, []))
 		end
 
     def add_sources(sources, excludes=[], toolchain)
@@ -56,6 +59,11 @@ module MTBuild
       source_files.exclude(excludes)
 
       return source_files.to_ary.collect {|s| File.expand_path(s)}
+    end
+
+    def expand_tests(tests)
+      tests = [tests] unless tests.respond_to?(:to_ary)
+      return tests
     end
 
     def self.add_framework_dependencies_to_toolchain(toolchain, *dependencies)

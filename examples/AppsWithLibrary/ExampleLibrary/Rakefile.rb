@@ -9,7 +9,7 @@ static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
 			cxxflags: '-mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
 			include_paths: ['src']
 		),
-		dependencies: [
+		tests: [
 			'ExampleLibraryTest:Test'
 		]
 
@@ -22,7 +22,7 @@ static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
 			cxxflags: '-mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
 			include_paths: ['src']
 		),
-		dependencies: [
+		tests: [
 			'ExampleLibraryTest:Test'
 		]
 

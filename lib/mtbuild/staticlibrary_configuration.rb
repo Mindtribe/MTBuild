@@ -25,6 +25,13 @@ module MTBuild
       dependencies = @dependencies+all_object_folders+library_folders+library_files
       new_task = static_library_task @configuration_name => dependencies do |t|
         puts "built library #{t.name}."
+        @tests.each do |test|
+          if Rake::Task.task_defined? test
+            Rake::Task[test].invoke
+          else
+            $stderr.puts "warning: Skipping unknown test '#{test}'"
+          end
+        end
       end
       new_task.add_description("Build library '#{@project_name}' with configuration '#{@configuration_name}'")
       new_task.api_headers = @api_headers

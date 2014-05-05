@@ -1,7 +1,5 @@
 module MTBuild
 
-  require 'logger'
-
   def self.set_build_folder(folder)
     @build_folder ||= folder
   end

@@ -1,6 +1,6 @@
-require 'rake'
-
 module Rake
+
+  require 'rake'
 
   class ApplicationTask < Task
 

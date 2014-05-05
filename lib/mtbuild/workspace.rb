@@ -34,9 +34,9 @@ module MTBuild
     def add_project(project_location)
       new_projects = []
       Dir[File.join(Rake.original_dir,project_location)].each do |project_path|
-        if File.directory?(project_path)
-          project_rakefile = File.join(project_path,'Rakefile')
-          new_projects << project_rakefile
+        if File.directory? project_path
+          project_rakefile = File.join(project_path,'Rakefile.rb')
+          new_projects << project_rakefile if File.file? project_rakefile
         end
       end
       $stderr.puts "Could not find a valid project at '#{project_location}'. Ignored." if new_projects.empty?

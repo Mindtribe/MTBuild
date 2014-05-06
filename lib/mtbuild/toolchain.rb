@@ -30,20 +30,17 @@ module MTBuild
     end
 
     def add_include_objects(include_objects)
-      include_objects = [include_objects] if include_objects.is_a?(String)
-      include_objects = include_objects.to_a.flatten
+      include_objects = Utils.ensure_array(include_objects).to_a.flatten
       @include_objects |= include_objects
     end
 
     def add_include_paths(include_paths)
-      include_paths = [include_paths] if include_paths.is_a?(String)
-      include_paths = include_paths.to_a.flatten
+      include_paths = Utils.ensure_array(include_paths).to_a.flatten
       @include_paths |= include_paths
     end
 
     def add_library_paths(library_paths)
-      library_paths = [library_paths] if library_paths.is_a?(String)
-      library_paths = library_paths.to_a.flatten
+      library_paths = Utils.ensure_array(library_paths).to_a.flatten
       @library_paths |= library_paths
     end
 
@@ -62,9 +59,7 @@ module MTBuild
     private
 
     def expand_project_relative_paths(paths)
-      paths = [paths] if paths.is_a?(String)
-      paths = paths.to_a.flatten
-      return paths.collect { |p| (File.join('$(PROJECT_DIR)', p))}
+      return Utils.ensure_array(paths).to_a.flatten.collect{ |p| (File.join('$(PROJECT_DIR)', p))}
     end
 
     include Rake::DSL

@@ -19,16 +19,16 @@ module MTBuild
       @output_folder = File.expand_path(File.join(MTBuild.build_folder, @project_name.to_s, @configuration_name.to_s))
       @default_toolchain = configuration[:toolchain]
 
-      source_files = expand_sources(configuration.fetch(:sources, []), configuration.fetch(:excludes, []))
+      source_files = Utils.expand_file_list(configuration.fetch(:sources, []), configuration.fetch(:excludes, []), @project_folder)
       @toolchains = {@default_toolchain => source_files}
 
-      @tests = expand_tests(configuration.fetch(:tests, []))
+      @tests = Utils.ensure_array(configuration.fetch(:tests, []))
 		end
 
     def add_sources(sources, excludes=[], toolchain)
       toolchain_sources = []
       toolchain_sources = @toolchains[toolchain] if @toolchains.has_key?toolchain
-      toolchain_sources |= expand_sources(sources, excludes)
+      toolchain_sources |= Utils.expand_file_list(sources, excludes, @project_folder)
       @toolchains[toolchain] = toolchain_sources
     end
 
@@ -45,25 +45,6 @@ module MTBuild
 
     def check_configuration(configuration)
       fail "No toolchain specified for #{@project_name}:#{@configuration_name}" if configuration.fetch(:toolchain, nil).nil?
-    end
-
-    def expand_sources(sources, excludes)
-      source_files = FileList.new()
-
-      sources = [sources] unless sources.respond_to?(:to_ary)
-      sources = sources.collect {|s| File.join(@project_folder,s)}
-      source_files.include(sources)
-
-      excludes = [excludes] unless excludes.respond_to?(:to_ary)
-      excludes = excludes.collect {|e| File.join(@project_folder,e)}
-      source_files.exclude(excludes)
-
-      return source_files.to_ary.collect {|s| File.expand_path(s)}
-    end
-
-    def expand_tests(tests)
-      tests = [tests] unless tests.respond_to?(:to_ary)
-      return tests
     end
 
     def self.add_framework_dependencies_to_toolchain(toolchain, *dependencies)

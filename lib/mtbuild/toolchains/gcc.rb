@@ -63,7 +63,7 @@ module MTBuild
     end
 
     def create_static_library_tasks(objects, library_name)
-      library_file = File.join(@output_folder, "lib#{library_name}.a")
+      library_file = File.join(@output_folder, "lib#{library_name}#{@binary_decorator}.a")
       library_folder = @output_folder
       directory library_folder
       CLOBBER.include(library_folder)
@@ -77,7 +77,7 @@ module MTBuild
     end
 
     def create_application_tasks(objects, executable_name)
-      executable_file = File.join(@output_folder, "#{executable_name}")
+      executable_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}")
       executable_folder = @output_folder
       directory executable_folder
       CLOBBER.include(executable_folder)

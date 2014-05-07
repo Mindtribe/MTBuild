@@ -2,8 +2,8 @@ module MTBuild
 
   module DSL
 
-    def workspace(workspace_name, &configuration_block)
-      MTBuild::Workspace.new(workspace_name, &configuration_block)
+    def workspace(workspace_name, workspace_folder, &configuration_block)
+      MTBuild::Workspace.new(workspace_name, workspace_folder, &configuration_block)
     end
 
     def application_project(application_name, project_folder, &configuration_block)

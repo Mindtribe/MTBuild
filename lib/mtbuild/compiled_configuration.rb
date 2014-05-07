@@ -6,17 +6,14 @@ module MTBuild
 
     attr_reader :dependencies
     attr_reader :include_paths
-    attr_reader :output_folder
-    attr_reader :project_folder
     attr_reader :source_files
     attr_reader :tests
 
-		def initialize(project_name, project_folder, configuration_name, configuration)
+		def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
       super
       check_configuration(configuration)
 
       @dependencies = configuration.fetch(:dependencies, [])
-      @output_folder = File.expand_path(File.join(MTBuild.build_folder, @project_name.to_s, @configuration_name.to_s))
       @default_toolchain_config = configuration[:toolchain]
       @default_toolchain = Toolchain.create_toolchain(@default_toolchain_config)
 
@@ -37,6 +34,7 @@ module MTBuild
       @toolchains.each do |toolchain, sources|
         toolchain.output_folder = @output_folder
         toolchain.project_folder = @project_folder
+        toolchain.binary_decorator = "-#{@configuration_name}"
         CompiledConfiguration.add_framework_dependencies_to_toolchain(toolchain, @dependencies)
       end
     end

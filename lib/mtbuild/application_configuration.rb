@@ -3,10 +3,6 @@ module MTBuild
 
 	class ApplicationConfiguration < CompiledConfiguration
 
-    def initialize(project_name, project_folder, configuration_name, configuration)
-      super
-    end
-
     def configure_tasks
       super
       all_object_files = []

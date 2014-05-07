@@ -5,7 +5,7 @@ module MTBuild
 
     attr_reader :api_headers
 
-    def initialize(project_name, project_folder, configuration_name, configuration)
+    def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
       super
       @api_headers = Utils.expand_folder_list(configuration.fetch(:api_headers, []), @project_folder)
     end

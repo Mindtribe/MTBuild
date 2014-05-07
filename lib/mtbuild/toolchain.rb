@@ -4,10 +4,12 @@ module MTBuild
 
     attr_accessor :output_folder
     attr_accessor :project_folder
+    attr_accessor :binary_decorator
 
 		def initialize(configuration)
       @output_folder = ''
       @project_folder = ''
+      @binary_decorator = ''
       @include_objects = []
       @include_paths = []
       @library_paths = []

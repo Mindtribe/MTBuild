@@ -4,10 +4,14 @@ module MTBuild
     require 'mtbuild/utils'
     require 'rake/clean'
 
-    attr_reader :name
+    attr_reader :workspace_name
+    attr_reader :workspace_folder
+    attr_reader :output_folder
 
-		def initialize(workspace_name, &configuration_block)
-      @name = workspace_name
+		def initialize(workspace_name, workspace_folder, &configuration_block)
+      @workspace_name = workspace_name
+      @workspace_folder = File.expand_path(workspace_folder)
+      @output_folder = File.expand_path(File.join(@workspace_folder, MTBuild.default_outpout_folder))
       @projects = []
       @default_tasks = []
 
@@ -22,10 +26,10 @@ module MTBuild
           require project
         end
 
-        CLOBBER.include(MTBuild.build_folder)
+        CLOBBER.include(@output_folder)
 
         task :workspace do
-          puts "built workspace #{@name}"
+          puts "built workspace #{@workspace_name}"
         end
 
         task :default => @default_tasks+[:workspace]
@@ -45,12 +49,15 @@ module MTBuild
     end
 
     def add_default_tasks(default_tasks)
-      default_tasks = [default_tasks] unless default_tasks.respond_to? :to_ary
-      @default_tasks |= default_tasks.flatten
+      @default_tasks |= Utils.ensure_array(default_tasks).flatten
     end
 
     def set_configuration_defaults(configuration_name, defaults_hash)
       Workspace.set_configuration_defaults(configuration_name, defaults_hash)
+    end
+
+    def set_output_folder(output_folder)
+      @output_folder = File.expand_path(File.join(@workspace_folder,output_folder))
     end
 
     @workspace = nil
@@ -61,6 +68,10 @@ module MTBuild
 
     def self.set_workspace(workspace)
       @workspace = workspace
+    end
+
+    def self.have_workspace?
+      return !@workspace.nil?
     end
 
     def self.add_default_tasks(default_tasks)

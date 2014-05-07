@@ -1,11 +1,9 @@
 module MTBuild
 
-  def self.set_build_folder(folder)
-    @build_folder ||= folder
-  end
+  @default_outpout_folder = 'build'
 
-  def self.build_folder
-    return @build_folder || File.join(Rake.original_dir, 'build')
+  def self.default_outpout_folder
+    return @default_outpout_folder
   end
 
 end

@@ -1,6 +1,9 @@
 # Build folder
 build/
 
+# Compiled Ruby Gem files
+*.gem
+
 # Compiled Object files
 *.slo
 *.lo

@@ -1,5 +1,6 @@
 module MTBuild
   require 'mtbuild/configuration'
+  require 'mtbuild/toolchain'
 
 	class CompiledConfiguration < Configuration
 
@@ -8,7 +9,6 @@ module MTBuild
     attr_reader :output_folder
     attr_reader :project_folder
     attr_reader :source_files
-    attr_reader :toolchain
     attr_reader :tests
 
 		def initialize(project_name, project_folder, configuration_name, configuration)
@@ -17,7 +17,8 @@ module MTBuild
 
       @dependencies = configuration.fetch(:dependencies, [])
       @output_folder = File.expand_path(File.join(MTBuild.build_folder, @project_name.to_s, @configuration_name.to_s))
-      @default_toolchain = configuration[:toolchain]
+      @default_toolchain_config = configuration[:toolchain]
+      @default_toolchain = Toolchain.create_toolchain(@default_toolchain_config)
 
       source_files = Utils.expand_file_list(configuration.fetch(:sources, []), configuration.fetch(:excludes, []), @project_folder)
       @toolchains = {@default_toolchain => source_files}
@@ -25,11 +26,10 @@ module MTBuild
       @tests = Utils.ensure_array(configuration.fetch(:tests, []))
 		end
 
-    def add_sources(sources, excludes=[], toolchain)
-      toolchain_sources = []
-      toolchain_sources = @toolchains[toolchain] if @toolchains.has_key?toolchain
-      toolchain_sources |= Utils.expand_file_list(sources, excludes, @project_folder)
-      @toolchains[toolchain] = toolchain_sources
+    def add_sources(sources, excludes=[], toolchain_configuration)
+      merged_configuration = Utils.merge_configurations(@default_toolchain_config, toolchain_configuration)
+      toolchain = Toolchain.create_toolchain(merged_configuration)
+      @toolchains[toolchain] = Utils.expand_file_list(sources, excludes, @project_folder)
     end
 
     def configure_tasks

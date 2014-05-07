@@ -62,6 +62,30 @@ module MTBuild
       return Utils.ensure_array(paths).to_a.flatten.collect{ |p| (File.join('$(PROJECT_DIR)', p))}
     end
 
+    @registered_toolchains = {}
+
+    def self.register_toolchain(toolchain_name, toolchain_class)
+      @registered_toolchains[toolchain_name] = toolchain_class;
+    end
+
+    def self.create_toolchain(toolchain_configuration)
+      toolchain_name = toolchain_configuration.fetch(:name, nil)
+      fail "error: toolchain name not specified." if toolchain_name.nil?
+
+      toolchain_class = @registered_toolchains.fetch(toolchain_name, nil)
+      if !toolchain_class
+        toolchain_file = File.join('mtbuild', 'toolchains', toolchain_name.to_s)
+        begin
+          require toolchain_file
+        rescue LoadError
+          fail "error: could not load #{toolchain_file}."
+        end
+      end
+      toolchain_class = @registered_toolchains.fetch(toolchain_name, nil)
+      fail "error: toolchain #{toolchain_name} could not be found." if toolchain_class.nil?
+      return Object::const_get(toolchain_class).new(toolchain_configuration)
+    end
+
     include Rake::DSL
 	end
 

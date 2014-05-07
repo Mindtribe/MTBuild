@@ -18,6 +18,12 @@ module MTBuild
       MTBuild::TestApplicationProject.new(application_name, project_folder, &configuration_block)
     end
 
+    def toolchain(toolchain_name, toolchain_configuration={})
+      fail "error: the toolchain configuration is expected to be a hash." unless toolchain_configuration.is_a? Hash
+      toolchain_configuration[:name] = toolchain_name
+      return toolchain_configuration
+    end
+
   end
 
 end

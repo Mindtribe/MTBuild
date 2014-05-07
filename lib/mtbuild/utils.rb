@@ -37,6 +37,10 @@ module MTBuild
       return input
     end
 
+    def self.merge_configurations(default, override)
+      return default.merge(override) {|key, old_value, new_value| if old_value.is_a? Hash and new_value.is_a? Hash then merge_configurations(old_value, new_value) else new_value end}
+    end
+
   end
 
 end

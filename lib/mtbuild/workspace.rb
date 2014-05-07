@@ -1,6 +1,7 @@
 module MTBuild
 
 	class Workspace
+    require 'mtbuild/utils'
     require 'rake/clean'
 
     attr_reader :name
@@ -33,7 +34,7 @@ module MTBuild
 
     def add_project(project_location)
       new_projects = []
-      Dir[File.join(Rake.original_dir,project_location)].each do |project_path|
+      Utils.expand_folder_list(project_location, Rake.original_dir).each do |project_path|
         if File.directory? project_path
           project_rakefile = File.join(project_path,'Rakefile.rb')
           new_projects << project_rakefile if File.file? project_rakefile
@@ -48,6 +49,9 @@ module MTBuild
       @default_tasks |= default_tasks.flatten
     end
 
+    def set_configuration_defaults(configuration_name, defaults_hash)
+      Workspace.set_configuration_defaults(configuration_name, defaults_hash)
+    end
 
     @workspace = nil
 
@@ -61,6 +65,16 @@ module MTBuild
 
     def self.add_default_tasks(default_tasks)
       @workspace.add_default_tasks(default_tasks) unless @workspace.nil?
+    end
+
+    @configuration_defaults = {}
+
+    def self.configuration_defaults
+      return @configuration_defaults
+    end
+
+    def self.set_configuration_defaults(configuration_name, defaults_hash)
+      @configuration_defaults[configuration_name] = defaults_hash
     end
 
     include Rake::DSL

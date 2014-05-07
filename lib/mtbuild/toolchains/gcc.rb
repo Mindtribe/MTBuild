@@ -4,6 +4,8 @@ module MTBuild
   require 'rake/clean'
   require 'rake/loaders/makefile'
 
+  Toolchain.register_toolchain(:gcc, 'MTBuild::ToolchainGcc')
+
 	class ToolchainGcc < Toolchain
 
     attr_accessor :cppflags, :cflags, :cxxflags, :asflags, :ldflags, :linker_script
@@ -68,7 +70,7 @@ module MTBuild
       CLOBBER.include(library_file)
 
       file library_file => objects do |t|
-        command_line = construct_archive_command(t.prerequisites, t.name)
+        command_line = construct_archive_command(objects, t.name)
         sh command_line
       end
       return [library_file], [library_folder]
@@ -81,8 +83,10 @@ module MTBuild
       CLOBBER.include(executable_folder)
       CLOBBER.include(executable_file)
 
-      file executable_file => objects+get_include_objects do |t|
-        command_line = construct_link_command(t.prerequisites, t.name)
+      all_objects = objects+get_include_objects
+
+      file executable_file => all_objects do |t|
+        command_line = construct_link_command(all_objects, t.name)
         sh command_line
       end
       return executable_file, [], [executable_folder]
@@ -136,11 +140,5 @@ module MTBuild
     end
 
 	end
-
-  module DSL
-    def gcc(configuration_hash)
-      MTBuild::ToolchainGcc.new configuration_hash
-    end
-  end
 
 end

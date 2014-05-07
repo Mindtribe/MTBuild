@@ -1,6 +1,8 @@
 module MTBuild
   require 'mtbuild/toolchains/gcc'
 
+  Toolchain.register_toolchain(:arm_none_eabi_gcc, 'MTBuild::ToolchainArmNoneEabiGcc')
+
 	class ToolchainArmNoneEabiGcc < ToolchainGcc
 
 		def initialize(configuration)
@@ -22,11 +24,5 @@ module MTBuild
     end
 
 	end
-
-  module DSL
-    def arm_none_eabi_gcc(configuration_hash)
-      MTBuild::ToolchainArmNoneEabiGcc.new configuration_hash
-    end
-  end
 
 end

@@ -11,7 +11,7 @@ module MTBuild
       @default_tasks = []
       @project_name = project_name
       @project_folder = File.expand_path(project_folder)
-      @output_folder = File.expand_path(File.join(@project_folder, MTBuild.default_outpout_folder))
+      @output_folder = File.expand_path(File.join(@project_folder, MTBuild.default_output_folder))
 			configuration_block.call(self) if configuration_block
 
       namespace @project_name do

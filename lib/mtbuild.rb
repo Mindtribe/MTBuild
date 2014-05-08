@@ -1,5 +1,6 @@
 require 'rake'
 
+require "mtbuild/application"
 require "mtbuild/application_project"
 require "mtbuild/application_task"
 require "mtbuild/dsl"

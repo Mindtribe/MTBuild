@@ -1,9 +1,9 @@
 module MTBuild
 
-  @default_outpout_folder = 'build'
+  @default_output_folder = 'build'
 
-  def self.default_outpout_folder
-    return @default_outpout_folder
+  def self.default_output_folder
+    return @default_output_folder
   end
 
 end

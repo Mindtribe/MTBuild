@@ -21,6 +21,7 @@ module MTBuild
       end
       fail "Toolchain component #{compiler} not found." unless toolchain_test_passed
 
+      @compiler_is_LLVM_gcc = toolchain_test_output.include?'LLVM'
       @cppflags = configuration.fetch(:cppflags, '')
       @cflags = configuration.fetch(:cflags, '')
       @cxxflags = configuration.fetch(:cxxflags, '')
@@ -77,19 +78,23 @@ module MTBuild
     end
 
     def create_application_tasks(objects, executable_name)
-      executable_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}")
+      elf_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}")
+      map_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}.map")
       executable_folder = @output_folder
       directory executable_folder
       CLOBBER.include(executable_folder)
-      CLOBBER.include(executable_file)
+      CLOBBER.include(elf_file)
 
       all_objects = objects+get_include_objects
 
-      file executable_file => all_objects do |t|
-        command_line = construct_link_command(all_objects, t.name)
+      file elf_file => all_objects do |t|
+        command_line = construct_link_command(all_objects, t.name, get_include_paths, get_library_paths, map_file)
         sh command_line
       end
-      return executable_file, [], [executable_folder]
+
+      file map_file => elf_file
+
+      return [elf_file], [map_file], [executable_folder]
     end
 
     private
@@ -118,13 +123,20 @@ module MTBuild
       return "#{archiver} rcs #{output_name} #{prerequisites_s}"
     end
 
-    def construct_link_command(prerequisites, output_name)
+    def construct_link_command(prerequisites, output_name, include_paths, library_paths, map_name)
       prerequisites_s = prerequisites.empty? ? '' : " #{prerequisites.join(' ')}"
+      include_paths_s = include_paths.empty? ? '' : " -I#{include_paths.join(' -I')}"
+      library_paths_s = library_paths.empty? ? '' : " -L#{library_paths.join(' -L')}"
       cppflags_s = @cppflags.empty? ? '' : " #{@cppflags}"
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
       ldflags_s = @ldflags.empty? ? '' : " #{@ldflags}"
       linker_script_s = @linker_script.empty? ? '' : " -Wl,-T#{File.join(@project_folder,@linker_script)}"
-      return "#{compiler}#{cppflags_s}#{cflags_s}#{ldflags_s}#{linker_script_s}#{prerequisites_s} -o #{output_name}"
+      return "#{compiler}#{cppflags_s}#{cflags_s}#{ldflags_s}#{linker_script_s}#{prerequisites_s}#{include_paths_s} #{map_flag(map_name)} -o #{output_name}"
+    end
+
+    def map_flag(map_file)
+      return "-Wl,-map,#{map_file}" if @compiler_is_LLVM_gcc
+      return "-Wl,-Map=#{map_file},--cref"
     end
 
     def compiler

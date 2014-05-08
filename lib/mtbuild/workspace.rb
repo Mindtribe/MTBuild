@@ -11,7 +11,7 @@ module MTBuild
 		def initialize(workspace_name, workspace_folder, &configuration_block)
       @workspace_name = workspace_name
       @workspace_folder = File.expand_path(workspace_folder)
-      @output_folder = File.expand_path(File.join(@workspace_folder, MTBuild.default_outpout_folder))
+      @output_folder = File.expand_path(File.join(@workspace_folder, MTBuild.default_output_folder))
       @projects = []
       @default_tasks = []
 

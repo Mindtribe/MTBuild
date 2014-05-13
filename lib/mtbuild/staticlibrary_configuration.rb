@@ -23,6 +23,8 @@ module MTBuild
 
       library_files, library_folders = @default_toolchain.create_static_library_tasks(all_object_files, @project_name)
       dependencies = @dependencies+all_object_folders+library_folders+library_files
+
+      desc "Build library '#{@project_name}' with configuration '#{@configuration_name}'"
       new_task = static_library_task @configuration_name => dependencies do |t|
         puts "built library #{t.name}."
         @tests.each do |test|
@@ -33,7 +35,6 @@ module MTBuild
           end
         end
       end
-      new_task.add_description("Build library '#{@project_name}' with configuration '#{@configuration_name}'")
       new_task.api_headers = @api_headers
       new_task.library_files = library_files
     end

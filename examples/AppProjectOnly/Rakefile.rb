@@ -8,7 +8,10 @@ application_project :App1, File.dirname(__FILE__) do |app|
 			cxxflags: '-std=c++03 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
 			ldflags: '-Wl,--entry,ResetISR -Wl,--gc-sections',
 			linker_script: 'src/LinkerFile-Configuration1.ld'
-		)
+		),
+    versioner: versioner(:mt_std_version,
+      files: 'src/version.h'
+    )
 
     app.add_default_tasks('App1:Configuration1')
 

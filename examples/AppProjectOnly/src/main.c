@@ -11,6 +11,7 @@
 #include <stdbool.h>
 
 #include "hardware.h"
+#include "version.h"
 
 int main(void)
 {

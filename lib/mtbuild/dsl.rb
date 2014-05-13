@@ -24,6 +24,12 @@ module MTBuild
       return toolchain_configuration
     end
 
+    def versioner(versioner_name, versioner_configuration={})
+      fail "error: the version file configuration is expected to be a hash." unless versioner_configuration.is_a? Hash
+      versioner_configuration[:name] = versioner_name
+      return versioner_configuration
+    end
+
   end
 
 end

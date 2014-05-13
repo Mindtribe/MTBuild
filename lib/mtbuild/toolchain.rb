@@ -80,7 +80,6 @@ module MTBuild
         begin
           require toolchain_file
         rescue LoadError
-          fail "error: could not load #{toolchain_file}."
         end
       end
       toolchain_class = @registered_toolchains.fetch(toolchain_name, nil)

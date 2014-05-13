@@ -15,6 +15,8 @@ module MTBuild
 
       application_binaries, application_files, application_folders = @default_toolchain.create_application_tasks(all_object_files, @project_name)
       dependencies = @dependencies+all_object_folders+application_folders+application_files+application_binaries
+
+      desc "Build application '#{@project_name}' with configuration '#{@configuration_name}'"
       new_task = application_task @configuration_name => dependencies do |t|
         puts "built application #{t.name}."
         @tests.each do |test|
@@ -25,7 +27,6 @@ module MTBuild
           end
         end
       end
-      new_task.add_description("Build application '#{@project_name}' with configuration '#{@configuration_name}'")
     end
 
 	end

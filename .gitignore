@@ -1,8 +1,11 @@
 # Build folder
 build/
 
-# Compiled Ruby Gem files
-*.gem
+# Package folder
+/pkg/
+
+# HTML documentation folder
+/html/
 
 # Compiled Object files
 *.slo

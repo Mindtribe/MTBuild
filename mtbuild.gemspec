@@ -20,4 +20,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency 'rake', '~> 0.9', '>= 0.9.6'
 
   spec.add_development_dependency "rake", '~> 0.9', '>= 0.9.6'
+  spec.add_development_dependency "rdoc", '~> 4.0', '>= 4.0.0'
+  spec.add_development_dependency "rspec", '~> 2.14', '>= 2.14.8'
 end

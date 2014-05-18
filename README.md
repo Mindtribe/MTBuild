@@ -2,6 +2,8 @@
 
 MTBuild is MindTribe's Rake-based build system for building C/C++ projects.
 
+MTBuild lives here: https://github.com/MindTribe/MTBuild
+
 ## Quick Start ##
 
 ### Installation ###
@@ -16,6 +18,12 @@ To build with MTBuild, switch to a folder containing a rakefile and run:
 
 ```Shell
 mtbuild
+```
+
+To install from source, clone the [MTBuild repository](https://github.com/MindTribe/MTBuild) and run the following:
+
+```Shell
+rake install
 ```
 
 ### Getting Started ###

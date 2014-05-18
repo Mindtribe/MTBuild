@@ -1,11 +1,18 @@
 module MTBuild
 
+  # Use this class to create a workspace
 	class Workspace
     require 'mtbuild/utils'
     require 'rake/clean'
 
+    # The workspace's name
     attr_reader :workspace_name
+
+    # The workspace's folder. Relative path references are interpreted as
+    # relative to this folder.
     attr_reader :workspace_folder
+
+    # The workspace's output folder
     attr_reader :output_folder
 
 		def initialize(workspace_name, workspace_folder, &configuration_block)
@@ -36,6 +43,7 @@ module MTBuild
       end
 		end
 
+    # Adds a project subfolder
     def add_project(project_location)
       new_projects = []
       Utils.expand_folder_list(project_location, Rake.original_dir).each do |project_path|
@@ -48,42 +56,51 @@ module MTBuild
       @projects += new_projects
     end
 
+    # Adds tasks to be run by default when MTBuild is invoked with no arguments.
     def add_default_tasks(default_tasks)
       @default_tasks |= Utils.ensure_array(default_tasks).flatten
     end
 
+    # Sets defaults for all configurations with the specified name
     def set_configuration_defaults(configuration_name, defaults_hash)
       Workspace.set_configuration_defaults(configuration_name, defaults_hash)
     end
 
+    # Sets the build output folder location
     def set_output_folder(output_folder)
       @output_folder = File.expand_path(File.join(@workspace_folder,output_folder))
     end
 
     @workspace = nil
 
+    # The singleton workspace instance
     def self.workspace
       return @workspace
     end
 
+    # Sets the singleton workspace instance
     def self.set_workspace(workspace)
       @workspace = workspace
     end
 
+    # Queries whether a workspace exists
     def self.have_workspace?
       return !@workspace.nil?
     end
 
+    # Add default tasks to the singleton workspace instance
     def self.add_default_tasks(default_tasks)
       @workspace.add_default_tasks(default_tasks) unless @workspace.nil?
     end
 
     @configuration_defaults = {}
 
+    # Gets the singleton configuration defaults
     def self.configuration_defaults
       return @configuration_defaults
     end
 
+    # Adds or updates defaults to the singleton configuration defaults
     def self.set_configuration_defaults(configuration_name, defaults_hash)
       @configuration_defaults[configuration_name] = defaults_hash
     end

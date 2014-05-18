@@ -3,17 +3,19 @@ module MTBuild
 
   Toolchain.register_toolchain(:arm_none_eabi_gcc, 'MTBuild::ToolchainArmNoneEabiGcc')
 
+  # This ToolchainGcc subclass can build using arm-non-eabi-gcc
 	class ToolchainArmNoneEabiGcc < ToolchainGcc
 
 		def initialize(configuration)
       super
 		end
 
+    # Create Rake tasks for linking
     def create_application_tasks(objects, executable_name)
-      elf_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}.elf")
-      bin_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}.bin")
-      hex_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}.hex")
-      map_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}.map")
+      elf_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.elf")
+      bin_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.bin")
+      hex_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.hex")
+      map_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.map")
       executable_folder = @output_folder
       directory executable_folder
       CLOBBER.include(executable_folder)

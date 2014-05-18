@@ -2,11 +2,17 @@ module MTBuild
   require 'mtbuild/configuration'
   require 'mtbuild/toolchain'
 
+  # This is the base class for configurations representing compiled objects
+  # (libraries, applications, etc.)
 	class CompiledConfiguration < Configuration
 
+    # A list of Rake tasks that this configuration depends upon
     attr_reader :dependencies
-    attr_reader :include_paths
+
+    # A list of source files that will be compiled
     attr_reader :source_files
+
+    # A list of Rake test tasks that will execute after this configuration builds
     attr_reader :tests
 
 		def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
@@ -23,18 +29,21 @@ module MTBuild
       @tests = Utils.ensure_array(configuration.fetch(:tests, []))
 		end
 
+    # This method adds source files with their own toolchains. Use this method
+    # to add any source files that need special toolchain settings.
     def add_sources(sources, excludes=[], toolchain_configuration)
       merged_configuration = Utils.merge_configurations(@default_toolchain_config, toolchain_configuration)
       toolchain = Toolchain.create_toolchain(merged_configuration)
       @toolchains[toolchain] = Utils.expand_file_list(sources, excludes, @project_folder)
     end
 
+    # Create the actual Rake tasks that will perform the configuration's work
     def configure_tasks
       super
       @toolchains.each do |toolchain, sources|
         toolchain.output_folder = @output_folder
         toolchain.project_folder = @project_folder
-        toolchain.binary_decorator = "-#{@configuration_name}"
+        toolchain.output_decorator = "-#{@configuration_name}"
         CompiledConfiguration.add_framework_dependencies_to_toolchain(toolchain, @dependencies)
       end
     end

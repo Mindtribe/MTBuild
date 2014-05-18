@@ -3,6 +3,7 @@ module MTBuild
 
   Versioner.register_versioner(:mt_std_version, 'MTBuild::VersionerMTStdVersion')
 
+  # This Versioner subclass can update files that follow the standard MindTribe version format.
   class VersionerMTStdVersion < Versioner
 
     def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
@@ -10,6 +11,7 @@ module MTBuild
       @version_files = Utils.expand_file_list(configuration.fetch(:files, []), [], @project_folder)
     end
 
+    # Create the actual Rake tasks that will perform the versioner's work
     def create_version_tasks
       namespace @configuration_name do
         desc "Update version for '#{@project_name}' with configuration '#{@configuration_name}'"
@@ -30,7 +32,7 @@ module MTBuild
       fail "No version files specified for #{@project_name}:#{@configuration_name}" if configuration.fetch(:files, nil).nil?
     end
 
-    # This function searches through a file for version definitions of roughly the following format:
+    # This method searches through a file for version definitions of roughly the following format:
     #
     # #define xxxMAJOR            0
     # #define xxxMINOR            0
@@ -45,7 +47,7 @@ module MTBuild
     # below.
     #
     # When one or more of the above lines is found, the defined value is replaced by the respective value passed into this
-    # function.
+    # method.
     def update_version(file_name, major=nil, minor=nil, revision=nil, build=nil, version_string=nil, git_SHA=nil)
       matching_list = []
 

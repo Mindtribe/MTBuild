@@ -1,8 +1,12 @@
 module MTBuild
   require 'mtbuild/compiled_configuration'
 
+  # Use this class to create application configurations. You won't typically
+  # instantiate this directly. Instead, the ApplicationProject.add_configuration
+  # method will create this for you.
 	class ApplicationConfiguration < CompiledConfiguration
 
+    # Create the actual Rake tasks that will perform the configuration's work
     def configure_tasks
       super
       all_object_files = []

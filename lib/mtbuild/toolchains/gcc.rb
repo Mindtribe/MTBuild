@@ -6,6 +6,7 @@ module MTBuild
 
   Toolchain.register_toolchain(:gcc, 'MTBuild::ToolchainGcc')
 
+  # This Toolchain subclass can build using GCC
 	class ToolchainGcc < Toolchain
 
     attr_accessor :cppflags, :cflags, :cxxflags, :asflags, :ldflags, :linker_script
@@ -30,6 +31,7 @@ module MTBuild
       @linker_script = configuration.fetch(:linker_script, '')
 		end
 
+    # Create Rake tasks for compilation
     def create_compile_tasks(source_files)
       object_files = []
       object_folders = []
@@ -63,8 +65,9 @@ module MTBuild
       return object_files, object_folders
     end
 
+    # Create Rake tasks for archival
     def create_static_library_tasks(objects, library_name)
-      library_file = File.join(@output_folder, "lib#{library_name}#{@binary_decorator}.a")
+      library_file = File.join(@output_folder, "lib#{library_name}#{@output_decorator}.a")
       library_folder = @output_folder
       directory library_folder
       CLOBBER.include(library_folder)
@@ -77,9 +80,10 @@ module MTBuild
       return [library_file], [library_folder]
     end
 
+    # Create Rake tasks for linking
     def create_application_tasks(objects, executable_name)
-      elf_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}")
-      map_file = File.join(@output_folder, "#{executable_name}#{@binary_decorator}.map")
+      elf_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}")
+      map_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.map")
       executable_folder = @output_folder
       directory executable_folder
       CLOBBER.include(executable_folder)

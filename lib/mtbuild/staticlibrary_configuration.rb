@@ -1,8 +1,12 @@
 module MTBuild
   require 'mtbuild/compiled_configuration'
 
+  # Use this class to create static library configurations. You won't typically
+  # instantiate this directly. Instead, the StaticLibraryProject.add_configuration
+  # method will create this for you.
 	class StaticLibraryConfiguration < CompiledConfiguration
 
+    # API header location for the static library
     attr_reader :api_headers
 
     def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
@@ -10,6 +14,7 @@ module MTBuild
       @api_headers = Utils.expand_folder_list(configuration.fetch(:api_headers, []), @project_folder)
     end
 
+    # Create the actual Rake tasks that will perform the configuration's work
     def configure_tasks
       super
       all_object_files = []

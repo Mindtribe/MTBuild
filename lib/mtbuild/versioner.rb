@@ -1,5 +1,6 @@
 module MTBuild
 
+  # This is the base class for all versioner types.
   class Versioner
 
     def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
@@ -13,6 +14,7 @@ module MTBuild
       @versioner_name = configuration[:name]
     end
 
+    # Create the actual Rake tasks that will perform the versioner's work
     def create_version_tasks
       fail "Versioner didn't provide create_version_tasks"
     end

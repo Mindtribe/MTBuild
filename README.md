@@ -279,6 +279,29 @@ end
 
 MTBuild Toolchains generate the individual compile, archival, and link tasks that comprise an application or library. Most of the interesting settings in a project's configuration go in the toolchain. The settings vary based upon the toolchain.
 
+#### Versioners ####
+
+MTBuild Versioners update version information inside a source or header file. Versioner tasks are typically invoked on their own with a separate invocation of MTBuild. Versioners are an optional convenience intended for Continuous Integration servers. They're not strictly related to the build process; however, because it's common for CI servers to stamp version information into a file when building, it is convenient to be able to describe the files that need updating along with the rest of the project inside the Rakefile.
+
+For example, the following project is configure to use the MindTribe Standard Version versioner:
+
+```Ruby
+application_project :MyApp, File.dirname(__FILE__) do |app|
+  app.add_configuration :Debug,
+    sources: ['main.c'],
+    toolchain: toolchain(:gcc),
+    versioner: versioner(:mt_std_version,
+      files: 'src/version.h'
+    )
+end
+```
+
+The following updates the project's "version.h" header. The parameters to this particular versioner are detailed in a later section.
+
+```Shell
+mtbuild MyApp:Debug:Version[1,0,0,465,"1.0.0 (465)","f1e471b49a4bedc9cf5c6aabf88cde478e482a69"]
+```
+
 #### DSL ####
 
 MTBuild provides several Domain Specific Language (DSL) methods to wrap up the underlying MTBuild classes into a more Rakefile-friendly syntax. These are called out in the reference section below.
@@ -375,28 +398,123 @@ Define a Static Library Project with the following DSL method:
 static_library_project(library_name, project_folder, &configuration_block)
 ```
 
-```library_name``` is your desired name for the library. This should be a symbol like ```:MyLibrary```. It serves as a human-readable name for the application. Rake tasks related to this application will be namespaced with this symbol. For example, the top-level Rake task for building the "MyApplication" application with a configuration called "Debug" would be "MyApplication:Debug".
+```library_name``` is your desired name for the library. This should be a symbol like ```:MyLibrary```. It serves as a human-readable name for the library. Rake tasks related to this library will be namespaced with this symbol. For example, the top-level Rake task for building the "MyLibrary" library with a configuration called "Debug" would be "MyLibrary:Debug".
 
 ```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's Rakefile.
 
-For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass an ApplicationProject object as this parameter. Inside the block, you can make ApplicationProject calls on this object to add configurations.
+For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a StaticLibraryProject object as this parameter. Inside the block, you can make StaticLibraryProject calls on this object to add configurations.
 
 #### add_configuration ####
-Use ```add_configuration(configuration_name, configuration)``` inside of an application project configuration block to add a build configuration for the application. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyApplication" would be "MyApplication:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
+Use ```add_configuration(configuration_name, configuration)``` inside of a static library project configuration block to add a build configuration for the library. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyLibrary" would be "MyLibrary:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
 
-##### Application Project configuration settings #####
-Application Project configurations require the following settings:
+##### Static Library Project configuration settings #####
+Static Library Project configurations use the same settings as Application Project configurations.
 
-* ```:toolchain``` - A toolchain hash constructed with the ```toolchain``` DSL method (detailed in a later section).
+Additionally, Static Library Project configurations offer the following optional settings:
 
-Application Project configurations offer the following optional settings:
+* ```:api_headers``` - One or more API header paths. For example, ```'include'``` or ```['include', 'include/plugins']```. Note that the API header paths should be relative to the project folder.
 
-* ```:dependencies``` - The Rake task names of one or more dependencies. For example, For example, ```'MyLibrary:Debug'``` or ```['MyLibrary1:Debug', 'MyLibrary2:Debug']```
+### MTBuild::TestApplicationProject ###
+Define a Test Application Project with the following DSL method:
 
-* ```:sources``` - One or more source file names or source file glob patterns. For example, ```'main.c'``` or ```['main.c', 'startup.c']``` or ```['src/main.c', 'src/*.cpp']```. Note that the source file paths should be relative to the project folder.
+```Ruby
+test_application_project(application_name, project_folder, &configuration_block)
+```
 
-* ```:tests``` - The Rake task names of one or more unit test applications. For example, ```'MyLibraryTest:Test'``` or ```['MyLibraryTest1:Test', 'MyLibraryTest2:Test']```
+```application_name``` is your desired name for the application. This should be a symbol like ```:MyApplication```. It serves as a human-readable name for the application. Rake tasks related to this application will be namespaced with this symbol. For example, the top-level Rake task for building the "MyTestApplication" application with a configuration called "Debug" would be "MyTestApplication:Debug".
 
-* ```:versioner``` - A versioner hash constructed with the ```versioner``` DSL method (detailed in a later section).
+```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's Rakefile.
 
+For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a TestApplicationProject object as this parameter. Inside the block, you can make TestApplicationProject calls on this object to add configurations.
 
+#### add_configuration ####
+Use ```add_configuration(configuration_name, configuration)``` inside of a test application project configuration block to add a build configuration for the application. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyTestApplication" would be "MyTestApplication:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
+
+##### Test Application Project configuration settings #####
+Test Application Project configurations use the same settings as Application Library Project configurations.
+
+### MTBuild::Toolchain ###
+Define a Toolchain with the following DSL method:
+
+```Ruby
+def toolchain(toolchain_name, toolchain_configuration={})
+```
+
+```toolchain_name``` is the name of a valid MTBuild toolchain. See following sections for valid toolchain names.
+
+```toolchain_configuration``` expects a hash that contains settings for the toolchain.
+
+##### Toolchain settings #####
+All toolchains offer the following optional settings:
+
+* ```:include_paths``` - One or more include folders to use while compiling. For example, ```'include'``` or ```['include', 'include/plugins']```. Note that the paths should be relative to the project folder.
+
+* ```:include_objects``` - One or more object files or libraries to link against. For example, ```'startup.o'``` or ```['startup.o', 'lib3rdParty.a']```.
+
+* ```:library_paths``` - One or more library paths to search when linking. For example, ```'FancyLibrary/lib'``` or ```['FancyLibrary/lib', 'SuperFancyLibrary/lib']```. Note that the paths should be relative to the project folder.
+
+### MTBuild::ToolchainGcc ###
+Define a GCC toolchain by passing ```:gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
+
+##### ToolchainGcc settings #####
+On top of the base Toolchain settings, the ToolchainGcc toolchain offers the following optional settings:
+
+* ```:cppflags``` - A string representing C Preprocessor flags to be used in all compilation and link steps
+
+* ```:cflags``` - A string representing C flags to be used when compiling C files
+
+* ```:cxxflags``` - A string representing C++ flags to be used when compiling C++ files
+
+* ```:asflags``` - A string representing assembler flags to be used when assembling assembly files
+
+* ```:ldflags``` - A string representing linker flags to be used when linking
+
+* ```:linker_script``` - A linker script file to be used when linking
+
+### MTBuild::ToolchainArmNoneEabiGcc ###
+Define an arm-none-eabi-gcc toolchain by passing ```:arm_none_eabi_gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
+
+##### ToolchainArmNoneEabiGcc settings #####
+The ToolchainArmNoneEabiGcc toolchain uses the same settings as the ToolchainGcc toolchain.
+
+### MTBuild::Versioner ###
+
+Define a Versioner with the following DSL method:
+
+```Ruby
+def versioner(versioner_name, versioner_configuration={})
+```
+
+```versioner_name``` is the name of a valid MTBuild versioner. See following sections for valid versioner names.
+
+```versioner_configuration``` expects a hash that contains settings for the versioner.
+
+### MTBuild::VersionerMTStdVersion ###
+Define a MindTribe Standard Version versioner by passing ```:mt_std_version``` as the ```versioner_name``` when invoking the ```versioner()``` method.
+
+##### VersionerMTStdVersion settings #####
+The VersionerMTStdVersion versioner requires the following settings:
+
+* ```:files``` - One or more version files to be updated. For example, ```'version.h'``` or ```['src/version.h', 'test/version.h']```.
+
+##### VersionerMTStdVersion invocation #####
+
+MindTribe Standard Version parameters should be specified when invoking MTBuild to run a VersionerMTStdVersion versioner task. These parameters, in order, are:
+
+* ```major``` - The build's major version number
+
+* ```minor``` - The build's minor version number
+
+* ```revision``` - The build's revision number
+
+* ```build``` - The build's build number
+
+* ```version_string``` - The build's version as a complete string
+
+* ```git_SHA``` - The build's git SHA as a string
+
+For example:
+
+```Shell
+mtbuild MyApp:Debug:Version[1,0,0,465,"1.0.0 (465)","f1e471b49a4bedc9cf5c6aabf88cde478e482a69"]
+```

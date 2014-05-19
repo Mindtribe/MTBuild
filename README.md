@@ -1,5 +1,7 @@
 # MTBuild #
 
+[![Gem Version](https://badge.fury.io/rb/mtbuild.svg)](http://badge.fury.io/rb/mtbuild)
+
 MTBuild is MindTribe's Rake-based build system for building C/C++ projects.
 
 MTBuild lives here: https://github.com/MindTribe/MTBuild

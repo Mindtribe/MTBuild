@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/MindTribe/MTBuild"
   spec.license       = "BSD-3-Clause"
 
-  spec.files         = [Dir.glob('{bin,lib}/**/*'), 'LICENSE.md', 'README.md']
+  spec.files         = [Dir.glob('{bin,lib}/**/*'), 'CHANGES.md', 'LICENSE.md', 'README.md']
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 

@@ -52,9 +52,10 @@ module MTBuild
     end
 
     # Add folder to a folder in the package
-    def add_folders_to_folder(package_folder, folders, excluded_files=[])
+    def add_folders_to_folder(package_folder, folders, included_files=['*'], excluded_files=[])
       folders.each do |folder|
-        file_list = Utils.expand_file_list('/**/*', excluded_files, folder)
+        included_files = Utils.ensure_array(included_files).collect{|f| File.join('**',f)}
+        file_list = Utils.expand_file_list(included_files, excluded_files, folder)
         package_file_list = file_list.collect{ |f| File.join(package_dir_path, package_folder, get_relative_path(folder,f)) }
         @origin_files += file_list
         @destination_files += package_file_list

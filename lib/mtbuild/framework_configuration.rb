@@ -9,8 +9,9 @@ module MTBuild
     def initialize(project_name, project_folder, output_folder, configuration_name, configuration, api_headers)
       super project_name, project_folder, output_folder, configuration_name, configuration
       check_configuration(configuration)
-      @object_files = Utils.expand_file_list(configuration[:objects], [], @project_folder)
       @api_headers = api_headers
+      @configuration_headers = Utils.expand_folder_list(configuration.fetch(:configuration_headers, []), @project_folder)
+      @object_files = Utils.expand_file_list(configuration[:objects], [], @project_folder)
     end
 
     # Create the actual Rake tasks that will perform the configuration's work
@@ -21,6 +22,7 @@ module MTBuild
         puts "found framework #{t.name}."
       end
       new_task.api_headers = @api_headers
+      new_task.configuration_headers = @configuration_headers
       new_task.library_files = @object_files
     end
 

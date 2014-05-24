@@ -47,9 +47,10 @@ module MTBuild
             configuration_name = "#{@project_name}:#{framework_configuration}"
             configuration_task = Rake.application.lookup(configuration_name)
             fail "Unable to locate configuration: #{configuration_name}" if configuration_task.nil?
-            fail "Configuration is not a library configuration: #{configuration_name}" unless configuration_task.respond_to? :library_files
+            fail "Configuration is not a library configuration: #{configuration_name}" unless configuration_task.respond_to? :library_files and configuration_task.respond_to? :configuration_headers
 
             t.add_files_to_folder("Libraries/#{framework_configuration}", configuration_task.library_files)
+            t.add_folders_to_folder("Config/#{framework_configuration}", configuration_task.configuration_headers) unless configuration_task.configuration_headers.empty?
           end
         end
 
@@ -65,6 +66,7 @@ module MTBuild
               configuration_name = "#{@project_name}:#{framework_configuration}"
               configuration_task = Rake.application.lookup(configuration_name)
               f.puts("  lib.add_configuration :#{framework_configuration},")
+              f.puts("    configuration_headers: ['Config/#{framework_configuration}'],") unless configuration_task.configuration_headers.empty?
               f.puts("    objects: ['Libraries/#{framework_configuration}/*']")
             end
             f.puts("end")

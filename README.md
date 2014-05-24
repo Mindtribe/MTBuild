@@ -241,9 +241,15 @@ Configurations can list dependencies that will be built before the configuration
 
 #### Automatic Library Dependencies ####
 
-MTBuild library projects allow you to specify API header locations for framework and static library project configurations. If you list a framework or a static library project as a dependency of an application project, MTbuild will automatically include the framework or library's API header paths when compiling the application. Additionally, it will automatically link the application with the framework or library. This is intended to facilitate the scenario where you're building both a library and an application from a Workspace. To use the library from the application, you simply need to list the library as a dependency and MTBuild will make sure the application can use it.
+MTBuild allows you to specify API header locations for framework and static library project configurations. If you list a framework or a static library project as a dependency of an application project, MTbuild will automatically include the framework or library's API header paths when compiling the application. Additionally, it will automatically link the application with the framework or library. This is intended to facilitate the scenario where you're building both a library and an application from a Workspace. To use the library from the application, you simply need to list the library as a dependency and MTBuild will make sure the application can use it.
 
 Note that this does not work with non-MTBuild libraries. If you list a non-MTBuild Rake library task as a dependency of a MTBuild project, you will need to manually add the library's headers and library file to the project. If you have a precompiled 3rd-party library, you might consider wrapping it in a framework project so that you can use the Automatic Library Dependencies mechanism.
+
+###### Configuration Headers #####
+
+In addition to the per-project API header location, MTBuild allows you to specify per-configuration header locations. These are intended for headers that "configure" a library--typically via ```#define```. Note that this is a terrible pattern. If you're creating your own library, try very hard not to do this. For example, instead of using a ```#define``` to configure a library resource such as a buffer size, consider structuring the library such that the caller passes in buffer storage.
+
+Using configuration headers to configure libraries is such a bad idea that MTBuild almost didn't support them. Unfortunately, the pattern is so common that we felt we needed to support them in order to work properly with many 3rd-party libraries. Again, if you're writing a library, avoid using them.
 
 ###### Automatic Library Dependencies Example #####
 
@@ -260,14 +266,15 @@ end
 
 MyLibrary/Rakefile.rb
 
-This defines a library with one configuration called "Debug". The library's API headers are in a folder called "include".
+This defines a library with one configuration called "Debug". The library's API headers are in a folder called "include". This library is foul and therefore has configuration headers for the Debug configuration in a folder called "config/Debug".
 
 ```Ruby
 static_library_project :MyLibrary, File.dirname(__FILE__) do |lib|
   lib.add_api_headers 'include'
   lib.add_configuration :Debug,
     sources: ['src/**/*.c'],
-    toolchain: toolchain(:gcc)
+    toolchain: toolchain(:gcc),
+    configuration_headers: ['config/Debug']
 end
 ```
 
@@ -390,7 +397,7 @@ Application Project configurations require the following settings:
 
 Application Project configurations offer the following optional settings:
 
-* ```:dependencies``` - The Rake task names of one or more dependencies. For example, For example, ```'MyLibrary:Debug'``` or ```['MyLibrary1:Debug', 'MyLibrary2:Debug']```
+* ```:dependencies``` - The Rake task names of one or more dependencies. For example, ```'MyLibrary:Debug'``` or ```['MyLibrary1:Debug', 'MyLibrary2:Debug']```
 
 * ```:sources``` - One or more source file names or source file glob patterns. For example, ```'main.c'``` or ```['main.c', 'startup.c']``` or ```['src/main.c', 'src/*.cpp']```. Note that the source file paths should be relative to the project folder.
 
@@ -434,6 +441,10 @@ Use ```build_framework_package(configuration_names)``` inside of a static librar
 ##### Static Library Project configuration settings #####
 Static Library Project configurations use the same settings as Application Project configurations.
 
+Additionally, Static Library Project configurations offer the following optional settings:
+
+* ```:configuration_headers``` - One or more configuration header paths. For example, ```'config/Debug'``` or ```['config/Debug', 'config/common']```.
+
 ### MTBuild::TestApplicationProject ###
 Define a Test Application Project with the following DSL method:
 
@@ -474,11 +485,13 @@ Use ```add_configuration(configuration_name, configuration)``` inside of a frame
 Use ```add_api_headers(api_headers)``` inside of a framework project configuration block--before adding configurations--to set the location(s) of the framework's API headers. The ```api_headers``` parameter should be one or more API header paths. For example, ```'include'``` or ```['include', 'plugins']```. Note that the API header paths should be relative to the project folder. API header paths should NOT contain one another. For example, do not do this: ```['include', 'include/things']```. You can have subfolders inside of an API header location, but you should only add the topmost folder.
 
 ##### Framework Project configuration settings #####
-Framework Project configurations use the same settings as Application Project configurations.
-
-Additionally, Framework Project configurations require the following settings:
+Framework Project configurations require the following settings:
 
 * ```:objects``` - One or more framework object files. For example, ```'MyLibrary.a'```
+
+Framework Project configurations offer the following optional settings:
+
+* ```:configuration_headers``` - One or more configuration header paths. For example, ```'config/Debug'``` or ```['config/Debug', 'config/common']```.
 
 ### MTBuild::Toolchain ###
 Define a Toolchain with the following DSL method:

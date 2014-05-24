@@ -62,6 +62,7 @@ module MTBuild
           task_dependency = Rake.application.lookup(dependency)
           fail "Unable to locate task for dependency: #{dependency}" if task_dependency.nil?
           toolchain.add_include_paths(task_dependency.api_headers) if task_dependency.respond_to? :api_headers
+          toolchain.add_include_paths(task_dependency.configuration_headers) if task_dependency.respond_to? :configuration_headers
           toolchain.add_include_objects(task_dependency.library_files) if task_dependency.respond_to? :library_files
         end
       end

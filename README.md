@@ -112,7 +112,7 @@ Workspace Folder
           └ *.h/*.c/*.cpp
 ```
 
-In this case, we have a top-level workspace folder that contains projects in sub-folders. The project folders have public headers and source files neatly separated. Unit Test files are either located in their own folders, or separated by language--for example, if our project is written in C, but our unit tests are C++, we might put the unit test files alongside the project sources for convenience.
+We have a top-level workspace folder that contains projects in sub-folders. The project folders have public headers and source files neatly separated. Unit Test files are either located in their own folders, or separated by language--for example, if our project is written in C, but our unit tests are C++, we might put the unit test files alongside the project sources for convenience.
 
 Here is an example of a simpler application that is self-contained:
 
@@ -125,7 +125,7 @@ Application Project Folder
       └ *.h/*.c/*.cpp
 ```
 
-In this case, the project and (optional) workspace are defined in a single Rakefile. There are no public headers, so everything goes into the "src" folder, but tests might still be separated into a "test" folder.
+The project and (optional) workspace are defined in a single Rakefile. There are no public headers, so everything goes into the "src" folder, but tests might still be separated into a "test" folder.
 
 #### Rakefiles ####
 
@@ -171,7 +171,7 @@ A framework project wraps up a static library and its headers for use by applica
 
 #### Configurations ####
 
-A configuration containa build settings for a project. This includes source files, toolchain, dependencies, etc. By defining multiple configurations, a project can be built for different processors (ARM, x86, etc.), different platforms, or simply different settings (debug vs. release). Configurations generate the actual Rake tasks that begin doing work. They are named with a fixed convention that allows you to refer to them in other Rake tasks. The naming scheme is "Project:Configuration". For example, if you declare a project called "MyLibrary" with configuration "Debug", you could list "MyLibrary:Debug" as a dependency in any Rake task and "MyLibrary:Debug" would be built before that task.
+A configuration contains build settings for a project. This includes source files, toolchain, dependencies, etc. By defining multiple configurations, a project can be built for different processors (ARM, x86, etc.), different platforms, or simply different settings (debug vs. release). Configurations generate the actual Rake tasks that begin doing work. They are named with a fixed convention that allows you to refer to them in other Rake tasks. The naming scheme is "Project:Configuration". For example, if you declare a project called "MyLibrary" with configuration "Debug", you could list "MyLibrary:Debug" as a dependency in any Rake task and "MyLibrary:Debug" would be built before that task.
 
 #### Workspaces ####
 

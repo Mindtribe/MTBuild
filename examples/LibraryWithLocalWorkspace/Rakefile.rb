@@ -19,9 +19,10 @@ end
 
 static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
 
+  lib.add_api_headers 'include'
+
   lib.add_configuration :Configuration1,
     sources: ['src/**/*.c'],
-    api_headers: 'include',
     toolchain: toolchain(:arm_none_eabi_gcc,
       include_paths: ['src']
     ),
@@ -30,8 +31,7 @@ static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
     ]
 
   lib.add_configuration :Test,
-    sources: ['src/**/*.c'],
-    api_headers: 'include'
+    sources: ['src/**/*.c']
 end
 
 test_application_project :ExampleLibraryTest, File.dirname(__FILE__) do |app|

@@ -1,5 +1,6 @@
 module MTBuild
   require 'mtbuild/compiled_configuration'
+  require 'mtbuild/organized_package_task'
 
   # Use this class to create application configurations. You won't typically
   # instantiate this directly. Instead, the ApplicationProject.add_configuration
@@ -31,6 +32,15 @@ module MTBuild
           end
         end
       end
+
+      namespace @configuration_name do
+        OrganizedPackageTask.new("#{@project_name}-#{@configuration_name}", :noversion) do |t|
+          t.need_tar_gz = true
+          t.add_files_to_folder("", application_binaries+application_files)
+        end
+      end
+      Rake::Task[:"#{@project_name}:#{@configuration_name}:package"].prerequisites.insert(0, :"#{@project_name}:#{@configuration_name}")
+
     end
 
 	end

@@ -6,12 +6,9 @@ module MTBuild
   # method will create this for you.
 	class StaticLibraryConfiguration < CompiledConfiguration
 
-    # API header location for the static library
-    attr_reader :api_headers
-
-    def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
-      super
-      @api_headers = Utils.expand_folder_list(configuration.fetch(:api_headers, []), @project_folder)
+    def initialize(project_name, project_folder, output_folder, configuration_name, configuration, api_headers)
+      @api_headers = api_headers
+      super project_name, project_folder, output_folder, configuration_name, configuration
     end
 
     # Create the actual Rake tasks that will perform the configuration's work

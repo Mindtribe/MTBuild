@@ -8,13 +8,17 @@ module Rake
     # API header location for the framework
     attr_accessor :api_headers
 
+    # Configuration header location for the framework
+    attr_accessor :configuration_headers
+
     # The framework objects
     attr_accessor :library_files
 
     def initialize(task_name, app)
       super
-      @api_headers = ''
-      @library_files = ''
+      @api_headers = []
+      @configuration_headers = []
+      @library_files = []
     end
 
   end

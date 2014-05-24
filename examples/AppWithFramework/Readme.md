@@ -1,1 +1,1 @@
-Put the framework output of LibraryProjectOnly here before building.
+Put the "ExampleLibrary" framework output of LibraryProjectOnly here before building.

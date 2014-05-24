@@ -8,13 +8,17 @@ module Rake
     # API header location for the static library
     attr_accessor :api_headers
 
+    # Configuration header location for the static library
+    attr_accessor :configuration_headers
+
     # The static library output file(s)
     attr_accessor :library_files
 
     def initialize(task_name, app)
       super
-      @api_headers = ''
-      @library_files = ''
+      @api_headers = []
+      @configuration_headers = []
+      @library_files = []
     end
 
   end

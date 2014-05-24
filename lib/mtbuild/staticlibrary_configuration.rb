@@ -9,6 +9,7 @@ module MTBuild
     def initialize(project_name, project_folder, output_folder, configuration_name, configuration, api_headers)
       @api_headers = api_headers
       super project_name, project_folder, output_folder, configuration_name, configuration
+      @configuration_headers = Utils.expand_folder_list(configuration.fetch(:configuration_headers, []), @project_folder)
     end
 
     # Create the actual Rake tasks that will perform the configuration's work
@@ -17,7 +18,7 @@ module MTBuild
       all_object_files = []
       all_object_folders = []
       @toolchains.each do |toolchain, sources|
-        toolchain.add_include_paths(@api_headers)
+        toolchain.add_include_paths(@api_headers+@configuration_headers)
         object_files, object_folders = toolchain.create_compile_tasks(sources)
         all_object_files |= object_files
         all_object_folders |= object_folders
@@ -38,6 +39,7 @@ module MTBuild
         end
       end
       new_task.api_headers = @api_headers
+      new_task.configuration_headers = @configuration_headers
       new_task.library_files = library_files
     end
 

@@ -151,7 +151,7 @@ Workspace
 
 #### Projects ####
 
-MTBuild currently defines three types of projects.
+MTBuild currently defines four types of projects.
 
 ##### Application Project #####
 
@@ -164,6 +164,10 @@ A library project defines one or more configurations that contain settings for b
 ##### Test Application Project #####
 
 A test application project defines one or more configurations that contain settings for building an executable application that is executed after building. This project type generates Rake tasks for compiling source files, linking them into an executable, and then running the executable. This is intended for building and running unit tests as part of the build process.
+
+##### Framework Project #####
+
+A framework project wraps up a static library and its headers for use by applications. See the "Frameworks" section below for more information.
 
 #### Configurations ####
 
@@ -201,12 +205,12 @@ workspace :MyWorkspace, File.dirname(__FILE__) do |w|
 end
 
 static_library_project :MyLibrary, File.dirname(__FILE__) do |lib|
+  lib.add_api_headers 'include'
   lib.add_configuration :Debug,
     sources: ['src/**/*.c'],
     toolchain: toolchain(:gcc,
       cflags: '-std=c99',
     )
-    api_headers: 'include'
 end
 ```
 
@@ -225,9 +229,9 @@ workspace :MyLibrary, File.dirname(__FILE__) do |w|
 end
 
 static_library_project :MyLibrary, File.dirname(__FILE__) do |lib|
+  lib.add_api_headers 'include'
   lib.add_configuration :Debug,
-    sources: ['src/**/*.c'],
-    api_headers: 'include'
+    sources: ['src/**/*.c']
 end
 ```
 
@@ -237,9 +241,9 @@ Configurations can list dependencies that will be built before the configuration
 
 #### Automatic Library Dependencies ####
 
-MTBuild library projects allow you to specify API header locatinos for library project configurations. If you list a library project as a dependency of an application project, MTbuild will automatically include the library's API header paths when compiling the application. Additionally, it will automatically link the application with the library. This is intended to facilitate the scenario where you're building both a library and an application from a Workspace. To use the library from the application, you simply need to list the library as a dependency and MTBuild will make sure the application can use it.
+MTBuild library projects allow you to specify API header locations for framework and static library project configurations. If you list a framework or a static library project as a dependency of an application project, MTbuild will automatically include the framework or library's API header paths when compiling the application. Additionally, it will automatically link the application with the framework or library. This is intended to facilitate the scenario where you're building both a library and an application from a Workspace. To use the library from the application, you simply need to list the library as a dependency and MTBuild will make sure the application can use it.
 
-Note that this does not work with non-MTBuild libraries. If you list a non-MTBuild Rake library task as a dependency of a MTBuild project, you will need to manually add the library's headers and library file to the project.
+Note that this does not work with non-MTBuild libraries. If you list a non-MTBuild Rake library task as a dependency of a MTBuild project, you will need to manually add the library's headers and library file to the project. If you have a precompiled 3rd-party library, you might consider wrapping it in a framework project so that you can use the Automatic Library Dependencies mechanism.
 
 ###### Automatic Library Dependencies Example #####
 
@@ -260,9 +264,9 @@ This defines a library with one configuration called "Debug". The library's API 
 
 ```Ruby
 static_library_project :MyLibrary, File.dirname(__FILE__) do |lib|
+  lib.add_api_headers 'include'
   lib.add_configuration :Debug,
     sources: ['src/**/*.c'],
-    api_headers: 'include',
     toolchain: toolchain(:gcc)
 end
 ```
@@ -284,6 +288,10 @@ application_project :MyApp, File.dirname(__FILE__) do |app|
     ]
 end
 ```
+
+#### Frameworks ####
+
+MTBuild Frameworks contain pre-compiled objects/libraries and their headers. MTBuild Frameworks generate tasks that don't do anything; however, applications can list Framework configurations as dependencies to take advantage of Automatic Library Dependencies.
 
 #### Toolchains ####
 
@@ -417,12 +425,14 @@ For ```configuration_block```, you supply a block that takes one parameter. When
 #### add_configuration ####
 Use ```add_configuration(configuration_name, configuration)``` inside of a static library project configuration block to add a build configuration for the library. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyLibrary" would be "MyLibrary:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
 
+#### add_api_headers ####
+Use ```add_api_headers(api_headers)``` inside of a static library project configuration block--before adding configurations--to set the location(s) of the library's API headers. The ```api_headers``` parameter should be one or more API header paths. For example, ```'include'``` or ```['include', 'plugins']```. Note that the API header paths should be relative to the project folder. API header paths should NOT contain one another. For example, do not do this: ```['include', 'include/things']```. You can have subfolders inside of an API header location, but you should only add the topmost folder.
+
+#### build_framework_package ####
+Use ```build_framework_package(configuration_names)``` inside of a static library project configuration block to specify that the library should provide a framework package target. Use ```configuration_names``` to provide a list of configuration names to include in the package. For example, ```'Configuration1'``` or ```['Configuration1', 'Configuration2']```.
+
 ##### Static Library Project configuration settings #####
 Static Library Project configurations use the same settings as Application Project configurations.
-
-Additionally, Static Library Project configurations offer the following optional settings:
-
-* ```:api_headers``` - One or more API header paths. For example, ```'include'``` or ```['include', 'include/plugins']```. Note that the API header paths should be relative to the project folder.
 
 ### MTBuild::TestApplicationProject ###
 Define a Test Application Project with the following DSL method:
@@ -442,6 +452,33 @@ Use ```add_configuration(configuration_name, configuration)``` inside of a test 
 
 ##### Test Application Project configuration settings #####
 Test Application Project configurations use the same settings as Application Library Project configurations.
+
+### MTBuild::FrameworkProject ###
+
+Define a Framework Project with the following DSL method:
+
+```Ruby
+framework_project(framework_name, project_folder, &configuration_block)
+```
+
+```framework_name``` is your desired name for the framework. This should be a symbol such as ```:MyApplication```. It serves as a human-readable name for the framework. Rake tasks related to this framework will be namespaced with this symbol. For example, the top-level Rake task for building the "MyLibrary" framework with a configuration called "Debug" would be "MyLibrary:Debug".
+
+```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's Rakefile.
+
+For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass an FrameworkProject object as this parameter. Inside the block, you can make FrameworkProject calls on this object to add configurations.
+
+#### add_configuration ####
+Use ```add_configuration(configuration_name, configuration)``` inside of a framework project configuration block to add a configuration for the framework. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyLibrary" would be "MyLibrary:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
+
+#### add_api_headers ####
+Use ```add_api_headers(api_headers)``` inside of a framework project configuration block--before adding configurations--to set the location(s) of the framework's API headers. The ```api_headers``` parameter should be one or more API header paths. For example, ```'include'``` or ```['include', 'plugins']```. Note that the API header paths should be relative to the project folder. API header paths should NOT contain one another. For example, do not do this: ```['include', 'include/things']```. You can have subfolders inside of an API header location, but you should only add the topmost folder.
+
+##### Framework Project configuration settings #####
+Framework Project configurations use the same settings as Application Project configurations.
+
+Additionally, Framework Project configurations require the following settings:
+
+* ```:objects``` - One or more framework object files. For example, ```'MyLibrary.a'```
 
 ### MTBuild::Toolchain ###
 Define a Toolchain with the following DSL method:

@@ -1,8 +1,8 @@
-# Build folder
+# Build folders
 build/
 
-# Package folder
-/pkg/
+# Package folders
+pkg/
 
 # HTML documentation folder
 /html/

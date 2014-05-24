@@ -12,6 +12,11 @@ module MTBuild
       MTBuild::ApplicationProject.new(application_name, project_folder, &configuration_block)
     end
 
+    # Defines a FrameworkProject
+    def framework_project(framework_name, project_folder, &configuration_block)
+      MTBuild::FrameworkProject.new(framework_name, project_folder, &configuration_block)
+    end
+
     # Defines a StaticLibraryProject
     def static_library_project(library_name, project_folder, &configuration_block)
       MTBuild::StaticLibraryProject.new(library_name, project_folder, &configuration_block)

@@ -61,10 +61,6 @@ module MTBuild
     def add_configuration(configuration_name, configuration)
     end
 
-    def create_configuration_tasks(configuration_name, configuration)
-      check_configuration(configuration_name, configuration)
-    end
-
     include Rake::DSL
 	end
 

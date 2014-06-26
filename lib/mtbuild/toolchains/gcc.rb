@@ -111,36 +111,36 @@ module MTBuild
     end
 
     def construct_compile_command(file_type, prerequisites, include_paths, output_name)
-      prerequisites_s = prerequisites.empty? ? '' : " #{prerequisites.join(' ')}"
-      include_paths_s = include_paths.empty? ? '' : " -I#{include_paths.join(' -I')}"
+      prerequisites_s = prerequisites.empty? ? '' : " \"#{prerequisites.join('" "')}\""
+      include_paths_s = include_paths.empty? ? '' : " -I\"#{include_paths.join('" -I"')}\""
       cppflags_s = @cppflags.empty? ? '' : " #{@cppflags}"
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
       cxxflags_s = @cxxflags.empty? ? '' : " #{@cxxflags}"
       asflags_s = @asflags.empty? ? '' : " #{@asflags}"
-      return "#{compiler}#{cppflags_s}#{cflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :c
-      return "#{compiler}#{cppflags_s}#{cxxflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :cplusplus
-      return "#{compiler}#{cppflags_s}#{asflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o #{output_name}" if file_type == :asm
+      return "\"#{compiler}\"#{cppflags_s}#{cflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :c
+      return "\"#{compiler}\"#{cppflags_s}#{cxxflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :cplusplus
+      return "\"#{compiler}\"#{cppflags_s}#{asflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :asm
     end
 
     def construct_archive_command(prerequisites, output_name)
-      prerequisites_s = prerequisites.empty? ? '' : " #{prerequisites.join(' ')}"
-      return "#{archiver} rcs #{output_name} #{prerequisites_s}"
+      prerequisites_s = prerequisites.empty? ? '' : " \"#{prerequisites.join('" "')}\""
+      return "\"#{archiver}\" rcs \"#{output_name}\" #{prerequisites_s}"
     end
 
     def construct_link_command(prerequisites, output_name, include_paths, library_paths, map_name)
-      prerequisites_s = prerequisites.empty? ? '' : " #{prerequisites.join(' ')}"
-      include_paths_s = include_paths.empty? ? '' : " -I#{include_paths.join(' -I')}"
-      library_paths_s = library_paths.empty? ? '' : " -L#{library_paths.join(' -L')}"
+      prerequisites_s = prerequisites.empty? ? '' : " \"#{prerequisites.join('" "')}\""
+      include_paths_s = include_paths.empty? ? '' : " -I\"#{include_paths.join('" -I"')}\""
+      library_paths_s = library_paths.empty? ? '' : " -L\"#{library_paths.join('" -L"')}\""
       cppflags_s = @cppflags.empty? ? '' : " #{@cppflags}"
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
       ldflags_s = @ldflags.empty? ? '' : " #{@ldflags}"
-      linker_script_s = @linker_script.empty? ? '' : " -Wl,-T#{File.join(@project_folder,@linker_script)}"
-      return "#{compiler}#{cppflags_s}#{cflags_s}#{ldflags_s}#{linker_script_s}#{prerequisites_s}#{include_paths_s} #{map_flag(map_name)} -o #{output_name}"
+      linker_script_s = @linker_script.empty? ? '' : " -Wl,-T\"#{File.join(@project_folder,@linker_script)}\""
+      return "\"#{compiler}\"#{cppflags_s}#{cflags_s}#{ldflags_s}#{linker_script_s}#{prerequisites_s}#{include_paths_s} #{map_flag(map_name)} -o \"#{output_name}\""
     end
 
     def map_flag(map_file)
-      return "-Wl,-map,#{map_file}" if @compiler_is_LLVM_gcc
-      return "-Wl,-Map=#{map_file},--cref"
+      return "-Wl,-map,\"#{map_file}\"" if @compiler_is_LLVM_gcc
+      return "-Wl,-Map=\"#{map_file}\",--cref"
     end
 
     def compiler

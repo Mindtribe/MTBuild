@@ -4,7 +4,7 @@ module MTBuild
 
   # This class is used to build applications. An application has compilation
   # and link phases that produce a binary executable.
-	class ApplicationProject < Project
+  class ApplicationProject < Project
 
     # Adds a named ApplicationConfiguration to the project.
     def add_configuration(configuration_name, configuration)
@@ -16,6 +16,6 @@ module MTBuild
       return cfg
     end
 
-	end
+  end
 
 end

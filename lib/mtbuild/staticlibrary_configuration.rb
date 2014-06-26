@@ -4,7 +4,7 @@ module MTBuild
   # Use this class to create static library configurations. You won't typically
   # instantiate this directly. Instead, the StaticLibraryProject.add_configuration
   # method will create this for you.
-	class StaticLibraryConfiguration < CompiledConfiguration
+  class StaticLibraryConfiguration < CompiledConfiguration
 
     def initialize(project_name, project_folder, output_folder, configuration_name, configuration, api_headers)
       @api_headers = api_headers
@@ -43,6 +43,6 @@ module MTBuild
       new_task.library_files = library_files
     end
 
-	end
+  end
 
 end

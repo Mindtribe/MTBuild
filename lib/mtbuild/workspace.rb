@@ -1,7 +1,7 @@
 module MTBuild
 
   # Use this class to create a workspace
-	class Workspace
+  class Workspace
     require 'mtbuild/utils'
     require 'rake/clean'
 
@@ -15,7 +15,7 @@ module MTBuild
     # The workspace's output folder
     attr_reader :output_folder
 
-		def initialize(workspace_name, workspace_folder, &configuration_block)
+    def initialize(workspace_name, workspace_folder, &configuration_block)
       @workspace_name = workspace_name
       @workspace_folder = File.expand_path(workspace_folder)
       @output_folder = File.expand_path(File.join(@workspace_folder, MTBuild.default_output_folder))
@@ -41,7 +41,7 @@ module MTBuild
 
         task :default => @default_tasks+[:workspace]
       end
-		end
+    end
 
     # Adds a project subfolder
     def add_project(project_location)
@@ -107,6 +107,6 @@ module MTBuild
 
     include Rake::DSL
 
-	end
+  end
 
 end

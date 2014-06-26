@@ -5,7 +5,7 @@ module MTBuild
 
   # This class is used to build static libraries. A static library has
   # compilation and archival phases that produce a binary library package.
-	class StaticLibraryProject < Project
+  class StaticLibraryProject < Project
 
     def initialize(project_name, project_folder, &configuration_block)
       @framework_configurations = []
@@ -81,6 +81,6 @@ module MTBuild
       end
     end
 
-	end
+  end
 
 end

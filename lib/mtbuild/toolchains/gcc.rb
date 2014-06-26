@@ -7,11 +7,11 @@ module MTBuild
   Toolchain.register_toolchain(:gcc, 'MTBuild::ToolchainGcc')
 
   # This Toolchain subclass can build using GCC
-	class ToolchainGcc < Toolchain
+  class ToolchainGcc < Toolchain
 
     attr_accessor :cppflags, :cflags, :cxxflags, :asflags, :ldflags, :linker_script
 
-		def initialize(configuration)
+    def initialize(configuration)
       super
 
       begin
@@ -29,7 +29,7 @@ module MTBuild
       @asflags = configuration.fetch(:asflags, '')
       @ldflags = configuration.fetch(:ldflags, '')
       @linker_script = configuration.fetch(:linker_script, '')
-		end
+    end
 
     # Create Rake tasks for compilation
     def create_compile_tasks(source_files)
@@ -155,6 +155,6 @@ module MTBuild
       return 'gcc'
     end
 
-	end
+  end
 
 end

@@ -1,7 +1,7 @@
 module MTBuild
 
   # This is the base class for all project types.
-	class Project
+  class Project
 
     # The project's name
     attr_reader :project_name
@@ -15,13 +15,13 @@ module MTBuild
 
     # If supplied, the configuration_block will be passed the
     # newly-constructed Project object.
-		def initialize(project_name, project_folder, &configuration_block)
+    def initialize(project_name, project_folder, &configuration_block)
       @configurations = []
       @default_tasks = []
       @project_name = project_name
       @project_folder = File.expand_path(project_folder)
       @output_folder = File.expand_path(File.join(@project_folder, MTBuild.default_output_folder))
-			configuration_block.call(self) if configuration_block
+      configuration_block.call(self) if configuration_block
 
       namespace @project_name do
         @configurations.each do |configuration|
@@ -31,7 +31,7 @@ module MTBuild
 
       # If there is no active workspace, set up any registered default project tasks
       task :default => @default_tasks unless Workspace.have_workspace?
-		end
+    end
 
     # Add tasks to be built by default if MTBuild is invoked with no arguments
     def add_default_tasks(default_tasks)
@@ -62,6 +62,6 @@ module MTBuild
     end
 
     include Rake::DSL
-	end
+  end
 
 end

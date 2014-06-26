@@ -4,11 +4,11 @@ module MTBuild
   Toolchain.register_toolchain(:arm_none_eabi_gcc, 'MTBuild::ToolchainArmNoneEabiGcc')
 
   # This ToolchainGcc subclass can build using arm-non-eabi-gcc
-	class ToolchainArmNoneEabiGcc < ToolchainGcc
+  class ToolchainArmNoneEabiGcc < ToolchainGcc
 
-		def initialize(configuration)
+    def initialize(configuration)
       super
-		end
+    end
 
     # Create Rake tasks for linking
     def create_application_tasks(objects, executable_name)
@@ -64,6 +64,6 @@ module MTBuild
       return 'arm-none-eabi-objcopy'
     end
 
-	end
+  end
 
 end

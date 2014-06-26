@@ -4,7 +4,7 @@ module MTBuild
 
   # This is the base class for configurations representing compiled objects
   # (libraries, applications, etc.)
-	class CompiledConfiguration < Configuration
+  class CompiledConfiguration < Configuration
 
     # A list of Rake tasks that this configuration depends upon
     attr_reader :dependencies
@@ -15,7 +15,7 @@ module MTBuild
     # A list of Rake test tasks that will execute after this configuration builds
     attr_reader :tests
 
-		def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
+    def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
       super
       check_configuration(configuration)
 
@@ -27,7 +27,7 @@ module MTBuild
       @toolchains = {@default_toolchain => source_files}
 
       @tests = Utils.ensure_array(configuration.fetch(:tests, []))
-		end
+    end
 
     # This method adds source files with their own toolchains. Use this method
     # to add any source files that need special toolchain settings.
@@ -69,6 +69,6 @@ module MTBuild
     end
 
     include Rake::DSL
-	end
+  end
 
 end

@@ -5,7 +5,7 @@ module MTBuild
   # This class is used to build test applications. A test application has
   # compilation and link phases that produce a binary test executable. The test
   # executable is invoked after building successfully.
-	class TestApplicationProject < Project
+  class TestApplicationProject < Project
 
     # Adds a named test application configuration to the project.
     def add_configuration(configuration_name, configuration)
@@ -17,6 +17,6 @@ module MTBuild
       return cfg
     end
 
-	end
+  end
 
 end

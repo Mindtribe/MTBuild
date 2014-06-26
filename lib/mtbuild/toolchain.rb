@@ -1,7 +1,7 @@
 module MTBuild
 
   # This is the base class for all toolchain types.
-	class Toolchain
+  class Toolchain
 
     # The toolchain's output folder
     attr_accessor :output_folder
@@ -13,7 +13,7 @@ module MTBuild
     # Text to append to the name of output files
     attr_accessor :output_decorator
 
-		def initialize(configuration)
+    def initialize(configuration)
       @output_folder = ''
       @project_folder = ''
       @output_decorator = ''
@@ -24,7 +24,7 @@ module MTBuild
       add_include_paths(expand_project_relative_paths(configuration.fetch(:include_paths, [])))
       add_include_objects(expand_project_relative_paths(configuration.fetch(:include_objects, [])))
       add_library_paths(expand_project_relative_paths(configuration.fetch(:library_paths, [])))
-		end
+    end
 
     # Retrieve a list of additional objects to link with
     def get_include_objects
@@ -104,6 +104,6 @@ module MTBuild
     end
 
     include Rake::DSL
-	end
+  end
 
 end

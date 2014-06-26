@@ -45,7 +45,7 @@ module MTBuild
     private
 
     def construct_objcopy_command(input_name, output_name, objcopyflags)
-      return "#{objcopy}#{objcopyflags} #{input_name} #{output_name}"
+      return "\"#{objcopy}\"#{objcopyflags} \"#{input_name}\" \"#{output_name}\""
     end
 
     def compiler

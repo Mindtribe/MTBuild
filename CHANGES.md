@@ -1,5 +1,20 @@
 # Release Notes #
 
+## MTBuild 0.0.5 ##
+
+### Changes ###
+
+* MTBuild now supports spaces in project paths
+* Cleaned up mtbuild sources and coverted stray tabs to spaces.
+
+
+## MTBuild 0.0.4 ##
+
+### Changes ###
+
+* This was a bad gem push. Don't use.
+
+
 ## MTBuild 0.0.3 ##
 
 ### Changes ###

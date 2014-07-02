@@ -23,7 +23,7 @@ module MTBuild
       desc "Build and run test application '#{@project_name}' with configuration '#{@configuration_name}'"
       new_task = test_application_task @configuration_name => dependencies do |t|
         puts "built test application #{t.name}."
-        sh application_binaries.first
+        sh "\"#{application_binaries.first}\""
         puts "ran test application #{t.name}."
       end
     end

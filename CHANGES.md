@@ -1,5 +1,12 @@
 # Release Notes #
 
+## MTBuild 0.0.6 ##
+
+### Changes ###
+
+* Fixed spaces in project paths for test executables
+
+
 ## MTBuild 0.0.5 ##
 
 ### Changes ###

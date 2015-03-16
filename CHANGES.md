@@ -1,5 +1,13 @@
 # Release Notes #
 
+## MTBuild 0.0.7 ##
+
+### Changes ###
+
+* GCC-based toolchains can now automatically handle renamed header files.
+  Previously, if you renamed a header file, you had to manually clean before building.
+
+
 ## MTBuild 0.0.6 ##
 
 ### Changes ###

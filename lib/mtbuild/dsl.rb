@@ -41,6 +41,23 @@ module MTBuild
       return versioner_configuration
     end
 
+    # Declare an MT file task.
+    #
+    # Example:
+    #   mtfile "config.cfg" => ["config.template"] do
+    #     open("config.cfg", "w") do |outfile|
+    #       open("config.template") do |infile|
+    #         while line = infile.gets
+    #           outfile.puts line
+    #         end
+    #       end
+    #     end
+    #  end
+    #
+    def mtfile(*args, &block)
+      MTBuild::MTFileTask.define_task(*args, &block)
+    end
+
   end
 
 end

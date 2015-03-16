@@ -1,8 +1,8 @@
 module MTBuild
+  require 'mtbuild/loaders/makefile'
   require 'mtbuild/toolchain'
   require 'mtbuild/utils'
   require 'rake/clean'
-  require 'rake/loaders/makefile'
 
   Toolchain.register_toolchain(:gcc, 'MTBuild::ToolchainGcc')
 
@@ -56,11 +56,14 @@ module MTBuild
 
         file_type = get_file_type(source_file)
 
-        file object_file => [source_file] do |t|
+        mtfile object_file => [source_file] do |t|
           command_line = construct_compile_command(file_type, [source_file], get_include_paths, t.name)
           sh command_line
         end
-        Rake::MakefileLoader.new.load(dependency_file) if File.file?(dependency_file)
+        # Load dependencies if the dependencies file exists and the object file is not already scheduled to be rebuilt
+        if File.file?(dependency_file) and not Rake::Task[object_file].needed?
+          Rake::Task[object_file].force_needed() if not MTBuild::MakefileLoader.new.load(dependency_file)
+        end
       end
       return object_files, object_folders
     end
@@ -154,6 +157,8 @@ module MTBuild
     def linker
       return 'gcc'
     end
+
+    include MTBuild::DSL
 
   end
 

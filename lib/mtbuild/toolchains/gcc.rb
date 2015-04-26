@@ -23,11 +23,11 @@ module MTBuild
       fail "Toolchain component #{compiler} not found." unless toolchain_test_passed
 
       @compiler_is_LLVM_gcc = toolchain_test_output.include?'LLVM'
-      @cppflags = configuration.fetch(:cppflags, '')
-      @cflags = configuration.fetch(:cflags, '')
-      @cxxflags = configuration.fetch(:cxxflags, '')
-      @asflags = configuration.fetch(:asflags, '')
-      @ldflags = configuration.fetch(:ldflags, '')
+      @cppflags = Utils.ensure_array(configuration.fetch(:cppflags, '')).to_a.flatten.join(' ')
+      @cflags = Utils.ensure_array(configuration.fetch(:cflags, '')).to_a.flatten.join(' ')
+      @cxxflags = Utils.ensure_array(configuration.fetch(:cxxflags, '')).to_a.flatten.join(' ')
+      @asflags = Utils.ensure_array(configuration.fetch(:asflags, '')).to_a.flatten.join(' ')
+      @ldflags = Utils.ensure_array(configuration.fetch(:ldflags, '')).to_a.flatten.join(' ')
       @linker_script = configuration.fetch(:linker_script, '')
     end
 

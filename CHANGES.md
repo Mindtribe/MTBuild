@@ -1,5 +1,23 @@
 # Release Notes #
 
+## MTBuild 0.0.8 ##
+
+### Changes ###
+
+* MTBuild now uses 'mtbuildfile', 'MTBuildfile', 'mtbuildfile.rb', or 'MTBuildfile.rb'
+  instead of the standard rakefile names. This was changed to avoid confusion
+  since MTBuild files don't work with the "rake" command.
+* When merging project configurations with workspace defaults, MTBuild now
+  merges any arrays using the union operator. This allows projects to extend
+  more default workspace configuration.
+* MTBuild now allows strings or arrays for toolchain settings. If arrays are
+  used, project configurations will be merged with any default workspace
+  configurations. For example, a workspace could declare default cflags as
+  and array of individual flags. A project could then declare its own cflags,
+  which MTBuild would merge with the workspace defaults instead of
+  overriding them.
+
+
 ## MTBuild 0.0.7 ##
 
 ### Changes ###

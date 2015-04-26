@@ -16,7 +16,7 @@ MTBuild is distributed as a gem. Install it with:
 gem install mtbuild
 ```
 
-To build with MTBuild, switch to a folder containing a rakefile and run:
+To build with MTBuild, switch to a folder containing an mtbuildfile and run:
 
 ```Shell
 mtbuild
@@ -30,7 +30,7 @@ rake install
 
 ### Getting Started ###
 
-Here's an example of a very simple Rakefile.rb that defines an MTBuild project:
+Here's an example of a very simple mtbuildfile.rb that defines an MTBuild project:
 
 ```Ruby
 application_project :MyApp, File.dirname(__FILE__) do |app|
@@ -50,9 +50,9 @@ application_project :MyApp, File.dirname(__FILE__) do |app|
 end
 ```
 
-This Rakefile builds an application called "MyApp" (```application_project :MyApp```).
+This mtbuildfile builds an application called "MyApp" (```application_project :MyApp```).
 
-The project folder is set to the Rakefile's containing folder (```File.dirname(__FILE__)```). All folder references in the Rakefile are relative to this folder.
+The project folder is set to the mtbuildfile's containing folder (```File.dirname(__FILE__)```). All folder references in the mtbuildfile are relative to this folder.
 
 The MyApp project has one configuration called "Debug" (```app.add_configuration :Debug,```).
 
@@ -95,9 +95,9 @@ Here is an example of our preferred structure for a complex application that is 
 
 ```
 Workspace Folder
-  ├ Rakefile.rb            <-- workspace Rakefile
+  ├ mtbuildfile.rb         <-- workspace mtbuildfile
   ├ Library Project Folder
-  │   ├ Rakefile.rb        <-- project Rakefile
+  │   ├ mtbuildfile.rb     <-- project mtbuildfile
   │   ├ include            <-- public headers
   │   │   └ *.h
   │   ├ src                <-- private headers and source
@@ -105,7 +105,7 @@ Workspace Folder
   │   └ test               <-- unit tests
   │       └ *.c/*.cpp
   └ Application Project Folder
-      ├ Rakefile.rb        <-- project Rakefile
+      ├ mtbuildfile.rb     <-- project mtbuildfile
       ├ src                <-- headers and source
       │   └ *.h/*.c/*.cpp
       └ test               <-- unit tests
@@ -118,22 +118,22 @@ Here is an example of a simpler application that is self-contained:
 
 ```
 Application Project Folder
-  ├ Rakefile.rb            <-- project+workspace Rakefile
+  ├ mtbuildfile.rb         <-- project+workspace mtbuildfile
   ├ src                    <-- headers and source
   │   └ *.h/*.c/*.cpp
   └ test                   <-- unit tests
       └ *.h/*.c/*.cpp
 ```
 
-The project and (optional) workspace are defined in a single Rakefile. There are no public headers, so everything goes into the "src" folder, but tests might still be separated into a "test" folder.
+The project and (optional) workspace are defined in a single mtbuildfile. There are no public headers, so everything goes into the "src" folder, but tests might still be separated into a "test" folder.
 
-#### Rakefiles ####
+#### mtbuildfiles ####
 
-MTBuild uses Rake. MTBuild projects and workspaces are defined using Rakefiles. MTBuild offers new syntax to learn for defining projects and workspaces, but this syntax simply results in the generation of standard Rake tasks. Therefore, Rake is highly leveraged--if you encounter a build scenario that MTBuild doesn't quite handle, you can usually drop down to the Rake level and make it work.
+MTBuild uses Rake. MTBuild projects and workspaces are defined using mtbuildfiles. MTBuild offers new syntax to learn for defining projects and workspaces, but this syntax simply results in the generation of standard Rake tasks. Therefore, Rake is highly leveraged--if you encounter a build scenario that MTBuild doesn't quite handle, you can usually drop down to the Rake level and make it work.
 
 #### Building ####
 
-Building is as simple as invoking ```mtbuild``` in a folder containing a Rakefile. Under the hood, MTBuild pulls in the MTBuild infrastructure and then invokes Rake. It is possible to run MTBuild on a Rakefile that contains no MTBuild-specific syntax. It's also possible to run ```rake``` instead of ```mtbuild``` on a Rakefile that does include MTBuild-specific syntax; however, that Rakefile would need to ```require 'mtbuild'``` in order to work with the ```rake``` command. We recommend that you use the ```mtbuild``` command to build MTBuild projects.
+Building is as simple as invoking ```mtbuild``` in a folder containing a mtbuildfile. Under the hood, MTBuild pulls in the MTBuild infrastructure and then invokes Rake.
 
 #### Project Hierarchy ####
 
@@ -183,9 +183,9 @@ MTBuild builds only the first workspace it finds. If a workspace includes a proj
 
 ###### Simple Workspace Example #####
 
-Rakefile.rb:
+mtbuildfile.rb:
 
-This defines a workspace that includes the "MyLibrary" and "MyApp" projects. The projects are presumed to be defined in their own Rakefiles inside sub-folders called "MyLibrary" and "MyApp":
+This defines a workspace that includes the "MyLibrary" and "MyApp" projects. The projects are presumed to be defined in their own mtbuildfiles inside sub-folders called "MyLibrary" and "MyApp":
 
 ```Ruby
 workspace :AppWithLibrary, File.dirname(__FILE__) do |w|
@@ -196,9 +196,9 @@ end
 
 ###### Project Plus Workspace Example #####
 
-Rakefile.rb:
+mtbuildfile.rb:
 
-This defines a workspace that includes the MyLibrary project, which is defined in the same Rakefile. When a project is defined in the same Rakefile, it does not need to be explicitly added to the workspace (in this particular example, the workspace isn't very useful):
+This defines a workspace that includes the MyLibrary project, which is defined in the same mtbuildfile. When a project is defined in the same mtbuildfile, it does not need to be explicitly added to the workspace (in this particular example, the workspace isn't very useful):
 
 ```Ruby
 workspace :MyWorkspace, File.dirname(__FILE__) do |w|
@@ -216,9 +216,9 @@ end
 
 ###### Project Plus Workspace With Defaults Example #####
 
-Rakefile.rb:
+mtbuildfile.rb:
 
-This defines a workspace that includes the MyLibrary project, which is defined in the same Rakefile. The workspace provides a default toolchain for the "Debug" configuration. A higher-level workspace would override this with its own defaults:
+This defines a workspace that includes the MyLibrary project, which is defined in the same mtbuildfile. The workspace provides a default toolchain for the "Debug" configuration. A higher-level workspace would override this with its own defaults:
 
 ```Ruby
 workspace :MyLibrary, File.dirname(__FILE__) do |w|
@@ -253,7 +253,7 @@ Using configuration headers to configure libraries is such a bad idea that MTBui
 
 ###### Automatic Library Dependencies Example #####
 
-Top-level Rakefile.rb:
+Top-level mtbuildfile.rb:
 
 This defines a workspace that includes the "MyLibrary" and "MyApp" projects. Because MyApp will depend upon MyLibrary, the order that the projects are added does matter. MyLibrary needs to be added first.
 
@@ -264,7 +264,7 @@ workspace :AppWithLibrary, File.dirname(__FILE__) do |w|
 end
 ```
 
-MyLibrary/Rakefile.rb
+MyLibrary/mtbuildfile.rb
 
 This defines a library with one configuration called "Debug". The library's API headers are in a folder called "include". This library is foul and therefore has configuration headers for the Debug configuration in a folder called "config/Debug".
 
@@ -278,7 +278,7 @@ static_library_project :MyLibrary, File.dirname(__FILE__) do |lib|
 end
 ```
 
-MyApp/Rakefile.rb:
+MyApp/mtbuildfile.rb:
 
 This defines an application with one configuration called "Debug". It uses two libraries. It takes advantage of the automatic library dependency feature to include and link with 'MyLibrary:Debug' simply by listing it as a dependency. It includes and links with a 3rd party by manually specifying the include path and the library file for the toolchain.
 
@@ -306,7 +306,7 @@ MTBuild Toolchains generate the individual compile, archival, and link tasks tha
 
 #### Versioners ####
 
-MTBuild Versioners update version information inside a source or header file. Versioner tasks are typically invoked on their own with a separate invocation of MTBuild. Versioners are an optional convenience intended for Continuous Integration servers. They're not strictly related to the build process; however, because it's common for CI servers to stamp version information into a file when building, it is convenient to be able to describe the files that need updating along with the rest of the project inside the Rakefile.
+MTBuild Versioners update version information inside a source or header file. Versioner tasks are typically invoked on their own with a separate invocation of MTBuild. Versioners are an optional convenience intended for Continuous Integration servers. They're not strictly related to the build process; however, because it's common for CI servers to stamp version information into a file when building, it is convenient to be able to describe the files that need updating along with the rest of the project inside the mtbuildfile.
 
 For example, the following project is configure to use the MindTribe Standard Version versioner:
 
@@ -329,7 +329,7 @@ mtbuild MyApp:Debug:Version[1,0,0,465,"1.0.0 (465)","f1e471b49a4bedc9cf5c6aabf88
 
 #### DSL ####
 
-MTBuild provides several Domain Specific Language (DSL) methods to wrap up the underlying MTBuild classes into a more Rakefile-friendly syntax. These are called out in the reference section below.
+MTBuild provides several Domain Specific Language (DSL) methods to wrap up the underlying MTBuild classes into a friendlier syntax. These are called out in the reference section below.
 
 ## Reference ##
 
@@ -343,12 +343,12 @@ workspace(workspace_name, workspace_folder, &configuration_block)
 
 ```workspace_name``` is your desired name for the workspace. This should be a symbol like ":MyWorkspace". It serves as a human-readable way to refer to the workspace.
 
-```workspace_folder``` is the location of the workspace. Project folders should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the workspace's Rakefile.
+```workspace_folder``` is the location of the workspace. Project folders should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the workspace's mtbuildfile.
 
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a Workspace object as this parameter. Inside the block, you can make Workspace calls on this object to add projects, set configuration defaults, etc.
 
 #### add_project ####
-Use ```add_project(project_location)``` inside of a workspace configuration block to add a project that lives inside a subfolder. The ```project_location``` parameter must be a subfolder of the workspace. If the project lives at the same level as the workspace, you should define it in the same Rakefile as the workspace. In this case, the project will be implicitly added and you do not need to use ```add_project``` inside the workspace. See the **Project Plus Workspace Example** above for an example of a workspace and project that live at the same folder level.
+Use ```add_project(project_location)``` inside of a workspace configuration block to add a project that lives inside a subfolder. The ```project_location``` parameter must be a subfolder of the workspace. If the project lives at the same level as the workspace, you should define it in the same mtbuildfile as the workspace. In this case, the project will be implicitly added and you do not need to use ```add_project``` inside the workspace. See the **Project Plus Workspace Example** above for an example of a workspace and project that live at the same folder level.
 
 #### add_default_tasks ####
 Use ```add_default_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) Rake tasks. If no default tasks are specified, then invoking MTBuild with no arguments will effectively do nothing.
@@ -367,7 +367,30 @@ workspace :MyWorkspace, File.dirname(__FILE__) do |w|
 end
 ```
 
-Any configuration value can be specified in the hash passed to ```set_configuration_defaults```. MTBuild merges workspace configuration value defaults with project configuration values. In the case of conflicting settings, the project configuration wins and overrides the workspace.
+Any configuration value can be specified in the hash passed to ```set_configuration_defaults```. MTBuild merges workspace configuration value defaults with project configuration values. In the case of conflicting settings (when both a workspace and a project define the same configuration value), one of two things can happen:
+
+1. If the configuration value is a string in either the project or the workspace, the project configuration wins and completely overrides the workspace's value.
+2. If the configuration value is an array in both the project or the workspace, the values will be merged using a union operation. This allows the workspace to define, for example, "cflags" to be used for compiling, which could then be extended with more flags inside of a specific project. However, there is currently no way for a project to remove array values that are defined in the workspace. If a project needs to do this, it will have to override the entire workspace configuration using a string for the value.
+
+The following example selects the "gcc" toolchain and sets the C standard to C99 for any projects with a configuration named "Debug". The project then extends the "cflags" to add an optimization level. The resulting command line would be "-std=c99 -O0":
+
+```Ruby
+workspace :MyWorkspace, File.dirname(__FILE__) do |w|
+  w.set_configuration_defaults :Debug,
+    toolchain: toolchain(:gcc,
+      cflags: ['-std=c99'],
+    )
+end
+
+static_library_project :MyLibrary, File.dirname(__FILE__) do |lib|
+  lib.add_api_headers 'include'
+  lib.add_configuration :Debug,
+    sources: ['src/**/*.c']
+    toolchain: toolchain(:gcc,
+      cflags: ['-O0'],
+    )
+end
+```
 
 #### set_output_folder ####
 Use ```set_output_folder(output_folder)``` inside of a workspace configuration block to change the build output folder. By default, this folder is set to "build" underneath the workspace folder. The ```output_folder``` parameter expects the name of a folder relative to the workspace. If the folder does not exist, MTBuild will create it.
@@ -383,7 +406,7 @@ application_project(application_name, project_folder, &configuration_block)
 
 ```application_name``` is your desired name for the application. This should be a symbol such as ```:MyApplication```. It serves as a human-readable name for the application. Rake tasks related to this application will be namespaced with this symbol. For example, the top-level Rake task for building the "MyApplication" application with a configuration called "Debug" would be "MyApplication:Debug".
 
-```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's Rakefile.
+```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's mtbuildfile.
 
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass an ApplicationProject object as this parameter. Inside the block, you can make ApplicationProject calls on this object to add configurations.
 
@@ -425,7 +448,7 @@ static_library_project(library_name, project_folder, &configuration_block)
 
 ```library_name``` is your desired name for the library. This should be a symbol like ```:MyLibrary```. It serves as a human-readable name for the library. Rake tasks related to this library will be namespaced with this symbol. For example, the top-level Rake task for building the "MyLibrary" library with a configuration called "Debug" would be "MyLibrary:Debug".
 
-```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's Rakefile.
+```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's mtbuildfile.
 
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a StaticLibraryProject object as this parameter. Inside the block, you can make StaticLibraryProject calls on this object to add configurations.
 
@@ -454,7 +477,7 @@ test_application_project(application_name, project_folder, &configuration_block)
 
 ```application_name``` is your desired name for the application. This should be a symbol like ```:MyApplication```. It serves as a human-readable name for the application. Rake tasks related to this application will be namespaced with this symbol. For example, the top-level Rake task for building the "MyTestApplication" application with a configuration called "Debug" would be "MyTestApplication:Debug".
 
-```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's Rakefile.
+```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's mtbuildfile.
 
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a TestApplicationProject object as this parameter. Inside the block, you can make TestApplicationProject calls on this object to add configurations.
 
@@ -474,7 +497,7 @@ framework_project(framework_name, project_folder, &configuration_block)
 
 ```framework_name``` is your desired name for the framework. This should be a symbol such as ```:MyApplication```. It serves as a human-readable name for the framework. Rake tasks related to this framework will be namespaced with this symbol. For example, the top-level Rake task for building the "MyLibrary" framework with a configuration called "Debug" would be "MyLibrary:Debug".
 
-```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's Rakefile.
+```project_folder``` is the location of the project. Project files should be located at or below this location. Typically, you'd simply pass ```File.dirname(__FILE__)``` to use the same folder as the project's mtbuildfile.
 
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass an FrameworkProject object as this parameter. Inside the block, you can make FrameworkProject calls on this object to add configurations.
 
@@ -519,15 +542,15 @@ Define a GCC toolchain by passing ```:gcc``` as the ```toolchain_name``` when in
 ##### ToolchainGcc settings #####
 On top of the base Toolchain settings, the ToolchainGcc toolchain offers the following optional settings:
 
-* ```:cppflags``` - A string representing C Preprocessor flags to be used in all compilation and link steps
+* ```:cppflags``` - A string or array of strings representing C Preprocessor flags to be used in all compilation and link steps
 
-* ```:cflags``` - A string representing C flags to be used when compiling C files
+* ```:cflags``` - A string or array of strings representing C flags to be used when compiling C files
 
-* ```:cxxflags``` - A string representing C++ flags to be used when compiling C++ files
+* ```:cxxflags``` - A string or array of strings representing C++ flags to be used when compiling C++ files
 
-* ```:asflags``` - A string representing assembler flags to be used when assembling assembly files
+* ```:asflags``` - A string or array of strings representing assembler flags to be used when assembling assembly files
 
-* ```:ldflags``` - A string representing linker flags to be used when linking
+* ```:ldflags``` - A string or array of strings representing linker flags to be used when linking
 
 * ```:linker_script``` - A linker script file to be used when linking
 

@@ -48,8 +48,8 @@ module MTBuild
       new_projects = []
       Utils.expand_folder_list(project_location, Rake.original_dir).each do |project_path|
         if File.directory? project_path
-          project_rakefile = File.join(project_path,'Rakefile.rb')
-          new_projects << project_rakefile if File.file? project_rakefile
+          project_rakefile = MTBuild::Workspace.find_mtbuildfile(project_path)
+          new_projects << project_rakefile unless project_rakefile.nil?
         end
       end
       $stderr.puts "Could not find a valid project at '#{project_location}'. Ignored." if new_projects.empty?
@@ -103,6 +103,16 @@ module MTBuild
     # Adds or updates defaults to the singleton configuration defaults
     def self.set_configuration_defaults(configuration_name, defaults_hash)
       @configuration_defaults[configuration_name] = defaults_hash
+    end
+
+    def self.find_mtbuildfile(project_path)
+      Rake.application.rakefiles.each do |fn|
+        mtbuildfile = File.join(project_path, fn)
+        if File.file? mtbuildfile
+          return mtbuildfile
+        end
+      end
+      return nil
     end
 
     include Rake::DSL

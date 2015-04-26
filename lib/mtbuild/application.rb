@@ -11,9 +11,26 @@ module MTBuild
 
   require 'rake'
 
-  # This subclasses the Rake::Application class only only to inject the MTBuild
-  # version number for display when mtbuild is invoked with the --version flag.
+  # This subclasses the Rake::Application class to override default Rake
+  # behaviors with MTBuild-specific behaviors
   class Application < Rake::Application
+
+    # List of rakefile names to look for
+    attr_reader :rakefiles
+
+    # Default list of mtbuildfile names
+    DEFAULT_RAKEFILES = [
+      'mtbuildfile',
+      'MTBuildfile',
+      'mtbuildfile.rb',
+      'MTBuildfile.rb'
+    ].freeze
+
+    # This overrides the default rakefile names with the mtbuildfile names
+    def initialize
+      super
+      @rakefiles = DEFAULT_RAKEFILES.dup
+    end
 
     # This hijacks the "--version" flag and displays the MTBuild version along
     # with the Rake version. All other options/flags are returned unmodified.

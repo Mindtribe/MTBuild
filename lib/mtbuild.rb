@@ -1,5 +1,9 @@
-require 'rake'
+module MTBuild
+  # The current MTBuild version.
+  VERSION = "0.0.9"
+end
 
+require "rake"
 require "mtbuild/application"
 require "mtbuild/application_project"
 require "mtbuild/application_task"

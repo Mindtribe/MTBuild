@@ -41,7 +41,7 @@ module MTBuild
             "Display the program version.",
             lambda { |value|
               puts "mtbuild, version #{MTBuild::VERSION}"
-              puts "rake, version #{RAKEVERSION}"
+              puts "rake, version #{Rake::VERSION}"
               exit
             }
           ]

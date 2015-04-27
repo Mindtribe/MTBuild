@@ -1,4 +1,7 @@
 module MTBuild
-  # The current MTBuild version.
-  VERSION = "0.0.8"
+  module Version
+    MAJOR, MINOR, BUILD, *OTHER = MTBuild::VERSION.split '.'
+
+    NUMBERS = [MAJOR, MINOR, BUILD, *OTHER]
+  end
 end

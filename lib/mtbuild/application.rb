@@ -32,10 +32,11 @@ module MTBuild
       @rakefiles = DEFAULT_RAKEFILES.dup
     end
 
-    # This hijacks the "--version" flag and displays the MTBuild version along
-    # with the Rake version. All other options/flags are returned unmodified.
+    # This modifies Rake's command line options to do MTBuild-specific things
     def standard_rake_options
-      return super.map do |opt|
+      # This hijacks the "--version" flag and displays the MTBuild version along
+      # with the Rake version.
+      options = super.map do |opt|
         if opt.first == '--version'
           ['--version', '-V',
             "Display the program version.",
@@ -49,6 +50,10 @@ module MTBuild
           opt
         end
       end
+      # This adds MTBuild-specific options (For future development)
+      # options |= [
+      # ]
+      # sort_options(options)
     end
 
   end

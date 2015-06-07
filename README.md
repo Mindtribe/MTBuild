@@ -2,9 +2,9 @@
 
 [![Gem Version](https://badge.fury.io/rb/mtbuild.svg)](http://badge.fury.io/rb/mtbuild)
 
-MTBuild is MindTribe's Rake-based build system for building C/C++ projects.
+MTBuild is Mindtribe's Rake-based build system for building C/C++ projects.
 
-MTBuild lives here: https://github.com/MindTribe/MTBuild
+MTBuild lives here: https://github.com/Mindtribe/MTBuild
 
 ## Quick Start ##
 
@@ -22,7 +22,7 @@ To build with MTBuild, switch to a folder containing an mtbuildfile and run:
 mtbuild
 ```
 
-To install from source, clone the [MTBuild repository](https://github.com/MindTribe/MTBuild) and run the following:
+To install from source, clone the [MTBuild repository](https://github.com/Mindtribe/MTBuild) and run the following:
 
 ```Shell
 rake install
@@ -72,7 +72,7 @@ The ARM toolchain should use the specified linker script when linking (```linker
 
 When invoked with no parameters, MTBuild will build the Debug configuration of MyApp by default (```app.add_default_tasks('MyApp:Debug')```)
 
-You can find more project examples here: [MTBuild examples](https://github.com/MindTribe/MTBuild/tree/master/examples)
+You can find more project examples here: [MTBuild examples](https://github.com/Mindtribe/MTBuild/tree/master/examples)
 
 ## Documentation ##
 
@@ -308,7 +308,7 @@ MTBuild Toolchains generate the individual compile, archival, and link tasks tha
 
 MTBuild Versioners update version information inside a source or header file. Versioner tasks are typically invoked on their own with a separate invocation of MTBuild. Versioners are an optional convenience intended for Continuous Integration servers. They're not strictly related to the build process; however, because it's common for CI servers to stamp version information into a file when building, it is convenient to be able to describe the files that need updating along with the rest of the project inside the mtbuildfile.
 
-For example, the following project is configure to use the MindTribe Standard Version versioner:
+For example, the following project is configure to use the Mindtribe Standard Version versioner:
 
 ```Ruby
 application_project :MyApp, File.dirname(__FILE__) do |app|
@@ -573,7 +573,7 @@ def versioner(versioner_name, versioner_configuration={})
 ```versioner_configuration``` expects a hash that contains settings for the versioner.
 
 ### MTBuild::VersionerMTStdVersion ###
-Define a MindTribe Standard Version versioner by passing ```:mt_std_version``` as the ```versioner_name``` when invoking the ```versioner()``` method.
+Define a Mindtribe Standard Version versioner by passing ```:mt_std_version``` as the ```versioner_name``` when invoking the ```versioner()``` method.
 
 ##### VersionerMTStdVersion settings #####
 The VersionerMTStdVersion versioner requires the following settings:
@@ -582,7 +582,7 @@ The VersionerMTStdVersion versioner requires the following settings:
 
 ##### VersionerMTStdVersion invocation #####
 
-MindTribe Standard Version parameters should be specified when invoking MTBuild to run a VersionerMTStdVersion versioner task. These parameters, in order, are:
+Mindtribe Standard Version parameters should be specified when invoking MTBuild to run a VersionerMTStdVersion versioner task. These parameters, in order, are:
 
 * ```major``` - The build's major version number
 

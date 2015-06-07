@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{rake-based build system for C/C++ projects}
   spec.description   = %q{mtbuild is a rake-based build system for C/C++ projects. It provides a DSL for declaring workspaces and projects, which generate rake tasks.}
-  spec.homepage      = "https://github.com/MindTribe/MTBuild"
+  spec.homepage      = "https://github.com/Mindtribe/MTBuild"
   spec.license       = "BSD-3-Clause"
 
   spec.files         = [Dir.glob('{bin,lib}/**/*'), 'CHANGES.md', 'LICENSE.md', 'README.md']

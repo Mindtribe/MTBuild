@@ -1,5 +1,12 @@
 # Release Notes #
 
+## MTBuild 0.0.9 ##
+
+### Changes ###
+
+* MTBuild now requires Rake 10.4.2
+
+
 ## MTBuild 0.0.8 ##
 
 ### Changes ###

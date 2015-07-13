@@ -1,5 +1,13 @@
 # Release Notes #
 
+## MTBuild 0.1.0 ##
+
+### Changes ###
+
+* Workspaces can now include other workspaces to inherit their projects and
+  configurations.
+
+
 ## MTBuild 0.0.9 ##
 
 ### Changes ###

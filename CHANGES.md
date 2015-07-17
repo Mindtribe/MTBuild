@@ -5,7 +5,8 @@
 ### Changes ###
 
 * MTBuild now requires Rake 10.4.2
-
+* Fixed bug that prevented library include path specification for gcc-based
+  toolchains.
 
 ## MTBuild 0.0.8 ##
 

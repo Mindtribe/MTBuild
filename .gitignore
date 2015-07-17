@@ -28,3 +28,6 @@ pkg/
 *.exe
 *.out
 *.app
+
+# RubyMine Project files
+.idea/

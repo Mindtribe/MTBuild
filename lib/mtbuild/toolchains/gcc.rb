@@ -138,7 +138,7 @@ module MTBuild
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
       ldflags_s = @ldflags.empty? ? '' : " #{@ldflags}"
       linker_script_s = @linker_script.empty? ? '' : " -Wl,-T\"#{File.join(@project_folder,@linker_script)}\""
-      return "\"#{compiler}\"#{cppflags_s}#{cflags_s}#{ldflags_s}#{linker_script_s}#{prerequisites_s}#{include_paths_s} #{map_flag(map_name)} -o \"#{output_name}\""
+      return "\"#{compiler}\"#{cppflags_s}#{cflags_s}#{ldflags_s}#{include_paths_s}#{library_paths_s}#{linker_script_s}#{prerequisites_s} #{map_flag(map_name)} -o \"#{output_name}\""
     end
 
     def map_flag(map_file)

@@ -4,6 +4,8 @@
 
 ### Changes ###
 
+* MTBuild now overrides the rake application name to display "mtbuild" as the
+  application name.
 * Workspaces can now include other workspaces to inherit their projects and
   configurations.
 

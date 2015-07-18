@@ -32,6 +32,11 @@ module MTBuild
       @rakefiles = DEFAULT_RAKEFILES.dup
     end
 
+    # Override init to pass mtbuild as the app name
+    def init(app_name='mtbuild')
+      super
+    end
+
     # This modifies Rake's command line options to do MTBuild-specific things
     def standard_rake_options
       # This hijacks the "--version" flag and displays the MTBuild version along

@@ -135,6 +135,12 @@ MTBuild uses Rake. MTBuild projects and workspaces are defined using mtbuildfile
 
 Building is as simple as invoking ```mtbuild``` in a folder containing a mtbuildfile. Under the hood, MTBuild pulls in the MTBuild infrastructure and then invokes Rake.
 
+##### Command Line Options #####
+
+MTBuild supports the standard Rake command line options. Additionally, it adds the following:
+
+* ```--super-dry-run``` This command performs a dry run; however, unlike the Rake dry run, it actually prints the shell commands that would be executed. 
+
 #### Project Hierarchy ####
 
 The MTBuild project hierarchy looks roughly like this:

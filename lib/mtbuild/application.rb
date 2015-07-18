@@ -55,10 +55,17 @@ module MTBuild
           opt
         end
       end
-      # This adds MTBuild-specific options (For future development)
-      # options |= [
-      # ]
-      # sort_options(options)
+      # This adds MTBuild-specific options
+      options |= [
+          ['--super-dry-run',
+           "Do a dry run printing actions, but not executing them.",
+           lambda { |value|
+             Rake.verbose(true)
+             Rake.nowrite(true)
+           }
+          ],
+      ]
+      sort_options(options)
     end
 
   end

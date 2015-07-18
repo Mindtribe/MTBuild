@@ -6,6 +6,8 @@
 
 * MTBuild now overrides the rake application name to display "mtbuild" as the
   application name.
+* MTBuild now offers a '--super-dry-run' command line option to perform a dry
+  run of the build where each command is printed, but not executed.
 * Workspaces can now include other workspaces to inherit their projects and
   configurations.
 

@@ -32,6 +32,14 @@ module MTBuild
       @rakefiles = DEFAULT_RAKEFILES.dup
     end
 
+    def run
+      standard_exception_handling do
+        init
+        load_rakefile
+        top_level
+      end
+    end
+
     # Override init to pass mtbuild as the app name
     def init(app_name='mtbuild')
       super

@@ -36,6 +36,4 @@ application_project :ExampleApp, File.dirname(__FILE__) do |app|
       cflags: '-std=c89 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors'
     )
 
-  app.add_default_tasks(['ExampleApp:Configuration1', 'ExampleApp:Configuration2'])
-
 end

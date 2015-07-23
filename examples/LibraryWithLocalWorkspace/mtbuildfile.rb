@@ -1,4 +1,4 @@
-workspace :AppsWithLibrary, File.dirname(__FILE__) do |w|
+workspace :LibraryWithLocalWorkspace, File.dirname(__FILE__) do |w|
 
   w.set_configuration_defaults :Configuration1,
     toolchain: toolchain(:arm_none_eabi_gcc,
@@ -14,6 +14,8 @@ workspace :AppsWithLibrary, File.dirname(__FILE__) do |w|
       cflags: '-std=c99 -Wall -Werror -Wextra -pedantic-errors',
       cxxflags: '-Wall -Werror -Wextra -pedantic-errors',
     )
+
+  w.add_default_tasks('ExampleLibrary:Configuration1')
 
 end
 

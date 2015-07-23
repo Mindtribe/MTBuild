@@ -9,11 +9,12 @@ module MTBuild
     # Adds a named ApplicationConfiguration to the project.
     def add_configuration(configuration_name, configuration)
       super
-      default_configuration = Workspace.configuration_defaults.fetch(configuration_name, {})
+      default_configuration = {}
+      default_configuration = @parent_workspace.configuration_defaults.fetch(configuration_name, {}) unless @parent_workspace.nil?
       merged_configuration = Utils.merge_configurations(default_configuration, configuration)
-      cfg = ApplicationConfiguration.new(@project_name, @project_folder, effective_output_folder, configuration_name, merged_configuration)
+      cfg = ApplicationConfiguration.new(self, effective_output_folder, configuration_name, merged_configuration)
       @configurations << cfg
-      return cfg
+      cfg
     end
 
   end

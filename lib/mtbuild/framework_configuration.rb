@@ -6,8 +6,8 @@ module MTBuild
   # method will create this for you.
   class FrameworkConfiguration < Configuration
 
-    def initialize(project_name, project_folder, output_folder, configuration_name, configuration, api_headers)
-      super project_name, project_folder, output_folder, configuration_name, configuration
+    def initialize(parent_project, output_folder, configuration_name, configuration, api_headers)
+      super parent_project, output_folder, configuration_name, configuration
       check_configuration(configuration)
       @api_headers = api_headers
       @configuration_headers = Utils.expand_folder_list(configuration.fetch(:configuration_headers, []), @project_folder)
@@ -17,7 +17,7 @@ module MTBuild
     # Create the actual Rake tasks that will perform the configuration's work
     def configure_tasks
       super
-      desc "Framework '#{@project_name}' with configuration '#{@configuration_name}'"
+      desc "Framework '#{@parent_project.project_name}' with configuration '#{@configuration_name}'"
       new_task = framework_task @configuration_name => @object_files do |t|
         puts "found framework #{t.name}."
       end
@@ -30,7 +30,7 @@ module MTBuild
 
     def check_configuration(configuration)
       super
-      fail "No objects specified for #{@project_name}:#{@configuration_name}" if configuration.fetch(:objects, nil).nil?
+      fail "No objects specified for #{@parent_project.project_name}:#{@configuration_name}" if configuration.fetch(:objects, nil).nil?
     end
 
   end

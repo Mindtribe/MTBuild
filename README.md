@@ -45,8 +45,6 @@ application_project :MyApp, File.dirname(__FILE__) do |app|
       linker_script: 'src/LinkerFile-Debug.ld'
     )
 
-    app.add_default_tasks('MyApp:Debug')
-
 end
 ```
 
@@ -70,7 +68,7 @@ The ARM toolchain should use the specified linker flags when linking (```ldflags
 
 The ARM toolchain should use the specified linker script when linking (```linker_script: ...```)
 
-When invoked with no parameters, MTBuild will build the Debug configuration of MyApp by default (```app.add_default_tasks('MyApp:Debug')```)
+When invoked with no parameters, MTBuild will do nothing for this project. When invoked as ```mtbuild 'MyApp:Debug'```, MTBuild will build the ```Debug``` configuration of ```MyApp```.
 
 You can find more project examples here: [MTBuild examples](https://github.com/Mindtribe/MTBuild/tree/master/examples)
 
@@ -357,7 +355,10 @@ For ```configuration_block```, you supply a block that takes one parameter. When
 Use ```add_project(project_location)``` inside of a workspace configuration block to add a project that lives inside a subfolder. The ```project_location``` parameter must be a subfolder of the workspace. If the project lives at the same level as the workspace, you should define it in the same mtbuildfile as the workspace. In this case, the project will be implicitly added and you do not need to use ```add_project``` inside the workspace. See the **Project Plus Workspace Example** above for an example of a workspace and project that live at the same folder level.
 
 #### add_default_tasks ####
-Use ```add_default_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) Rake tasks. If no default tasks are specified, then invoking MTBuild with no arguments will effectively do nothing.
+Use ```add_default_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) project task names. The project tasks should be qualified relative to the current workspace. For example, if a workspace includes a project called ```MyApp```, which has a configuration called ```Debug```, you can add this by referring to it as ```MyApp:Debug```. If no default tasks are specified, then invoking MTBuild with no arguments will effectively do nothing.
+
+#### add_default_rake_tasks ####
+Use ```add_default_rake_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) Rake task names. Unlike ```add_default_tasks()```, this method expects "raw" Rake task names. This lets you specify that MTBuild should run any Rake task by default when building this workspace. 
 
 #### set_configuration_defaults ####
 Use ```set_configuration_defaults(configuration_name, defaults_hash)``` inside of a workspace configuration block to add default settings for a configuration. This is how you would select, for instance, a default toolchain for all projects with a specific configuration.

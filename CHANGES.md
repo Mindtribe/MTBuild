@@ -10,6 +10,9 @@
   run of the build where each command is printed, but not executed.
 * Workspaces can now include other workspaces to inherit their projects and
   configurations.
+* Default tasks can no longer be added to projects. You can only add default
+  tasks to workspaces. If you need default tasks for a project, simply include
+  a lightweight workspace that exists solely to specify default tasks.
 
 
 ## MTBuild 0.0.9 ##

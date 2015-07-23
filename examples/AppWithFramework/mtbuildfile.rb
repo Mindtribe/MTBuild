@@ -4,3 +4,4 @@ workspace :AppsWithLibrary, File.dirname(__FILE__) do |w|
 
   w.add_default_tasks(['ExampleApp:Configuration1', 'ExampleApp:Configuration2'])
 end
+

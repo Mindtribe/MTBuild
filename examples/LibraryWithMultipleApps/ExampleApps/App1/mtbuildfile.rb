@@ -11,7 +11,7 @@ app1 = application_project :App1, File.dirname(__FILE__) do |app|
       linker_script: 'LinkerFile-Configuration1.ld'
     ),
     dependencies: [
-      'ExampleSDK:ExampleLibrary:Configuration1'
+      'ExampleLibrary:Configuration1'
     ]
 
   cfg1.add_sources 'special.c', toolchain(:arm_none_eabi_gcc,
@@ -30,7 +30,7 @@ app1 = application_project :App1, File.dirname(__FILE__) do |app|
       linker_script: 'LinkerFile-Configuration2.ld'
     ),
     dependencies: [
-      'ExampleSDK:ExampleLibrary:Configuration2'
+      'ExampleLibrary:Configuration2'
     ]
 
   cfg2.add_sources 'special.c', toolchain(:arm_none_eabi_gcc,

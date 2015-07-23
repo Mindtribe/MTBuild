@@ -7,7 +7,6 @@ module MTBuild
     @projects = {}
     @top_workspace = nil
     @active_workspace = nil
-    @last_active_workspace = nil
 
     @expecting=:project_or_workspace
 
@@ -22,8 +21,8 @@ module MTBuild
       # The top-level workspace
       attr_reader :top_workspace
 
-      # The last active workspace
-      attr_reader :last_active_workspace
+      # The top-level workspace
+      attr_reader :active_workspace
 
       # Track the beginning of a new workspace's creation
       def enter_workspace(workspace_name, workspace)
@@ -33,13 +32,19 @@ module MTBuild
         @workspaces[workspace_name] = workspace
         @top_workspace = workspace if @top_workspace.nil?
         parent = @active_workspace
-        @active_workspace = @last_active_workspace = workspace
+        @active_workspace = workspace
         return workspace_name, parent
+      end
+
+      # Track the re-entry into a parent workspace after importing a child workspace.
+      def reenter_workspace(workspace)
+        last_workspace = @active_workspace
+        @active_workspace = workspace
+        last_workspace
       end
 
       # Track the completion of a new workspace's creation
       def exit_workspace
-        @active_workspace = @active_workspace.parent_workspace
       end
 
       # Track the beginning of a new project's creation
@@ -48,7 +53,7 @@ module MTBuild
         self.found_project(project_name)
         fail "A project named #{project_name} was already added." if @projects.has_key?(project_name)
         @projects[project_name] = project
-        return project_name, @last_active_workspace
+        return project_name, @active_workspace
       end
 
       # Track the completion of a new project's creation
@@ -70,26 +75,26 @@ module MTBuild
       # Register that we encountered a workspace and verify that it's allowed
       def found_workspace(workspace_name)
         unless [:project_or_workspace, :added_workspace].include? @expecting
-          fail "#{workspace_name} was added with add_project(), but it contains a workspace. Use add_workspace() if you want to include it." if @expect==:added_project
+          fail "#{workspace_name} was added with add_project(), but it contains a workspace. Use add_workspace() if you want to include it." if @expecting==:added_project
           fail "Encountered workspace #{workspace_name} declared after a project or another workspace in the same file. This isn't allowed."
         end
         # We expect nothing but top-level projects now.
-        @expect=:project
+        @expecting=:project
       end
 
       # Register that we encountered a project and verify that it's allowed
       def found_project(project_name)
         unless [:project_or_workspace, :project, :added_project].include? @expecting
-          fail "#{project_name} was added with add_workspace(), but it contains a project. Use add_project() if you want to include it." if @expect==:added_workspace
+          fail "#{project_name} was added with add_workspace(), but it contains a project. Use add_project() if you want to include it." if @expecting==:added_workspace
         end
         # We expect nothing but top-level projects now.
-        @expect=:project
+        @expecting=:project
       end
 
       # Get a workspace/project name that reflects the workspace/project hierarchy
       def hierarchical_name(name)
-        return name if @last_active_workspace.nil?
-        "#{@last_active_workspace.workspace_name}:#{name}"
+        return name if @active_workspace.nil?
+        "#{@active_workspace.workspace_name}:#{name}"
       end
 
     end

@@ -3,6 +3,7 @@ module MTBuild
   # This is the base class for all project types.
   class Project
     require 'mtbuild/build_registry'
+    require 'mtbuild/cleaner'
 
     # The project's name
     attr_reader :project_name
@@ -17,6 +18,9 @@ module MTBuild
     # The project's parent workspace
     attr_reader :parent_workspace
 
+    # The project's list of things to clean
+    attr_reader :clean_list
+
     # If supplied, the configuration_block will be passed the
     # newly-constructed Project object.
     def initialize(project_name, project_folder, &configuration_block)
@@ -24,6 +28,7 @@ module MTBuild
       @project_folder = File.expand_path(project_folder)
       @output_folder = File.expand_path(File.join(@project_folder, MTBuild.default_output_folder))
       @project_name, @parent_workspace = MTBuild::BuildRegistry.enter_project(project_name, self)
+      @clean_list = Rake::FileList.new
 
       configuration_block.call(self) if configuration_block
 
@@ -31,6 +36,8 @@ module MTBuild
         @configurations.each do |configuration|
           configuration.configure_tasks
         end
+
+        Cleaner.generate_clean_task_for_project(@project_name, @clean_list)
       end
 
       #TODO: This is a strange way to do this. Should probably be moved to "application" functionality.
@@ -51,6 +58,12 @@ module MTBuild
     # Set the project's output folder.
     def set_output_folder(output_folder)
       @output_folder = File.expand_path(File.join(@project_folder, output_folder))
+    end
+
+    # Get the fully-qualified task name for a configuration
+    def add_files_to_clean(*filenames)
+      @clean_list.include(filenames)
+      Cleaner.global_clean_list.include(filenames)
     end
 
     # Returns the effective output folder. If a workspace exists, this will

@@ -20,7 +20,7 @@ module MTBuild
       @dependencies = namespace_tasks(configuration.fetch(:dependencies, []))
       @dependencies |= configuration.fetch(:rake_dependencies, [])
       @default_toolchain_config = configuration[:toolchain]
-      @default_toolchain = Toolchain.create_toolchain(@default_toolchain_config)
+      @default_toolchain = Toolchain.create_toolchain(self, @default_toolchain_config)
 
       @source_files = Utils.expand_file_list(configuration.fetch(:sources, []), configuration.fetch(:excludes, []), @project_folder)
       @toolchains = {@default_toolchain => @source_files}
@@ -32,7 +32,7 @@ module MTBuild
     # to add any source files that need special toolchain settings.
     def add_sources(sources, excludes=[], toolchain_configuration)
       merged_configuration = Utils.merge_configurations(@default_toolchain_config, toolchain_configuration)
-      toolchain = Toolchain.create_toolchain(merged_configuration)
+      toolchain = Toolchain.create_toolchain(self, merged_configuration)
       @toolchains[toolchain] = Utils.expand_file_list(sources, excludes, @project_folder)
     end
 

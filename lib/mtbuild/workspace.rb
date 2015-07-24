@@ -4,7 +4,7 @@ module MTBuild
   class Workspace
     require 'mtbuild/utils'
     require 'mtbuild/build_registry'
-    require 'rake/clean'
+    require 'mtbuild/cleaner'
 
     # The workspace's name
     attr_reader :workspace_name
@@ -66,10 +66,13 @@ module MTBuild
         require project
       end
 
-      CLOBBER.include(@output_folder)
+      Cleaner.global_clean_list.include(@output_folder)
 
-      # Only register default tasks if we're the top-level workspace.
-      task :default => @default_tasks if @parent_workspace.nil?
+      # Only register default tasks and generate global clean if we're the top-level workspace.
+      if @parent_workspace.nil?
+        task :default => @default_tasks
+        Cleaner.generate_global_clean_task
+      end
 
       MTBuild::BuildRegistry.exit_workspace
     end

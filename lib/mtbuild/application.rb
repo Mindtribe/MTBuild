@@ -9,8 +9,6 @@ end
 
 module MTBuild
 
-  require 'rake'
-
   # This subclasses the Rake::Application class to override default Rake
   # behaviors with MTBuild-specific behaviors
   class Application < Rake::Application

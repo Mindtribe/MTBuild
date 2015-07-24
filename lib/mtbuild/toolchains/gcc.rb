@@ -14,6 +14,8 @@ module MTBuild
     def initialize(parent_configuration, toolchain_configuration)
       super
 
+      @tracked_folders = []
+
       begin
         toolchain_test_output=%x{#{compiler} --version 2>&1}
         toolchain_test_passed=$?.success?
@@ -44,8 +46,11 @@ module MTBuild
 
         object_folders << output_folder unless object_folders.include?output_folder
 
-        directory output_folder
-        @parent_configuration.parent_project.add_files_to_clean(output_folder)
+        unless @tracked_folders.include?output_folder
+          @tracked_folders << output_folder
+          directory output_folder
+          @parent_configuration.parent_project.add_files_to_clean(output_folder)
+        end
 
         object_file = File.join(output_folder, source_file.pathmap('%n.o'))
         dependency_file = File.join(output_folder, source_file.pathmap('%n.d'))
@@ -71,8 +76,14 @@ module MTBuild
     def create_static_library_tasks(objects, library_name)
       library_file = File.join(@output_folder, "lib#{library_name}#{@output_decorator}.a")
       library_folder = @output_folder
-      directory library_folder
-      @parent_configuration.parent_project.add_files_to_clean(library_folder, library_file)
+
+      unless @tracked_folders.include?library_folder
+        @tracked_folders << library_folder
+        directory library_folder
+        @parent_configuration.parent_project.add_files_to_clean(library_folder)
+      end
+
+      @parent_configuration.parent_project.add_files_to_clean(library_file)
 
       file library_file => objects do |t|
         command_line = construct_archive_command(objects, t.name)
@@ -86,8 +97,14 @@ module MTBuild
       elf_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}")
       map_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.map")
       executable_folder = @output_folder
-      directory executable_folder
-      @parent_configuration.parent_project.add_files_to_clean(executable_folder, map_file, elf_file)
+
+      unless @tracked_folders.include?executable_folder
+        @tracked_folders << executable_folder
+        directory executable_folder
+        @parent_configuration.parent_project.add_files_to_clean(executable_folder)
+      end
+
+      @parent_configuration.parent_project.add_files_to_clean(map_file, elf_file)
 
       all_objects = objects+get_include_objects
 

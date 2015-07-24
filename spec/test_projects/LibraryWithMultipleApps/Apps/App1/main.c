@@ -10,26 +10,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "Library/Library.h"
-#include "hardware.h"
-#include "special.h"
-
 int main(void)
 {
-    Hardware_Init();
-    Special_Init();
-    Library_Init();
     return 0;
 }
-
-
-#ifdef DEBUG
-void __error__(char *pcFilename, unsigned long ulLine)
-{
-    (void)pcFilename;
-    (void)ulLine;
-
-    for(;;)
-        ;
-}
-#endif

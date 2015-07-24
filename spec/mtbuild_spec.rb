@@ -1,3 +1,4 @@
+require 'open3'
 
 mtbuildcli = File.join(File.dirname(__FILE__), '..', 'bin', 'mtbuild')
 test_folder = File.join(File.dirname(__FILE__), 'test_projects')

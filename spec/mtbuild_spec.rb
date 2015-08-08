@@ -123,4 +123,33 @@ result
     }
   end
 
+  it "can build a nested workspace, pushing a configuration down to the nested workspace" do
+    project = 'NestedWorkspacePush'
+    project_folder = File.join(test_folder, project)
+    Dir.chdir(project_folder) {
+      stdout_str, stderr_str, status = Open3.capture3("#{mtbuildcli} --super-dry-run")
+      expect(status).to eq(0)
+      expect(stderr_str.gsub(project_folder,'')).to eq(
+                                                        <<result
+mkdir -p /build/NestedWorkspacePush/SDK/Library/Cfg1/src
+mkdir -p /build/NestedWorkspacePush/SDK/Library/Cfg1
+mkdir -p /build/NestedWorkspacePush/SDK/Library/Cfg1
+"gcc" -DCfg1 -std=c99 -Wall -Werror -Wextra "/SDK/Library/src/Library.c" -I"/SDK/Library/src" -I"/SDK/Library/include" -MMD -c -o "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/Library.o"
+"gcc" -DCfg1 -std=c99 -Wall -Werror -Wextra "/SDK/Library/src/LibraryFoo.c" -I"/SDK/Library/src" -I"/SDK/Library/include" -MMD -c -o "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/LibraryFoo.o"
+"ar" rcs "/build/NestedWorkspacePush/SDK/Library/Cfg1/libNestedWorkspacePush:SDK:Library-Cfg1.a"  "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/Library.o" "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/LibraryFoo.o"
+mkdir -p /build/NestedWorkspacePush/App1/Cfg1/
+mkdir -p /build/NestedWorkspacePush/App1/Cfg1
+"gcc" -DAPP1 -std=c99 -Wall -Werror -Wextra "/App/main.c" -I"/SDK/Library/include" -MMD -c -o "/build/NestedWorkspacePush/App1/Cfg1/main.o"
+"gcc" -DAPP1 -std=c99 -Wall -Werror -Wextra -I"/SDK/Library/include" "/build/NestedWorkspacePush/App1/Cfg1/main.o" "/build/NestedWorkspacePush/SDK/Library/Cfg1/libNestedWorkspacePush:SDK:Library-Cfg1.a" -Wl,-map,"/build/NestedWorkspacePush/App1/Cfg1/NestedWorkspacePush:App1-Cfg1.map" -o "/build/NestedWorkspacePush/App1/Cfg1/NestedWorkspacePush:App1-Cfg1"
+result
+                                                    )
+      expect(stdout_str).to eq(
+                                <<result
+built library NestedWorkspacePush:SDK:Library:Cfg1.
+built application NestedWorkspacePush:App1:Cfg1.
+result
+                            )
+    }
+  end
+
 end

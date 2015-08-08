@@ -78,7 +78,7 @@ module MTBuild
     end
 
     # Adds a workspace subfolder
-    def add_workspace(workspace_location, pull_default_tasks=false, pull_configurations=[], push_configurations=[])
+    def add_workspace(workspace_location, pull_default_tasks: false, pull_configurations: [], push_configurations: [])
       new_workspaces = []
       Utils.expand_folder_list(workspace_location, @workspace_folder).each do |workspace_path|
         if File.directory? workspace_path

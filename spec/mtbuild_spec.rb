@@ -152,4 +152,26 @@ result
     }
   end
 
+  it "can build a nested workspace, pulling default tasks up from the nested workspace" do
+    project = 'NestedWorkspacePullTasks'
+    project_folder = File.join(test_folder, project)
+    Dir.chdir(project_folder) {
+      stdout_str, stderr_str, status = Open3.capture3("#{mtbuildcli} --super-dry-run")
+      expect(status).to eq(0)
+      expect(stderr_str.gsub(project_folder,'')).to eq(
+                                                        <<result
+mkdir -p /build/NestedWorkspacePullTasks/Apps/App1/Cfg1/
+mkdir -p /build/NestedWorkspacePullTasks/Apps/App1/Cfg1
+"gcc" -std=c99 -Wall -Werror -Wextra "/Apps/App1/main.c" -MMD -c -o "/build/NestedWorkspacePullTasks/Apps/App1/Cfg1/main.o"
+"gcc" -std=c99 -Wall -Werror -Wextra "/build/NestedWorkspacePullTasks/Apps/App1/Cfg1/main.o" -Wl,-map,"/build/NestedWorkspacePullTasks/Apps/App1/Cfg1/NestedWorkspacePullTasks:Apps:App1-Cfg1.map" -o "/build/NestedWorkspacePullTasks/Apps/App1/Cfg1/NestedWorkspacePullTasks:Apps:App1-Cfg1"
+result
+                                                    )
+      expect(stdout_str).to eq(
+                                <<result
+built application NestedWorkspacePullTasks:Apps:App1:Cfg1.
+result
+                            )
+    }
+  end
+
 end

@@ -20,6 +20,8 @@
   its own "clean" task for cleaning just one project at a time. The "clean"
   tasks remove all intermediate files and final output, so they behave like
   the older Rake "clobber" task. 
+* Added the "gpp" toolchains. These are similar to the gcc toolchains, but they
+  invoke g++ instead of gcc.
 
 
 ## MTBuild 0.0.9 ##

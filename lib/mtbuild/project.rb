@@ -60,7 +60,7 @@ module MTBuild
       @output_folder = File.expand_path(File.join(@project_folder, output_folder))
     end
 
-    # Get the fully-qualified task name for a configuration
+    # Add files to the project's clean list.
     def add_files_to_clean(*filenames)
       @clean_list.include(filenames)
       Cleaner.global_clean_list.include(filenames)

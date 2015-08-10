@@ -1,4 +1,4 @@
-workspace :AppsWithLibrary, File.dirname(__FILE__) do |w|
+workspace :LibraryWithMultipleApps, File.dirname(__FILE__) do |w|
 
   w.set_configuration_defaults :Configuration1,
     toolchain: toolchain(:arm_none_eabi_gcc,

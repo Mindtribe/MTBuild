@@ -13,6 +13,4 @@ application_project :App1, File.dirname(__FILE__) do |app|
       files: 'src/version.h'
     )
 
-    app.add_default_tasks('App1:Configuration1')
-
 end

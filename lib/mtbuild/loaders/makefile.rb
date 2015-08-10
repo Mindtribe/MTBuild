@@ -2,7 +2,6 @@ module MTBuild
 
   # Makefile loader to be used with the import file loader.
   class MakefileLoader
-    include Rake::DSL
 
     SPACE_MARK = "\0"
 
@@ -35,6 +34,9 @@ module MTBuild
     def respace(str)
       str.tr SPACE_MARK, ' '
     end
+
+    include Rake::DSL
+
   end
 
   # Install the handler

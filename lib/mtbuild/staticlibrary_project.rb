@@ -19,9 +19,10 @@ module MTBuild
     # Adds a named static library configuration to the project.
     def add_configuration(configuration_name, configuration)
       super
-      default_configuration = Workspace.configuration_defaults.fetch(configuration_name, {})
+      default_configuration = {}
+      default_configuration = @parent_workspace.configuration_defaults.fetch(configuration_name, {}) unless @parent_workspace.nil?
       merged_configuration = Utils.merge_configurations(default_configuration, configuration)
-      cfg = StaticLibraryConfiguration.new(@project_name, @project_folder, effective_output_folder, configuration_name, merged_configuration, @api_headers)
+      cfg = StaticLibraryConfiguration.new(self, effective_output_folder, configuration_name, merged_configuration, @api_headers)
       @configurations << cfg
       return cfg
     end
@@ -54,7 +55,7 @@ module MTBuild
           end
         end
 
-        framework_rakefile = File.join(framework_task.package_dir_path, "Rakefile.rb")
+        framework_rakefile = File.join(framework_task.package_dir_path, "mtbuildfile.rb")
         file framework_rakefile do |f|
           fdir = File.dirname(framework_rakefile)
           mkdir_p(fdir) unless File.exist?(fdir)

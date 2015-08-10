@@ -1,4 +1,4 @@
-application_project :App2, File.dirname(__FILE__) do |app|
+app2 = application_project :App2, File.dirname(__FILE__) do |app|
 
   app.add_configuration :Configuration1,
     sources: ['main.c', 'startup_gcc.c', 'hardware-Configuration1.c'],
@@ -26,4 +26,7 @@ application_project :App2, File.dirname(__FILE__) do |app|
 
 end
 
-MTBuild::Workspace.add_default_tasks(['App2:Configuration1', 'App2:Configuration2'])
+MTBuild::Workspace.add_default_tasks(
+    [app2.task_for_configuration('Configuration1'),
+     app2.task_for_configuration('Configuration2')]
+)

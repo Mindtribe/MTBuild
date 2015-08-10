@@ -9,8 +9,6 @@ end
 
 module MTBuild
 
-  require 'rake'
-
   # This subclasses the Rake::Application class to override default Rake
   # behaviors with MTBuild-specific behaviors
   class Application < Rake::Application
@@ -32,6 +30,19 @@ module MTBuild
       @rakefiles = DEFAULT_RAKEFILES.dup
     end
 
+    def run
+      standard_exception_handling do
+        init
+        load_rakefile
+        top_level
+      end
+    end
+
+    # Override init to pass mtbuild as the app name
+    def init(app_name='mtbuild')
+      super
+    end
+
     # This modifies Rake's command line options to do MTBuild-specific things
     def standard_rake_options
       # This hijacks the "--version" flag and displays the MTBuild version along
@@ -50,10 +61,17 @@ module MTBuild
           opt
         end
       end
-      # This adds MTBuild-specific options (For future development)
-      # options |= [
-      # ]
-      # sort_options(options)
+      # This adds MTBuild-specific options
+      options |= [
+          ['--super-dry-run',
+           "Do a dry run printing actions, but not executing them.",
+           lambda { |value|
+             Rake.verbose(true)
+             Rake.nowrite(true)
+           }
+          ],
+      ]
+      sort_options(options)
     end
 
   end

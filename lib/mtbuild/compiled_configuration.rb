@@ -15,25 +15,24 @@ module MTBuild
     # A list of Rake test tasks that will execute after this configuration builds
     attr_reader :tests
 
-    def initialize(project_name, project_folder, output_folder, configuration_name, configuration)
+    def initialize(parent_project, output_folder, configuration_name, configuration)
       super
-      check_configuration(configuration)
-
-      @dependencies = configuration.fetch(:dependencies, [])
+      @dependencies = namespace_tasks(configuration.fetch(:dependencies, []))
+      @dependencies |= configuration.fetch(:rake_dependencies, [])
       @default_toolchain_config = configuration[:toolchain]
-      @default_toolchain = Toolchain.create_toolchain(@default_toolchain_config)
+      @default_toolchain = Toolchain.create_toolchain(self, @default_toolchain_config)
 
-      source_files = Utils.expand_file_list(configuration.fetch(:sources, []), configuration.fetch(:excludes, []), @project_folder)
-      @toolchains = {@default_toolchain => source_files}
+      @source_files = Utils.expand_file_list(configuration.fetch(:sources, []), configuration.fetch(:excludes, []), @project_folder)
+      @toolchains = {@default_toolchain => @source_files}
 
-      @tests = Utils.ensure_array(configuration.fetch(:tests, []))
+      @tests = namespace_tasks(Utils.ensure_array(configuration.fetch(:tests, [])))
     end
 
     # This method adds source files with their own toolchains. Use this method
     # to add any source files that need special toolchain settings.
     def add_sources(sources, excludes=[], toolchain_configuration)
       merged_configuration = Utils.merge_configurations(@default_toolchain_config, toolchain_configuration)
-      toolchain = Toolchain.create_toolchain(merged_configuration)
+      toolchain = Toolchain.create_toolchain(self, merged_configuration)
       @toolchains[toolchain] = Utils.expand_file_list(sources, excludes, @project_folder)
     end
 
@@ -51,7 +50,8 @@ module MTBuild
     private
 
     def check_configuration(configuration)
-      fail "No toolchain specified for #{@project_name}:#{@configuration_name}" if configuration.fetch(:toolchain, nil).nil?
+      super
+      fail "No toolchain specified for #{@parent_project.project_name}:#{@configuration_name}" if configuration.fetch(:toolchain, nil).nil?
     end
 
     def self.add_framework_dependencies_to_toolchain(toolchain, *dependencies)

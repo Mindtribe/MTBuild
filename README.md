@@ -45,8 +45,6 @@ application_project :MyApp, File.dirname(__FILE__) do |app|
       linker_script: 'src/LinkerFile-Debug.ld'
     )
 
-    app.add_default_tasks('MyApp:Debug')
-
 end
 ```
 
@@ -70,7 +68,7 @@ The ARM toolchain should use the specified linker flags when linking (```ldflags
 
 The ARM toolchain should use the specified linker script when linking (```linker_script: ...```)
 
-When invoked with no parameters, MTBuild will build the Debug configuration of MyApp by default (```app.add_default_tasks('MyApp:Debug')```)
+When invoked with no parameters, MTBuild will do nothing for this project. When invoked as ```mtbuild 'MyApp:Debug'```, MTBuild will build the ```Debug``` configuration of ```MyApp```.
 
 You can find more project examples here: [MTBuild examples](https://github.com/Mindtribe/MTBuild/tree/master/examples)
 
@@ -135,6 +133,12 @@ MTBuild uses Rake. MTBuild projects and workspaces are defined using mtbuildfile
 
 Building is as simple as invoking ```mtbuild``` in a folder containing a mtbuildfile. Under the hood, MTBuild pulls in the MTBuild infrastructure and then invokes Rake.
 
+##### Command Line Options #####
+
+MTBuild supports the standard Rake command line options. Additionally, it adds the following:
+
+* ```--super-dry-run``` This command performs a dry run; however, unlike the Rake dry run, it actually prints the shell commands that would be executed.
+
 #### Project Hierarchy ####
 
 The MTBuild project hierarchy looks roughly like this:
@@ -179,13 +183,13 @@ An MTBuild workspace contains MTBuild projects and can provide default settings 
 
 MTBuild workspaces are optional. It's possible to build an MTBuild project by itself--assuming the project provides all settings required to build & isn't relying on a workspace to provide those.
 
-MTBuild builds only the first workspace it finds. If a workspace includes a project that provides its own workspace, the project's workspace is ignored and the higher-level workspace is used. This allows projects--such as libraries--to be built by themselves or included in other workspaces while allowing the workspace to define toolchain settings.
+MTBuild allows workspaces to be nested. A workspace can include another workspace, allowing the parent to reference the child workspace's projects. When you include a child workspace from within your workspace, you can choose whether or not to pull in the child's default tasks. You can also choose to pull configurations up from the child or push configurations down to the child.
 
 ###### Simple Workspace Example #####
 
-mtbuildfile.rb:
+This defines a workspace that includes the "MyLibrary" and "MyApp" projects. The projects are presumed to be defined in their own mtbuildfiles inside sub-folders called "MyLibrary" and "MyApp".
 
-This defines a workspace that includes the "MyLibrary" and "MyApp" projects. The projects are presumed to be defined in their own mtbuildfiles inside sub-folders called "MyLibrary" and "MyApp":
+mtbuildfile.rb:
 
 ```Ruby
 workspace :AppWithLibrary, File.dirname(__FILE__) do |w|
@@ -196,9 +200,9 @@ end
 
 ###### Project Plus Workspace Example #####
 
-mtbuildfile.rb:
+This defines a workspace that includes the MyLibrary project, which is defined in the same mtbuildfile. When a project is defined in the same mtbuildfile, it does not need to be explicitly added to the workspace (in this particular example, the workspace isn't very useful).
 
-This defines a workspace that includes the MyLibrary project, which is defined in the same mtbuildfile. When a project is defined in the same mtbuildfile, it does not need to be explicitly added to the workspace (in this particular example, the workspace isn't very useful):
+mtbuildfile.rb:
 
 ```Ruby
 workspace :MyWorkspace, File.dirname(__FILE__) do |w|
@@ -216,9 +220,9 @@ end
 
 ###### Project Plus Workspace With Defaults Example #####
 
-mtbuildfile.rb:
+This defines a workspace that includes the MyLibrary project, which is defined in the same mtbuildfile. The workspace provides a default toolchain for the "Debug" configuration. A higher-level workspace would override this with its own defaults.
 
-This defines a workspace that includes the MyLibrary project, which is defined in the same mtbuildfile. The workspace provides a default toolchain for the "Debug" configuration. A higher-level workspace would override this with its own defaults:
+mtbuildfile.rb:
 
 ```Ruby
 workspace :MyLibrary, File.dirname(__FILE__) do |w|
@@ -232,6 +236,19 @@ static_library_project :MyLibrary, File.dirname(__FILE__) do |lib|
   lib.add_api_headers 'include'
   lib.add_configuration :Debug,
     sources: ['src/**/*.c']
+end
+```
+
+###### Nested Workspace Example #####
+
+This defines a workspace that includes a "MyLibrary" workspace and pulls up a configuration called "Debug" from the "MyLibrary" workspace. This makes the library's "Debug" configuration settings available to the "MyApp" project, allowing "MyApp" to be built with the same toolchain settings as "MyLibrary".
+
+mtbuildfile.rb:
+
+```Ruby
+workspace :AppWithLibrary, File.dirname(__FILE__) do |w|
+  w.add_workspace('MyLibrary', pull_configurations: [:Debug])
+  w.add_project('MyApp')
 end
 ```
 
@@ -350,8 +367,23 @@ For ```configuration_block```, you supply a block that takes one parameter. When
 #### add_project ####
 Use ```add_project(project_location)``` inside of a workspace configuration block to add a project that lives inside a subfolder. The ```project_location``` parameter must be a subfolder of the workspace. If the project lives at the same level as the workspace, you should define it in the same mtbuildfile as the workspace. In this case, the project will be implicitly added and you do not need to use ```add_project``` inside the workspace. See the **Project Plus Workspace Example** above for an example of a workspace and project that live at the same folder level.
 
+#### add_workspace ####
+Use ```add_workspace(workspace_location, pull_default_tasks: false, pull_configurations: [], push_configurations: [])``` inside of a workspace configuration block to add a child workspace that lives inside a subfolder. The ```workspace_location``` parameter must be a subfolder of the workspace.
+
+The optional, named parameter, ```pull_default_tasks``` determines whether the parent workspace should pull in the child workspace's default tasks. If this is ```true```, then when ```mtbuild``` is run on the parent workspace with no specified build targets, the child workspace's default targets will be built. If this is ```false```, then only targets that are referenced from the child workspace will be built as needed.
+
+The optional, named parameter ```pull_configurations``` specifies a list of configurations to pull up from the child workspace. Pulling up configurations makes them available to other projects included by the parent workspace.
+
+The optional, named parameter ```push_configurations``` specifies a list of configurations to push down to the child workspace. Pushing down configurations allows you to add to a child workspace's configuration settings. Note that pushing a configuration down to a child cannot be used to create a new configuration for that child. It only lets you add configuration settings to child configurations that already exist. MTBuild ignores pushed configurations that do not exist in the child workspace's projects. Pushing down a configuration is intended to allow a parent workspace to override or add to a child's build settings. This should be used rarely and with caution since it's generally assumed that projects in a child workspace have been tested with the settings provided by that workspace.
+
 #### add_default_tasks ####
-Use ```add_default_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) Rake tasks. If no default tasks are specified, then invoking MTBuild with no arguments will effectively do nothing.
+Use ```add_default_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) project task names. The project tasks should be qualified relative to the current workspace. For example, if a workspace includes a project called ```MyApp```, which has a configuration called ```Debug```, you can add this by referring to it as ```MyApp:Debug```. If no default tasks are specified, then invoking MTBuild with no arguments will effectively do nothing.
+
+#### add_default_rake_tasks ####
+Use ```add_default_rake_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) Rake task names. Unlike ```add_default_tasks()```, this method expects "raw" Rake task names. This lets you specify that MTBuild should run any Rake task by default when building this workspace.
+
+#### MTBuild::Workspace.add_default_tasks ####
+Use the class method ```MTBuild::Workspace.add_default_tasks(default_tasks)``` to add a default task outside of a workspace configuration block. This is useful for letting projects register default tasks in the project's mtbuildfile.rb. Note that the tasks specified in the ```default_tasks``` list must be fully-qualified ```mtbuild``` names that take workspace nesting into account. You should use the project method ```task_for_configuration``` to get the correct task names.
 
 #### set_configuration_defaults ####
 Use ```set_configuration_defaults(configuration_name, defaults_hash)``` inside of a workspace configuration block to add default settings for a configuration. This is how you would select, for instance, a default toolchain for all projects with a specific configuration.
@@ -394,6 +426,13 @@ end
 
 #### set_output_folder ####
 Use ```set_output_folder(output_folder)``` inside of a workspace configuration block to change the build output folder. By default, this folder is set to "build" underneath the workspace folder. The ```output_folder``` parameter expects the name of a folder relative to the workspace. If the folder does not exist, MTBuild will create it.
+
+### MTBuild::Project ###
+
+This is a base class for projects. You won't typically use it directly, but it provides some useful methods for all project types.
+
+#### task_for_configuration ####
+Use ```task_for_configuration(config_name)``` to get the fully qualified task name for the project configuration called ```config_name```. This is useful for getting fully qualified task names to register as default tasks using ```MTBuild::Workspace.add_default_tasks```
 
 
 ### MTBuild::ApplicationProject ###
@@ -536,8 +575,9 @@ All toolchains offer the following optional settings:
 
 * ```:library_paths``` - One or more library paths to search when linking. For example, ```'FancyLibrary/lib'``` or ```['FancyLibrary/lib', 'SuperFancyLibrary/lib']```. Note that the paths should be relative to the project folder.
 
+
 ### MTBuild::ToolchainGcc ###
-Define a GCC toolchain by passing ```:gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
+Define a gcc toolchain by passing ```:gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
 
 ##### ToolchainGcc settings #####
 On top of the base Toolchain settings, the ToolchainGcc toolchain offers the following optional settings:
@@ -554,14 +594,28 @@ On top of the base Toolchain settings, the ToolchainGcc toolchain offers the fol
 
 * ```:linker_script``` - A linker script file to be used when linking
 
+
+### MTBuild::ToolchainGpp ###
+Define a g++ toolchain by passing ```:gpp``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
+
+##### ToolchainGpp settings #####
+The ToolchainGpp toolchain uses the same settings as the ToolchainGcc toolchain.
+
+
 ### MTBuild::ToolchainArmNoneEabiGcc ###
 Define an arm-none-eabi-gcc toolchain by passing ```:arm_none_eabi_gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
 
 ##### ToolchainArmNoneEabiGcc settings #####
 The ToolchainArmNoneEabiGcc toolchain uses the same settings as the ToolchainGcc toolchain.
 
-### MTBuild::Versioner ###
+### MTBuild::ToolchainArmNoneEabiGpp ###
+Define an arm-none-eabi-g++ toolchain by passing ```:arm_none_eabi_gpp``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
 
+##### ToolchainArmNoneEabiGpp settings #####
+The ToolchainArmNoneEabiGpp toolchain uses the same settings as the ToolchainGcc toolchain.
+
+
+### MTBuild::Versioner ###
 Define a Versioner with the following DSL method:
 
 ```Ruby

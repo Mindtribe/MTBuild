@@ -1,5 +1,30 @@
 # Release Notes #
 
+
+## MTBuild 0.1.0 ##
+
+### Changes ###
+
+* MTBuild v0.1.0 is a big, API-breaking change.
+* MTBuild now requires Ruby >= 2.0.0.
+* MTBuild now overrides the rake application name to display "mtbuild" as the
+  application name.
+* MTBuild now offers a '--super-dry-run' command line option to perform a dry
+  run of the build where each command is printed, but not executed.
+* Workspaces can now include other workspaces to inherit their projects and
+  configurations.
+* Default tasks can no longer be added to projects. You can only add default
+  tasks to workspaces. If you need default tasks for a project, simply include
+  a lightweight workspace that exists solely to specify default tasks.
+* The "clobber" task is now gone. MTbuild workspaces now generate a top-level
+  "clean" task that cleans all projects. Additionally, each project provides
+  its own "clean" task for cleaning just one project at a time. The "clean"
+  tasks remove all intermediate files and final output, so they behave like
+  the older Rake "clobber" task.
+* Added the "gpp" toolchains. These are similar to the gcc toolchains, but they
+  invoke g++ instead of gcc.
+
+
 ## MTBuild 0.0.9 ##
 
 ### Changes ###
@@ -7,6 +32,7 @@
 * MTBuild now requires Rake 10.4.2
 * Fixed bug that prevented library include path specification for gcc-based
   toolchains.
+
 
 ## MTBuild 0.0.8 ##
 

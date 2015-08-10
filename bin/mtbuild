@@ -1,5 +1,10 @@
 #!/usr/bin/env ruby
 
+lib_path_expanded = File.expand_path(File.join(File.dirname(__FILE__),'..','lib'))
+if File.directory?(lib_path_expanded)
+  $:.unshift(lib_path_expanded) unless $:.include?(lib_path_expanded)
+end
+
 require 'mtbuild'
 
 Rake.application.run

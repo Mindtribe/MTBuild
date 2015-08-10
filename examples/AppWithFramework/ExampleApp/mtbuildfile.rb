@@ -1,4 +1,4 @@
-application_project :ExampleApp, File.dirname(__FILE__) do |app|
+example_app = application_project :ExampleApp, File.dirname(__FILE__) do |app|
 
   cfg1 = app.add_configuration :Configuration1,
     sources: ['main.c', 'startup_gcc.c', 'hardware-Configuration1.c'],
@@ -36,6 +36,9 @@ application_project :ExampleApp, File.dirname(__FILE__) do |app|
       cflags: '-std=c89 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors'
     )
 
-  app.add_default_tasks(['ExampleApp:Configuration1', 'ExampleApp:Configuration2'])
-
 end
+
+MTBuild::Workspace.add_default_tasks(
+    [example_app.task_for_configuration('Configuration1'),
+     example_app.task_for_configuration('Configuration2')]
+)

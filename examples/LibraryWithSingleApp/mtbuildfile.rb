@@ -1,4 +1,4 @@
-workspace :AppsWithLibrary, File.dirname(__FILE__) do |w|
+workspace :LibraryWithSingleApp, File.dirname(__FILE__) do |w|
   w.add_project('ExampleLibrary')
   w.add_project('ExampleApp')
 

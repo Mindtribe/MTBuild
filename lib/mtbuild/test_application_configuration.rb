@@ -17,10 +17,10 @@ module MTBuild
         all_object_folders |= object_folders
       end
 
-      application_binaries, application_files, application_folders = @default_toolchain.create_application_tasks(all_object_files, @project_name)
+      application_binaries, application_files, application_folders = @default_toolchain.create_application_tasks(all_object_files, @parent_project.project_name)
       dependencies = @dependencies+all_object_folders+application_folders+application_files+application_binaries
 
-      desc "Build and run test application '#{@project_name}' with configuration '#{@configuration_name}'"
+      desc "Build and run test application '#{@parent_project.project_name}' with configuration '#{@configuration_name}'"
       new_task = test_application_task @configuration_name => dependencies do |t|
         puts "built test application #{t.name}."
         sh "\"#{application_binaries.first}\""

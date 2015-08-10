@@ -6,9 +6,9 @@ module MTBuild
   # method will create this for you.
   class StaticLibraryConfiguration < CompiledConfiguration
 
-    def initialize(project_name, project_folder, output_folder, configuration_name, configuration, api_headers)
+    def initialize(parent_project, output_folder, configuration_name, configuration, api_headers)
       @api_headers = api_headers
-      super project_name, project_folder, output_folder, configuration_name, configuration
+      super parent_project, output_folder, configuration_name, configuration
       @configuration_headers = Utils.expand_folder_list(configuration.fetch(:configuration_headers, []), @project_folder)
     end
 
@@ -24,10 +24,10 @@ module MTBuild
         all_object_folders |= object_folders
       end
 
-      library_files, library_folders = @default_toolchain.create_static_library_tasks(all_object_files, @project_name)
+      library_files, library_folders = @default_toolchain.create_static_library_tasks(all_object_files, @parent_project.project_name)
       dependencies = @dependencies+all_object_folders+library_folders+library_files
 
-      desc "Build library '#{@project_name}' with configuration '#{@configuration_name}'"
+      desc "Build library '#{@parent_project.project_name}' with configuration '#{@configuration_name}'"
       new_task = static_library_task @configuration_name => dependencies do |t|
         puts "built library #{t.name}."
         @tests.each do |test|

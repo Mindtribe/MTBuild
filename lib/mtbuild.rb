@@ -1,6 +1,6 @@
 module MTBuild
   # The current MTBuild version.
-  VERSION = '0.0.9'
+  VERSION = '0.1.0'
 end
 
 require 'rake'

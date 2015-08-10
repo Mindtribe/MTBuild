@@ -82,13 +82,13 @@ module MTBuild
     end
 
     def define
-      desc "Build the package"
+      desc "Build the package for #{@name}"
       task :package
 
-      desc "Force a rebuild of the package files"
+      desc "Force a rebuild of the package files for #{@name}"
       task :repackage => [:clobber_package, :package]
 
-      desc "Remove package products"
+      desc "Remove package products for #{@name}"
       task :clobber_package do
         rm_r package_dir rescue nil
       end

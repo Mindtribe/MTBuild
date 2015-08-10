@@ -6,7 +6,7 @@ module MTBuild
   # This ToolchainGcc subclass can build using arm-non-eabi-gcc
   class ToolchainArmNoneEabiGcc < ToolchainGcc
 
-    def initialize(configuration)
+    def initialize(parent_configuration, toolchain_configuration)
       super
     end
 
@@ -17,9 +17,14 @@ module MTBuild
       hex_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.hex")
       map_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.map")
       executable_folder = @output_folder
-      directory executable_folder
-      CLOBBER.include(executable_folder)
-      CLOBBER.include(elf_file)
+
+      unless @tracked_folders.include?executable_folder
+        @tracked_folders << executable_folder
+        directory executable_folder
+        @parent_configuration.parent_project.add_files_to_clean(executable_folder)
+      end
+
+      @parent_configuration.parent_project.add_files_to_clean(elf_file, bin_file, hex_file, map_file)
 
       all_objects = objects+get_include_objects
 

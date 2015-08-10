@@ -1,8 +1,8 @@
 module MTBuild
+  require 'mtbuild/cleaner'
   require 'mtbuild/loaders/makefile'
   require 'mtbuild/toolchain'
   require 'mtbuild/utils'
-  require 'rake/clean'
 
   Toolchain.register_toolchain(:gcc, 'MTBuild::ToolchainGcc')
 
@@ -11,8 +11,10 @@ module MTBuild
 
     attr_accessor :cppflags, :cflags, :cxxflags, :asflags, :ldflags, :linker_script
 
-    def initialize(configuration)
+    def initialize(parent_configuration, toolchain_configuration)
       super
+
+      @tracked_folders = []
 
       begin
         toolchain_test_output=%x{#{compiler} --version 2>&1}
@@ -23,12 +25,12 @@ module MTBuild
       fail "Toolchain component #{compiler} not found." unless toolchain_test_passed
 
       @compiler_is_LLVM_gcc = toolchain_test_output.include?'LLVM'
-      @cppflags = Utils.ensure_array(configuration.fetch(:cppflags, '')).to_a.flatten.join(' ')
-      @cflags = Utils.ensure_array(configuration.fetch(:cflags, '')).to_a.flatten.join(' ')
-      @cxxflags = Utils.ensure_array(configuration.fetch(:cxxflags, '')).to_a.flatten.join(' ')
-      @asflags = Utils.ensure_array(configuration.fetch(:asflags, '')).to_a.flatten.join(' ')
-      @ldflags = Utils.ensure_array(configuration.fetch(:ldflags, '')).to_a.flatten.join(' ')
-      @linker_script = configuration.fetch(:linker_script, '')
+      @cppflags = Utils.ensure_array(toolchain_configuration.fetch(:cppflags, '')).to_a.flatten.join(' ')
+      @cflags = Utils.ensure_array(toolchain_configuration.fetch(:cflags, '')).to_a.flatten.join(' ')
+      @cxxflags = Utils.ensure_array(toolchain_configuration.fetch(:cxxflags, '')).to_a.flatten.join(' ')
+      @asflags = Utils.ensure_array(toolchain_configuration.fetch(:asflags, '')).to_a.flatten.join(' ')
+      @ldflags = Utils.ensure_array(toolchain_configuration.fetch(:ldflags, '')).to_a.flatten.join(' ')
+      @linker_script = toolchain_configuration.fetch(:linker_script, '')
     end
 
     # Create Rake tasks for compilation
@@ -44,15 +46,17 @@ module MTBuild
 
         object_folders << output_folder unless object_folders.include?output_folder
 
-        directory output_folder
-        CLOBBER.include(output_folder)
+        unless @tracked_folders.include?output_folder
+          @tracked_folders << output_folder
+          directory output_folder
+          @parent_configuration.parent_project.add_files_to_clean(output_folder)
+        end
 
         object_file = File.join(output_folder, source_file.pathmap('%n.o'))
         dependency_file = File.join(output_folder, source_file.pathmap('%n.d'))
 
         object_files << object_file
-        CLEAN.include(object_file)
-        CLEAN.include(dependency_file)
+        @parent_configuration.parent_project.add_files_to_clean(object_file, dependency_file)
 
         file_type = get_file_type(source_file)
 
@@ -72,9 +76,14 @@ module MTBuild
     def create_static_library_tasks(objects, library_name)
       library_file = File.join(@output_folder, "lib#{library_name}#{@output_decorator}.a")
       library_folder = @output_folder
-      directory library_folder
-      CLOBBER.include(library_folder)
-      CLOBBER.include(library_file)
+
+      unless @tracked_folders.include?library_folder
+        @tracked_folders << library_folder
+        directory library_folder
+        @parent_configuration.parent_project.add_files_to_clean(library_folder)
+      end
+
+      @parent_configuration.parent_project.add_files_to_clean(library_file)
 
       file library_file => objects do |t|
         command_line = construct_archive_command(objects, t.name)
@@ -88,9 +97,14 @@ module MTBuild
       elf_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}")
       map_file = File.join(@output_folder, "#{executable_name}#{@output_decorator}.map")
       executable_folder = @output_folder
-      directory executable_folder
-      CLOBBER.include(executable_folder)
-      CLOBBER.include(elf_file)
+
+      unless @tracked_folders.include?executable_folder
+        @tracked_folders << executable_folder
+        directory executable_folder
+        @parent_configuration.parent_project.add_files_to_clean(executable_folder)
+      end
+
+      @parent_configuration.parent_project.add_files_to_clean(map_file, elf_file)
 
       all_objects = objects+get_include_objects
 

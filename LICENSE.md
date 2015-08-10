@@ -1,4 +1,4 @@
-Copyright (c) 2014, Mindtribe Product Engineering, Inc.
+Copyright (c) 2014-2015, Mindtribe Product Engineering, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -13,17 +13,21 @@ module MTBuild
     # Text to append to the name of output files
     attr_accessor :output_decorator
 
-    def initialize(configuration)
+    # parent configuration
+    attr_accessor :parent_configuration
+
+    def initialize(parent_configuration, toolchain_configuration)
       @output_folder = ''
       @project_folder = ''
       @output_decorator = ''
       @include_objects = []
       @include_paths = []
       @library_paths = []
+      @parent_configuration = parent_configuration
 
-      add_include_paths(expand_project_relative_paths(configuration.fetch(:include_paths, [])))
-      add_include_objects(expand_project_relative_paths(configuration.fetch(:include_objects, [])))
-      add_library_paths(expand_project_relative_paths(configuration.fetch(:library_paths, [])))
+      add_include_paths(expand_project_relative_paths(toolchain_configuration.fetch(:include_paths, [])))
+      add_include_objects(expand_project_relative_paths(toolchain_configuration.fetch(:include_objects, [])))
+      add_library_paths(expand_project_relative_paths(toolchain_configuration.fetch(:library_paths, [])))
     end
 
     # Retrieve a list of additional objects to link with
@@ -86,7 +90,7 @@ module MTBuild
       @registered_toolchains[toolchain_name] = toolchain_class;
     end
 
-    def self.create_toolchain(toolchain_configuration)
+    def self.create_toolchain(parent_configuration, toolchain_configuration)
       toolchain_name = toolchain_configuration.fetch(:name, nil)
       fail "error: toolchain name not specified." if toolchain_name.nil?
 
@@ -100,7 +104,7 @@ module MTBuild
       end
       toolchain_class = @registered_toolchains.fetch(toolchain_name, nil)
       fail "error: toolchain #{toolchain_name} could not be found." if toolchain_class.nil?
-      return Object::const_get(toolchain_class).new(toolchain_configuration)
+      return Object::const_get(toolchain_class).new(parent_configuration, toolchain_configuration)
     end
 
     include Rake::DSL

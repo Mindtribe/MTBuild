@@ -36,7 +36,6 @@ static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
     )
 
   lib.build_framework_package([:Configuration1, :Configuration2])
-  lib.add_default_tasks('ExampleLibrary:package')
 end
 
 test_application_project :ExampleLibraryTest, File.dirname(__FILE__) do |app|

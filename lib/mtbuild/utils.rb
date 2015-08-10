@@ -2,7 +2,6 @@ module MTBuild
 
   module Utils
 
-    require 'rake'
     require 'pathname'
 
     def self.path_difference(root, subdir)

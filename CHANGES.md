@@ -1,6 +1,16 @@
 # Release Notes #
 
 
+## MTBuild 0.1.1 ##
+
+### Changes ###
+
+* Removed the gpp (g++) toolchains. Upon further reflection, these made no
+  sense. We're back to simply having "gcc" toolchains, but now these will
+  automatically invoke "gcc" or "g++" on C or C++ files, respectively. And if
+  a configuration contains any C++ files, the linking is performed with "g++".
+
+
 ## MTBuild 0.1.0 ##
 
 ### Changes ###

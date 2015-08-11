@@ -63,6 +63,10 @@ module MTBuild
       @library_paths |= library_paths
     end
 
+    # Scan source files for any special processing needs
+    def scan_sources(source_files)
+    end
+
     # Create Rake tasks for compilation
     def create_compile_tasks(source_files)
       fail "Toolchain didn't provide create_compile_tasks"

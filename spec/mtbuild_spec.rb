@@ -51,8 +51,8 @@ mkdir -p /build/LibWithApps/Library/Test
 mkdir -p /build/LibWithApps/LibraryTest/Test/src
 mkdir -p /build/LibWithApps/LibraryTest/Test
 mkdir -p /build/LibWithApps/LibraryTest/Test
-"gcc" -Dgcc -Wall -Werror -Wextra "/Library/src/Library_test.cpp" -I"/Library/src" -I"/Library/include" -MMD -c -o "/build/LibWithApps/LibraryTest/Test/src/Library_test.o"
-"gcc" -Dgcc -std=c99 -Wall -Werror -Wextra -I"/Library/src" -I"/Library/include" "/build/LibWithApps/LibraryTest/Test/src/Library_test.o" "/build/LibWithApps/Library/Test/libLibWithApps:Library-Test.a" -Wl,-map,"/build/LibWithApps/LibraryTest/Test/LibWithApps:LibraryTest-Test.map" -o "/build/LibWithApps/LibraryTest/Test/LibWithApps:LibraryTest-Test"
+"g++" -Dgcc -Wall -Werror -Wextra "/Library/src/Library_test.cpp" -I"/Library/src" -I"/Library/include" -MMD -c -o "/build/LibWithApps/LibraryTest/Test/src/Library_test.o"
+"g++" -Dgcc -Wall -Werror -Wextra -I"/Library/src" -I"/Library/include" "/build/LibWithApps/LibraryTest/Test/src/Library_test.o" "/build/LibWithApps/Library/Test/libLibWithApps:Library-Test.a" -Wl,-map,"/build/LibWithApps/LibraryTest/Test/LibWithApps:LibraryTest-Test.map" -o "/build/LibWithApps/LibraryTest/Test/LibWithApps:LibraryTest-Test"
 "/build/LibWithApps/LibraryTest/Test/LibWithApps:LibraryTest-Test"
 mkdir -p /build/LibWithApps/App1/Cfg1/
 mkdir -p /build/LibWithApps/App1/Cfg1

@@ -17,20 +17,25 @@ module MTBuild
       @tracked_folders = []
 
       begin
-        toolchain_test_output=%x{#{compiler} --version 2>&1}
+        toolchain_test_output=%x{#{compiler_c} --version 2>&1}
         toolchain_test_passed=$?.success?
       rescue
         toolchain_test_passed = false
       end
-      fail "Toolchain component #{compiler} not found." unless toolchain_test_passed
+      fail "Toolchain component #{compiler_c} not found." unless toolchain_test_passed
 
       @compiler_is_LLVM_gcc = toolchain_test_output.include?'LLVM'
+      @link_as_cpp = false
       @cppflags = Utils.ensure_array(toolchain_configuration.fetch(:cppflags, '')).to_a.flatten.join(' ')
       @cflags = Utils.ensure_array(toolchain_configuration.fetch(:cflags, '')).to_a.flatten.join(' ')
       @cxxflags = Utils.ensure_array(toolchain_configuration.fetch(:cxxflags, '')).to_a.flatten.join(' ')
       @asflags = Utils.ensure_array(toolchain_configuration.fetch(:asflags, '')).to_a.flatten.join(' ')
       @ldflags = Utils.ensure_array(toolchain_configuration.fetch(:ldflags, '')).to_a.flatten.join(' ')
       @linker_script = toolchain_configuration.fetch(:linker_script, '')
+    end
+
+    def scan_sources(source_files)
+      @link_as_cpp = source_files.any? { |s| get_file_type(s)==:cplusplus }
     end
 
     # Create Rake tasks for compilation
@@ -134,9 +139,9 @@ module MTBuild
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
       cxxflags_s = @cxxflags.empty? ? '' : " #{@cxxflags}"
       asflags_s = @asflags.empty? ? '' : " #{@asflags}"
-      return "\"#{compiler}\"#{cppflags_s}#{cflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :c
-      return "\"#{compiler}\"#{cppflags_s}#{cxxflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :cplusplus
-      return "\"#{compiler}\"#{cppflags_s}#{asflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :asm
+      return "\"#{compiler_c}\"#{cppflags_s}#{cflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :c
+      return "\"#{compiler_cpp}\"#{cppflags_s}#{cxxflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :cplusplus
+      return "\"#{assembler}\"#{cppflags_s}#{asflags_s}#{prerequisites_s}#{include_paths_s} -MMD -c -o \"#{output_name}\"" if file_type == :asm
     end
 
     def construct_archive_command(prerequisites, output_name)
@@ -150,9 +155,11 @@ module MTBuild
       library_paths_s = library_paths.empty? ? '' : " -L\"#{library_paths.join('" -L"')}\""
       cppflags_s = @cppflags.empty? ? '' : " #{@cppflags}"
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
+      cxxflags_s = @cxxflags.empty? ? '' : " #{@cxxflags}"
       ldflags_s = @ldflags.empty? ? '' : " #{@ldflags}"
       linker_script_s = @linker_script.empty? ? '' : " -Wl,-T\"#{File.join(@project_folder,@linker_script)}\""
-      return "\"#{compiler}\"#{cppflags_s}#{cflags_s}#{ldflags_s}#{include_paths_s}#{library_paths_s}#{linker_script_s}#{prerequisites_s} #{map_flag(map_name)} -o \"#{output_name}\""
+      return "\"#{compiler_cpp}\"#{cppflags_s}#{cxxflags_s}#{ldflags_s}#{include_paths_s}#{library_paths_s}#{linker_script_s}#{prerequisites_s} #{map_flag(map_name)} -o \"#{output_name}\"" if @link_as_cpp
+      return "\"#{compiler_c}\"#{cppflags_s}#{cflags_s}#{ldflags_s}#{include_paths_s}#{library_paths_s}#{linker_script_s}#{prerequisites_s} #{map_flag(map_name)} -o \"#{output_name}\""
     end
 
     def map_flag(map_file)
@@ -160,16 +167,28 @@ module MTBuild
       return "-Wl,-Map=\"#{map_file}\",--cref"
     end
 
-    def compiler
+    def assembler
       return 'gcc'
+    end
+
+    def compiler_c
+      return 'gcc'
+    end
+
+    def compiler_cpp
+      return 'g++'
     end
 
     def archiver
       return 'ar'
     end
 
-    def linker
+    def linker_c
       return 'gcc'
+    end
+
+    def linker_cpp
+      return 'g++'
     end
 
     include MTBuild::DSL

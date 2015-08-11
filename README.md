@@ -595,24 +595,11 @@ On top of the base Toolchain settings, the ToolchainGcc toolchain offers the fol
 * ```:linker_script``` - A linker script file to be used when linking
 
 
-### MTBuild::ToolchainGpp ###
-Define a g++ toolchain by passing ```:gpp``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
-
-##### ToolchainGpp settings #####
-The ToolchainGpp toolchain uses the same settings as the ToolchainGcc toolchain.
-
-
 ### MTBuild::ToolchainArmNoneEabiGcc ###
 Define an arm-none-eabi-gcc toolchain by passing ```:arm_none_eabi_gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
 
 ##### ToolchainArmNoneEabiGcc settings #####
 The ToolchainArmNoneEabiGcc toolchain uses the same settings as the ToolchainGcc toolchain.
-
-### MTBuild::ToolchainArmNoneEabiGpp ###
-Define an arm-none-eabi-g++ toolchain by passing ```:arm_none_eabi_gpp``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
-
-##### ToolchainArmNoneEabiGpp settings #####
-The ToolchainArmNoneEabiGpp toolchain uses the same settings as the ToolchainGcc toolchain.
 
 
 ### MTBuild::Versioner ###

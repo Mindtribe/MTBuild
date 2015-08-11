@@ -53,16 +53,28 @@ module MTBuild
       return "\"#{objcopy}\"#{objcopyflags} \"#{input_name}\" \"#{output_name}\""
     end
 
-    def compiler
+    def assembler
       return 'arm-none-eabi-gcc'
+    end
+
+    def compiler_c
+      return 'arm-none-eabi-gcc'
+    end
+
+    def compiler_cpp
+      return 'arm-none-eabi-g++'
     end
 
     def archiver
       return 'arm-none-eabi-ar'
     end
 
-    def linker
+    def linker_c
       return 'arm-none-eabi-gcc'
+    end
+
+    def linker_cpp
+      return 'arm-none-eabi-g++'
     end
 
     def objcopy

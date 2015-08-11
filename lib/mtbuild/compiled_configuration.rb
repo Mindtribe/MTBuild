@@ -39,12 +39,18 @@ module MTBuild
     # Create the actual Rake tasks that will perform the configuration's work
     def configure_tasks
       super
+      all_sources = []
       @toolchains.each do |toolchain, sources|
+        all_sources |= sources
         toolchain.output_folder = @output_folder
         toolchain.project_folder = @project_folder
         toolchain.output_decorator = "-#{@configuration_name}"
         CompiledConfiguration.add_framework_dependencies_to_toolchain(toolchain, @dependencies)
       end
+      # Give the default toolchain an opportunity to scan all source files for
+      # any special needs. For example, a toolchain might look for .cpp files
+      # to determine that it should link a project with the "g++" vs "gcc".
+      @default_toolchain.scan_sources(all_sources)
     end
 
     private

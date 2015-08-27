@@ -30,6 +30,7 @@ module MTBuild
 
       desc "Build library '#{@parent_project.project_name}' with configuration '#{@configuration_name}'"
       new_task = static_library_task @configuration_name => dependencies do |t|
+        @post_build.call if @post_build.respond_to? :call
         puts "built library #{t.name}."
         @tests.each do |test|
           if Rake::Task.task_defined? test

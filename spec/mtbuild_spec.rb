@@ -174,4 +174,29 @@ result
     }
   end
 
+  it "can build a simple project with pre and post-build tasks" do
+    project = 'BuildSteps'
+    project_folder = File.join(test_folder, project)
+    Dir.chdir(project_folder) {
+      stdout_str, stderr_str, status = Open3.capture3("#{mtbuildcli} --super-dry-run App1:Cfg1")
+      expect(status).to eq(0)
+      expect(stderr_str.gsub(project_folder,'')).to eq(
+                                                        <<result
+mkdir -p /build/App1/Cfg1/src
+mkdir -p /build/App1/Cfg1
+mkdir -p /build/App1/Cfg1
+"gcc" -std=c99 -Wall -Werror -Wextra "/src/main.c" -MMD -c -o "/build/App1/Cfg1/src/main.o"
+"gcc" -std=c99 -Wall -Werror -Wextra "/build/App1/Cfg1/src/main.o" -Wl,-map,"/build/App1/Cfg1/App1-Cfg1.map" -o "/build/App1/Cfg1/App1-Cfg1"
+result
+                                                    )
+      expect(stdout_str).to eq(
+                                <<result
+pre-build step!
+post-build step!
+built application App1:Cfg1.
+result
+                            )
+    }
+  end
+
 end

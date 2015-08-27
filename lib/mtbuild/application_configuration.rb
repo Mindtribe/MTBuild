@@ -24,6 +24,7 @@ module MTBuild
 
       desc "Build application '#{@parent_project.project_name}' with configuration '#{@configuration_name}'"
       new_task = application_task @configuration_name => dependencies do |t|
+        @post_build.call if @post_build.respond_to? :call
         puts "built application #{t.name}."
         @tests.each do |test|
           if Rake::Task.task_defined? test

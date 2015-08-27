@@ -467,6 +467,10 @@ Application Project configurations offer the following optional settings:
 
 * ```:versioner``` - A versioner hash constructed with the ```versioner``` DSL method (detailed in a later section).
 
+* ```:pre_build``` - A callable object (typically a ```lambda```) that will be invoked before the build of this configuration begins.
+
+* ```:post_build``` - A callable object (typically a ```lambda```) that will be invoked after the build of this configuration completes.
+
 ### MTBuild::TestApplicationProject ###
 
 Define a Test Application Project with the following DSL method:

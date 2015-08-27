@@ -1,6 +1,15 @@
 # Release Notes #
 
 
+## MTBuild 0.1.2 ##
+
+### Changes ###
+
+* Fixed issue where executables and libraries are generated with colons in
+  their names due to workspace prefix.
+* Added pre-build and post-build project tasks. 
+
+
 ## MTBuild 0.1.1 ##
 
 ### Changes ###

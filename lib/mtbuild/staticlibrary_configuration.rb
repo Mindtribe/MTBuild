@@ -24,11 +24,13 @@ module MTBuild
         all_object_folders |= object_folders
       end
 
-      library_files, library_folders = @default_toolchain.create_static_library_tasks(all_object_files, @parent_project.project_name)
+      project_filename = @parent_project.project_name.to_s.gsub(':','-')
+      library_files, library_folders = @default_toolchain.create_static_library_tasks(all_object_files, project_filename)
       dependencies = @dependencies+all_object_folders+library_folders+library_files
 
       desc "Build library '#{@parent_project.project_name}' with configuration '#{@configuration_name}'"
       new_task = static_library_task @configuration_name => dependencies do |t|
+        @post_build.call if @post_build.respond_to? :call
         puts "built library #{t.name}."
         @tests.each do |test|
           if Rake::Task.task_defined? test

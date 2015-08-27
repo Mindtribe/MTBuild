@@ -25,6 +25,11 @@ module MTBuild
       @output_folder = File.expand_path(File.join(output_folder, @configuration_name.to_s))
       check_configuration(configuration)
 
+      @pre_build = configuration.fetch(:pre_build, nil)
+      @post_build = configuration.fetch(:post_build, nil)
+
+      @pre_build.call if @pre_build.respond_to? :call
+
       @versioner = nil
       @versioner_config = configuration.fetch(:versioner, nil)
       @versioner = Versioner.create_versioner(@parent_project.project_name, @project_folder, @output_folder, @configuration_name, @versioner_config) unless @versioner_config.nil?

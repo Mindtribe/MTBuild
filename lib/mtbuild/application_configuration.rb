@@ -18,7 +18,8 @@ module MTBuild
         all_object_folders |= object_folders
       end
 
-      application_binaries, application_files, application_folders = @default_toolchain.create_application_tasks(all_object_files, @parent_project.project_name)
+      project_filename = @parent_project.project_name.to_s.gsub(':','-')
+      application_binaries, application_files, application_folders = @default_toolchain.create_application_tasks(all_object_files, project_filename)
       dependencies = @dependencies+all_object_folders+application_folders+application_files+application_binaries
 
       desc "Build application '#{@parent_project.project_name}' with configuration '#{@configuration_name}'"
@@ -34,7 +35,7 @@ module MTBuild
       end
 
       namespace @configuration_name do
-        OrganizedPackageTask.new("#{@parent_project.project_name}-#{@configuration_name}", :noversion) do |t|
+        OrganizedPackageTask.new("#{project_filename}-#{@configuration_name}", :noversion) do |t|
           t.need_tar_gz = true
           t.add_files_to_folder("", application_binaries+application_files)
         end

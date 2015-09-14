@@ -70,7 +70,7 @@ module MTBuild
 
       # Only register default tasks and generate global clean if we're the top-level workspace.
       if @parent_workspace.nil?
-        task :default => @default_tasks
+        task Rake.application.default_task_name => @default_tasks
         Cleaner.generate_global_clean_task
       end
 

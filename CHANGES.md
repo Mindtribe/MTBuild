@@ -1,6 +1,14 @@
 # Release Notes #
 
 
+## MTBuild 0.1.3 ##
+
+### Changes ###
+
+* Changed 'default' task to 'all' task to be more compatible with 'make'
+  conventions.  
+
+
 ## MTBuild 0.1.2 ##
 
 ### Changes ###

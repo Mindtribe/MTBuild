@@ -74,6 +74,10 @@ module MTBuild
       sort_options(options)
     end
 
+    def default_task_name
+      'all'
+    end
+
   end
 
 end

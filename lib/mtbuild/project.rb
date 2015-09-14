@@ -41,8 +41,8 @@ module MTBuild
       end
 
       #TODO: This is a strange way to do this. Should probably be moved to "application" functionality.
-      if @parent_workspace.nil? and Rake.application.lookup(:default).nil?
-        task :default do
+      if @parent_workspace.nil? and Rake.application.lookup(Rake.application.default_task_name).nil?
+        task Rake.application.default_task_name do
           puts 'Nothing to do. Use the -T flag to see the list of tasks you can build.'
         end
       end

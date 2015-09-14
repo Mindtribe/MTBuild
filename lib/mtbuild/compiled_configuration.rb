@@ -22,7 +22,7 @@ module MTBuild
       @default_toolchain_config = configuration[:toolchain]
       @default_toolchain = Toolchain.create_toolchain(self, @default_toolchain_config)
 
-      @source_files = Utils.expand_file_list(configuration.fetch(:sources, []), configuration.fetch(:excludes, []), @project_folder)
+      @source_files = Utils.expand_file_list(configuration.fetch(:sources, []), configuration.fetch(:excluded_sources, []), @project_folder)
       @toolchains = {@default_toolchain => @source_files}
 
       @tests = namespace_tasks(Utils.ensure_array(configuration.fetch(:tests, [])))

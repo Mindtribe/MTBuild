@@ -461,7 +461,9 @@ Application Project configurations offer the following optional settings:
 
 * ```:dependencies``` - The Rake task names of one or more dependencies. For example, ```'MyLibrary:Debug'``` or ```['MyLibrary1:Debug', 'MyLibrary2:Debug']```
 
-* ```:sources``` - One or more source file names or source file glob patterns. For example, ```'main.c'``` or ```['main.c', 'startup.c']``` or ```['src/main.c', 'src/*.cpp']```. Note that the source file paths should be relative to the project folder.
+* ```:sources``` - Source files to build in this configuration. Specified as one or more source file names or source file glob patterns. For example, ```'main.c'``` or ```['main.c', 'startup.c']``` or ```['src/main.c', 'src/*.cpp']```. Note that the source file paths should be relative to the project folder.
+
+* ```:excluded_sources``` - Source files to exclude from the configuration. Specified as one or more source file names or source file glob patterns. For example, ```'badmain.c'``` or ```['badmain.c', 'badstartup.c']``` or ```['src/badmain.c', 'src/bad*.cpp']```. Note that the source file paths should be relative to the project folder.
 
 * ```:tests``` - The Rake task names of one or more unit test applications. For example, ```'MyLibraryTest:Test'``` or ```['MyLibraryTest1:Test', 'MyLibraryTest2:Test']```
 

@@ -10,7 +10,7 @@ workspace :Workspace, File.dirname(__FILE__) do |w|
   app = application_project :App1, File.dirname(__FILE__) do |app|
     app.add_configuration :Cfg1,
       sources: ['src/*.c'],
-      excludes: ["src/main_bad.c"]
+      excluded_sources: ["src/main_bad.c"]
   end
 
   MTBuild::Workspace.add_default_tasks(app.task_for_configuration('Cfg1'))

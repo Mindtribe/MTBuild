@@ -222,5 +222,27 @@ result
     }
   end
 
+  it "can build project that has excluded source files" do
+    project = 'ProjectWithExcludedSources'
+    project_folder = File.join(test_folder, project)
+    Dir.chdir(project_folder) {
+      stdout_str, stderr_str, status = Open3.capture3("#{mtbuildcli} --super-dry-run all")
+      expect(status).to eq(0)
+      expect(stderr_str.gsub(project_folder,'')).to eq(
+                                                        <<result
+mkdir -p /build/Workspace/App1/Cfg1/src
+mkdir -p /build/Workspace/App1/Cfg1
+mkdir -p /build/Workspace/App1/Cfg1
+"gcc" -std=c99 -Wall -Werror -Wextra "/src/main.c" -MMD -c -o "/build/Workspace/App1/Cfg1/src/main.o"
+"gcc" -std=c99 -Wall -Werror -Wextra "/build/Workspace/App1/Cfg1/src/main.o" -Wl,-map,"/build/Workspace/App1/Cfg1/Workspace-App1-Cfg1.map" -o "/build/Workspace/App1/Cfg1/Workspace-App1-Cfg1"
+result
+                                                    )
+      expect(stdout_str).to eq(
+                                <<result
+built application Workspace:App1:Cfg1.
+result
+                            )
+    }
+  end
 
 end

@@ -34,6 +34,7 @@ module MTBuild
       standard_exception_handling do
         init
         load_rakefile
+        create_default_task_if_none_exists
         top_level
       end
     end
@@ -74,10 +75,20 @@ module MTBuild
       sort_options(options)
     end
 
+    def create_default_task_if_none_exists
+      if lookup(default_task_name).nil?
+        task default_task_name do
+          puts 'Nothing to do because no projects specified default tasks.'
+          puts 'Use the -T flag to see the list of tasks you can build.'
+        end
+      end
+    end
+
     def default_task_name
       'all'
     end
 
+    include Rake::DSL
   end
 
 end

@@ -21,7 +21,7 @@ module MTBuild
       file_list.include(included_files)
 
       excluded_files = Utils.ensure_array(excluded_files).flatten.collect{|e| base_folder ? File.join(base_folder, e) : e}
-      file_list.exclude(excluded_files)
+      file_list.exclude(*excluded_files)
 
       return file_list.to_ary.collect{|f| File.expand_path(f)}
     end

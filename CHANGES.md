@@ -8,7 +8,10 @@
 * Changed 'default' task to 'all' task to be more compatible with 'make'
   conventions.  
 * Fixed bug where source files couldn't be excluded with 'excludes'
-  configuration property.  
+  configuration property.
+* Renamed the 'excludes' property to 'source_excludes' and documented it.
+  (Source file exclusion was previously undocumented--probably because it
+  didn't work.)  
 
 
 ## MTBuild 0.1.2 ##

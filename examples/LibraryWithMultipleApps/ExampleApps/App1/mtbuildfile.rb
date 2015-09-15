@@ -41,6 +41,6 @@ app1 = application_project :App1, File.dirname(__FILE__) do |app|
 end
 
 MTBuild::Workspace.add_default_tasks(
-    [app1.task_for_configuration('Configuration1'),
-     app1.task_for_configuration('Configuration2')]
+    [app1.task_for_configuration(:Configuration1),
+     app1.task_for_configuration(:Configuration2)]
 )

@@ -15,32 +15,30 @@ workspace :LibraryWithLocalWorkspace, File.dirname(__FILE__) do |w|
       cxxflags: '-Wall -Werror -Wextra -pedantic-errors',
     )
 
+  static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
+    lib.add_api_headers 'include'
+
+    lib.add_configuration :Configuration1,
+                          sources: ['src/**/*.c'],
+                          toolchain: toolchain(:arm_none_eabi_gcc,
+                                               include_paths: ['src']
+                          ),
+                          tests: [
+                              'ExampleLibraryTest:Test'
+                          ]
+
+    lib.add_configuration :Test,
+                          sources: ['src/**/*.c']
+  end
+
+  test_application_project :ExampleLibraryTest, File.dirname(__FILE__) do |app|
+    app.add_configuration :Test,
+                          sources: ['src/**/*.cpp'],
+                          dependencies: [
+                              'ExampleLibrary:Test'
+                          ]
+  end
+
   w.add_default_tasks('ExampleLibrary:Configuration1')
 
-end
-
-static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
-
-  lib.add_api_headers 'include'
-
-  lib.add_configuration :Configuration1,
-    sources: ['src/**/*.c'],
-    toolchain: toolchain(:arm_none_eabi_gcc,
-      include_paths: ['src']
-    ),
-    tests: [
-      'ExampleLibraryTest:Test'
-    ]
-
-  lib.add_configuration :Test,
-    sources: ['src/**/*.c']
-end
-
-test_application_project :ExampleLibraryTest, File.dirname(__FILE__) do |app|
-
-  app.add_configuration :Test,
-    sources: ['src/**/*.cpp'],
-    dependencies: [
-      'ExampleLibrary:Test'
-    ]
 end

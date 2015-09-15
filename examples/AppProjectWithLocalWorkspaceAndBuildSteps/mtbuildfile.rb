@@ -8,22 +8,22 @@ workspace :AppPrpjectWithLocalWorkspaceAndBuildSteps, File.dirname(__FILE__) do 
       ldflags: '-Wl,--entry,ResetISR -Wl,--gc-sections'
     )
 
+  application_project :App1, File.dirname(__FILE__) do |app|
+
+    app.add_configuration :Configuration1,
+                          sources: ['src/*.c'],
+                          toolchain: toolchain(:arm_none_eabi_gcc,
+                                               linker_script: 'src/LinkerFile-Configuration1.ld'
+                          ),
+                          versioner: versioner(:mt_std_version,
+                                               files: 'src/version.h'
+                          ),
+                          pre_build: lambda {puts 'pre-build step!'},
+                          post_build: lambda {my_post_build_step}
+
+  end
+
   w.add_default_tasks('App1:Configuration1')
-
-end
-
-application_project :App1, File.dirname(__FILE__) do |app|
-
-  app.add_configuration :Configuration1,
-    sources: ['src/*.c'],
-    toolchain: toolchain(:arm_none_eabi_gcc,
-      linker_script: 'src/LinkerFile-Configuration1.ld'
-    ),
-    versioner: versioner(:mt_std_version,
-      files: 'src/version.h'
-    ),
-    pre_build: lambda {puts 'pre-build step!'},
-    post_build: lambda {my_post_build_step}
 
 end
 

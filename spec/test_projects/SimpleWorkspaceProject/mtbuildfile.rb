@@ -12,6 +12,6 @@ workspace :Workspace, File.dirname(__FILE__) do |w|
       sources: ['src/*.c']
   end
 
-  MTBuild::Workspace.add_default_tasks(app.task_for_configuration('Cfg1'))
+  MTBuild::Workspace.add_default_tasks(app.task_for_configuration(:Cfg1))
 
 end

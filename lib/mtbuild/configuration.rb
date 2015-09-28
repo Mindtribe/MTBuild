@@ -1,7 +1,5 @@
 module MTBuild
 
-  require 'mtbuild/versioner'
-
   # This is the base class for all configuration types.
   class Configuration
 
@@ -29,15 +27,10 @@ module MTBuild
       @post_build = configuration.fetch(:post_build, nil)
 
       @pre_build.call if @pre_build.respond_to? :call
-
-      @versioner = nil
-      @versioner_config = configuration.fetch(:versioner, nil)
-      @versioner = Versioner.create_versioner(@parent_project.project_name, @project_folder, @output_folder, @configuration_name, @versioner_config) unless @versioner_config.nil?
     end
 
     # Create the actual Rake tasks that will perform the configuration's work
     def configure_tasks
-      @versioner.create_version_tasks unless @versioner.nil?
     end
 
     private

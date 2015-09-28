@@ -3,8 +3,8 @@ app1 = application_project :App1, File.dirname(__FILE__) do |app|
   cfg1 = app.add_configuration :Configuration1,
     sources: ['main.c', 'startup_gcc.c', 'hardware-Configuration1.c'],
     toolchain: toolchain(:arm_none_eabi_gcc,
-      #overrides all flags from workspace
-      cppflags: "-Dgcc",
+      #using strings instead of arrays overrides all flags from workspace
+      cppflags: '-Dgcc',
       cflags: '-std=c99 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
       cxxflags: '-std=c++03 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
       ldflags: '-Wl,--entry,ResetISR -Wl,--gc-sections',
@@ -15,15 +15,15 @@ app1 = application_project :App1, File.dirname(__FILE__) do |app|
     ]
 
   cfg1.add_sources 'special.c', toolchain(:arm_none_eabi_gcc,
-      cppflags: "-Dgcc",
+      cppflags: '-Dgcc',
       cflags: '-std=c89 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors'
     )
 
   cfg2 = app.add_configuration :Configuration2,
     sources: ['main.c', 'startup_gcc.c', 'hardware-Configuration2.c'],
     toolchain: toolchain(:arm_none_eabi_gcc,
-      #overrides all flags from workspace
-      cppflags: "-Dgcc",
+      #using strings instead of arrays overrides all flags from workspace
+      cppflags: '-Dgcc',
       cflags: '-std=c99 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
       cxxflags: '-std=c++03 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors',
       ldflags: '-Wl,--entry,ResetISR -Wl,--gc-sections',
@@ -34,7 +34,7 @@ app1 = application_project :App1, File.dirname(__FILE__) do |app|
     ]
 
   cfg2.add_sources 'special.c', toolchain(:arm_none_eabi_gcc,
-      cppflags: "-Dgcc",
+      cppflags: '-Dgcc',
       cflags: '-std=c89 -mcpu=cortex-m4 -mthumb -mlittle-endian -mfpu=fpv4-sp-d16 -mfloat-abi=hard -ffunction-sections -fdata-sections -Wall -Werror -Wextra -pedantic-errors'
     )
 

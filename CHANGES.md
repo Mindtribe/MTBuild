@@ -1,6 +1,15 @@
 # Release Notes #
 
 
+## MTBuild 0.1.4 ##
+
+### Changes ###
+
+* Made minor changes to examples to fix style.  
+* Removed "versioners" because the concept was stupid.  
+* Added example of using environment variables.  
+
+
 ## MTBuild 0.1.3 ##
 
 ### Changes ###

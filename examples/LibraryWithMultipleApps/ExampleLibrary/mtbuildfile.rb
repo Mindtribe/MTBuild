@@ -27,9 +27,9 @@ static_library_project :ExampleLibrary, File.dirname(__FILE__) do |lib|
   lib.add_configuration :Test,
     sources: ['src/**/*.c'],
     toolchain: toolchain(:gcc,
-      cppflags: "-Dgcc",
-      cflags: '-std=c99 -Wall -Werror -Wextra -pedantic-errors',
-      cxxflags: '-Wall -Werror -Wextra -pedantic-errors',
+      cppflags: ['-Dgcc'],
+      cflags: ['-std=c99', '-Wall', '-Werror', '-Wextra', '-pedantic-errors'],
+      cxxflags: ['-Wall', '-Werror', '-Wextra', '-pedantic-errors'],
       include_paths: ['src']
     )
 
@@ -41,9 +41,9 @@ test_application_project :ExampleLibraryTest, File.dirname(__FILE__) do |app|
   app.add_configuration :Test,
     sources: ['src/**/*.cpp'],
     toolchain: toolchain(:gcc,
-      cppflags: "-Dgcc",
-      cflags: '-std=c99 -Wall -Werror -Wextra -pedantic-errors',
-      cxxflags: '-Wall -Werror -Wextra -pedantic-errors',
+      cppflags: ['-Dgcc'],
+      cflags: ['-std=c99', '-Wall', '-Werror', '-Wextra', '-pedantic-errors'],
+      cxxflags: ['-Wall', '-Werror', '-Wextra', '-pedantic-errors'],
       include_paths: ['src']
     ),
     dependencies: [

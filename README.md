@@ -321,28 +321,6 @@ MTBuild Frameworks contain pre-compiled objects/libraries and their headers. MTB
 
 MTBuild Toolchains generate the individual compile, archival, and link tasks that comprise an application or library. Most of the interesting settings in a project's configuration go in the toolchain. The settings vary based upon the toolchain.
 
-#### Versioners ####
-
-MTBuild Versioners update version information inside a source or header file. Versioner tasks are typically invoked on their own with a separate invocation of MTBuild. Versioners are an optional convenience intended for Continuous Integration servers. They're not strictly related to the build process; however, because it's common for CI servers to stamp version information into a file when building, it is convenient to be able to describe the files that need updating along with the rest of the project inside the mtbuildfile.
-
-For example, the following project is configure to use the Mindtribe Standard Version versioner:
-
-```Ruby
-application_project :MyApp, File.dirname(__FILE__) do |app|
-  app.add_configuration :Debug,
-    sources: ['main.c'],
-    toolchain: toolchain(:gcc),
-    versioner: versioner(:mt_std_version,
-      files: 'src/version.h'
-    )
-end
-```
-
-The following updates the project's "version.h" header. The parameters to this particular versioner are detailed in a later section.
-
-```Shell
-mtbuild MyApp:Debug:Version[1,0,0,465,"1.0.0 (465)","f1e471b49a4bedc9cf5c6aabf88cde478e482a69"]
-```
 
 #### DSL ####
 
@@ -466,8 +444,6 @@ Application Project configurations offer the following optional settings:
 * ```:excluded_sources``` - Source files to exclude from the configuration. Specified as one or more source file names or source file glob patterns. For example, ```'badmain.c'``` or ```['badmain.c', 'badstartup.c']``` or ```['src/badmain.c', 'src/bad*.cpp']```. Note that the source file paths should be relative to the project folder.
 
 * ```:tests``` - The Rake task names of one or more unit test applications. For example, ```'MyLibraryTest:Test'``` or ```['MyLibraryTest1:Test', 'MyLibraryTest2:Test']```
-
-* ```:versioner``` - A versioner hash constructed with the ```versioner``` DSL method (detailed in a later section).
 
 * ```:pre_build``` - A callable object (typically a ```lambda```) that will be invoked before the build of this configuration begins.
 
@@ -606,45 +582,3 @@ Define an arm-none-eabi-gcc toolchain by passing ```:arm_none_eabi_gcc``` as the
 
 ##### ToolchainArmNoneEabiGcc settings #####
 The ToolchainArmNoneEabiGcc toolchain uses the same settings as the ToolchainGcc toolchain.
-
-
-### MTBuild::Versioner ###
-Define a Versioner with the following DSL method:
-
-```Ruby
-def versioner(versioner_name, versioner_configuration={})
-```
-
-```versioner_name``` is the name of a valid MTBuild versioner. See following sections for valid versioner names.
-
-```versioner_configuration``` expects a hash that contains settings for the versioner.
-
-### MTBuild::VersionerMTStdVersion ###
-Define a Mindtribe Standard Version versioner by passing ```:mt_std_version``` as the ```versioner_name``` when invoking the ```versioner()``` method.
-
-##### VersionerMTStdVersion settings #####
-The VersionerMTStdVersion versioner requires the following settings:
-
-* ```:files``` - One or more version files to be updated. For example, ```'version.h'``` or ```['src/version.h', 'test/version.h']```.
-
-##### VersionerMTStdVersion invocation #####
-
-Mindtribe Standard Version parameters should be specified when invoking MTBuild to run a VersionerMTStdVersion versioner task. These parameters, in order, are:
-
-* ```major``` - The build's major version number
-
-* ```minor``` - The build's minor version number
-
-* ```revision``` - The build's revision number
-
-* ```build``` - The build's build number
-
-* ```version_string``` - The build's version as a complete string
-
-* ```git_SHA``` - The build's git SHA as a string
-
-For example:
-
-```Shell
-mtbuild MyApp:Debug:Version[1,0,0,465,"1.0.0 (465)","f1e471b49a4bedc9cf5c6aabf88cde478e482a69"]
-```

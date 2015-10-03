@@ -16,17 +16,6 @@ module MTBuild
       end
     end
 
-    # Adds a named static library configuration to the project.
-    def add_configuration(configuration_name, configuration)
-      super
-      default_configuration = {}
-      default_configuration = @parent_workspace.configuration_defaults.fetch(configuration_name, {}) unless @parent_workspace.nil?
-      merged_configuration = Utils.merge_configurations(default_configuration, configuration)
-      cfg = StaticLibraryConfiguration.new(self, effective_output_folder, configuration_name, merged_configuration, @api_headers)
-      @configurations << cfg
-      return cfg
-    end
-
     # Provides a framework package target that builds a framework package with the specified configurations
     def build_framework_package(configuration_names)
       @framework_configurations += Utils.ensure_array(configuration_names)
@@ -38,6 +27,11 @@ module MTBuild
     end
 
     private
+
+    # Create a static library configuration
+    def create_configuration(configuration_name, configuration)
+      StaticLibraryConfiguration.new(self, effective_output_folder, configuration_name, configuration, @api_headers)
+    end
 
     def configure_framework_tasks
       namespace @project_name do

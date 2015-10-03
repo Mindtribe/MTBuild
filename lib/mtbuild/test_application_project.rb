@@ -7,16 +7,13 @@ module MTBuild
   # executable is invoked after building successfully.
   class TestApplicationProject < Project
 
-    # Adds a named test application configuration to the project.
-    def add_configuration(configuration_name, configuration)
-      super
-      default_configuration = {}
-      default_configuration = @parent_workspace.configuration_defaults.fetch(configuration_name, {}) unless @parent_workspace.nil?
-      merged_configuration = Utils.merge_configurations(default_configuration, configuration)
-      cfg = TestApplicationConfiguration.new(self, effective_output_folder, configuration_name, merged_configuration)
-      @configurations << cfg
-      return cfg
+    private
+
+    # Create a test application configuration
+    def create_configuration(configuration_name, configuration)
+      TestApplicationConfiguration.new(self, effective_output_folder, configuration_name, configuration)
     end
+
 
   end
 

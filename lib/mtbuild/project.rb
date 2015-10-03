@@ -70,9 +70,19 @@ module MTBuild
       end
     end
 
+    def add_configuration(configuration_name, configuration)
+      default_configuration = {}
+      default_configuration = @parent_workspace.configuration_defaults.fetch(configuration_name, {}) unless @parent_workspace.nil?
+      merged_configuration = Utils.merge_configurations(default_configuration, configuration)
+      cfg = create_configuration(configuration_name, merged_configuration)
+      @configurations << cfg
+      cfg
+    end
+
     private
 
-    def add_configuration(configuration_name, configuration)
+    def create_configuration(configuration_name, configuration)
+      nil
     end
 
     include Rake::DSL

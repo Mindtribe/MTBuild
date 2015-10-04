@@ -6,7 +6,7 @@ app1 = application_project :App1, File.dirname(__FILE__) do |app|
       cppflags: ['-DHappyApp'],
     ),
     dependencies: [
-      'SDK:Library:*'
+      'SDK:Library:.'
     ]
   )
 

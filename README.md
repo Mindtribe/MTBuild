@@ -352,7 +352,7 @@ The optional, named parameter, ```pull_default_tasks``` determines whether the p
 
 The optional, named parameter ```pull_configurations``` specifies a list of configurations to pull up from the child workspace. Pulling up configurations makes them available to other projects included by the parent workspace.
 
-The optional, named parameter ```push_configurations``` specifies a list of configurations to push down to the child workspace. Pushing down configurations allows you to add to a child workspace's configuration settings. Note that pushing a configuration down to a child cannot be used to create a new configuration for that child. It only lets you add configuration settings to child configurations that already exist. MTBuild ignores pushed configurations that do not exist in the child workspace's projects. Pushing down a configuration is intended to allow a parent workspace to override or add to a child's build settings. This should be used rarely and with caution since it's generally assumed that projects in a child workspace have been tested with the settings provided by that workspace.
+The optional, named parameter ```push_configurations``` specifies a list of configurations to push down to the child workspace. Pushing down configurations allows you to add to a child workspace's configuration settings or, if the child has a default configuration set via ```set_default_configuration()```, you can auto-generate a new configuration.
 
 #### add_default_tasks ####
 Use ```add_default_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) project task names. The project tasks should be qualified relative to the current workspace. For example, if a workspace includes a project called ```MyApp```, which has a configuration called ```Debug```, you can add this by referring to it as ```MyApp:Debug```. If no default tasks are specified, then invoking MTBuild with no arguments will effectively do nothing.
@@ -412,6 +412,9 @@ This is a base class for projects. You won't typically use it directly, but it p
 #### task_for_configuration ####
 Use ```task_for_configuration(config_name)``` to get the fully qualified task name for the project configuration called ```config_name```. This is useful for getting fully qualified task names to register as default tasks using ```MTBuild::Workspace.add_default_tasks```
 
+#### tasks_for_all_configurations ####
+Use ```tasks_for_all_configurations``` to get a list of the fully qualified task names for all of the project's configurations. This is useful for getting fully qualified task names to register as default tasks using ```MTBuild::Workspace.add_default_tasks```
+
 
 ### MTBuild::ApplicationProject ###
 
@@ -427,6 +430,11 @@ application_project(application_name, project_folder, &configuration_block)
 
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass an ApplicationProject object as this parameter. Inside the block, you can make ApplicationProject calls on this object to add configurations.
 
+#### set_default_configuration #### 
+Use ```set_default_configuration(configuration)``` inside of an application project configuration block to add a default build configuration for the application. The ```configuration``` parameter expects a hash that contains settings for the configuration. Default project configurations allow you to specify a base set of toolchain settings, source files, dependencies, etc. for a project. Any project configurations that are explicitly added with ```add_configuration()``` will be merged with the project default.
+ 
+You can also use ```set_default_configuration()``` in a project along with ```set_configuration_defaults()``` in the parent workspace to auto-generate project configurations without needing to explicitly add each configuration to a project with ```add_configuration()```. If a project contains a default configuration, then any configurations added with ```set_configuration_defaults()``` in a parent workspace will be auto-generated for the project by merging the workspace configuration with the default configuration. Note that you can use all three mechanisms together: ```set_default_configuration()```, ```set_configuration_defaults()```, and ```add_configuration()```. When you do so, the configuration results from the merging of all three tiers of settings.      
+
 #### add_configuration ####
 Use ```add_configuration(configuration_name, configuration)``` inside of an application project configuration block to add a build configuration for the application. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyApplication" would be "MyApplication:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
 
@@ -437,7 +445,7 @@ Application Project configurations require the following settings:
 
 Application Project configurations offer the following optional settings:
 
-* ```:dependencies``` - The Rake task names of one or more dependencies. For example, ```'MyLibrary:Debug'``` or ```['MyLibrary1:Debug', 'MyLibrary2:Debug']```
+* ```:dependencies``` - The Rake task names of one or more dependencies. For example, ```'MyLibrary:Debug'``` or ```['MyLibrary1:Debug', 'MyLibrary2:Debug']```. You can use the special character '.' to specify the current configuration. For example, ```'MyLibrary:.'``` would expand to ```'MyLibrary:Debug'``` if listed as a dependency in a configuration called 'Debug'.
 
 * ```:sources``` - Source files to build in this configuration. Specified as one or more source file names or source file glob patterns. For example, ```'main.c'``` or ```['main.c', 'startup.c']``` or ```['src/main.c', 'src/*.cpp']```. Note that the source file paths should be relative to the project folder.
 

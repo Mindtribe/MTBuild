@@ -1,13 +1,23 @@
 # Release Notes #
 
 
+## MTBuild 0.1.5 ##
+
+### Changes ###
+
+* Projects no longer need to explicitly specify each desired configuration.
+  Instead, they can provide a default configuration which is used as a base
+  to automatically create specific configurations from defaults set in the
+  parent workspace.
+
+
 ## MTBuild 0.1.4 ##
 
 ### Changes ###
 
-* Made minor changes to examples to fix style.  
-* Removed "versioners" because the concept was stupid.  
-* Added example of using environment variables.  
+* Made minor changes to examples to fix style.
+* Removed "versioners" because the concept was stupid.
+* Added example of using environment variables.
 
 
 ## MTBuild 0.1.3 ##
@@ -15,12 +25,12 @@
 ### Changes ###
 
 * Changed 'default' task to 'all' task to be more compatible with 'make'
-  conventions.  
+  conventions.
 * Fixed bug where source files couldn't be excluded with 'excludes'
   configuration property.
 * Renamed the 'excludes' property to 'source_excludes' and documented it.
   (Source file exclusion was previously undocumented--probably because it
-  didn't work.)  
+  didn't work.)
 
 
 ## MTBuild 0.1.2 ##
@@ -29,7 +39,7 @@
 
 * Fixed issue where executables and libraries are generated with colons in
   their names due to workspace prefix.
-* Added pre-build and post-build project tasks. 
+* Added pre-build and post-build project tasks.
 
 
 ## MTBuild 0.1.1 ##

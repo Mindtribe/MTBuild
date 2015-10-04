@@ -13,20 +13,16 @@ module MTBuild
       super
     end
 
-    # Adds a named FrameworkConfiguration to the project.
-    def add_configuration(configuration_name, configuration)
-      super
-      default_configuration = {}
-      default_configuration = @parent_workspace.configuration_defaults.fetch(configuration_name, {}) unless @parent_workspace.nil?
-      merged_configuration = Utils.merge_configurations(default_configuration, configuration)
-      cfg = FrameworkConfiguration.new(self, effective_output_folder, configuration_name, merged_configuration, @api_headers)
-      @configurations << cfg
-      return cfg
-    end
-
     # Specifies API header locations
     def add_api_headers(api_headers)
       @api_headers += Utils.expand_folder_list(api_headers, @project_folder)
+    end
+
+    private
+
+    # Create a framework configuration
+    def create_configuration(configuration_name, configuration)
+      FrameworkConfiguration.new(self, effective_output_folder, configuration_name, configuration, @api_headers)
     end
 
   end

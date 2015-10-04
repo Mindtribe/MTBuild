@@ -5,7 +5,7 @@ test_folder = File.join(File.dirname(__FILE__), 'test_projects')
 
 describe 'mtbuild' do
 
-  it "can build a simple project with no workspace and one application" do
+  it 'can build a simple project with no workspace and one application' do
     project = 'SimpleProject'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -28,7 +28,7 @@ result
     }
   end
 
-  it "can build a project with a workspace, a library, and multiple apps" do
+  it 'can build a project with a workspace, a library, and multiple apps' do
     project = 'LibraryWithMultipleApps'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -94,7 +94,7 @@ result
     }
   end
 
-  it "can build a nested workspace, pulling a configuration up from the nested workspace" do
+  it 'can build a nested workspace, pulling a configuration up from the nested workspace' do
     project = 'NestedWorkspacePull'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -123,7 +123,7 @@ result
     }
   end
 
-  it "can build a nested workspace, pushing a configuration down to the nested workspace" do
+  it 'can build a nested workspace, pushing a configuration down to the nested workspace' do
     project = 'NestedWorkspacePush'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -152,7 +152,7 @@ result
     }
   end
 
-  it "can build a nested workspace, pulling default tasks up from the nested workspace" do
+  it 'can build a nested workspace, pulling default tasks up from the nested workspace' do
     project = 'NestedWorkspacePullTasks'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -174,7 +174,7 @@ result
     }
   end
 
-  it "can build a simple project with pre and post-build tasks" do
+  it 'can build a simple project with pre and post-build tasks' do
     project = 'BuildSteps'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -199,7 +199,7 @@ result
     }
   end
 
-  it "can build a simple project using 'all' task" do
+  it 'can build a simple project using \'all\' task' do
     project = 'SimpleWorkspaceProject'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -222,7 +222,7 @@ result
     }
   end
 
-  it "can build project that has excluded source files" do
+  it 'can build project that has excluded source files' do
     project = 'ProjectWithExcludedSources'
     project_folder = File.join(test_folder, project)
     Dir.chdir(project_folder) {
@@ -244,5 +244,35 @@ result
                             )
     }
   end
+
+  it 'can build a nested workspace, pushing new configurations down to the nested workspace' do
+    project = 'NestedWorkspacePushNewConfigs'
+    project_folder = File.join(test_folder, project)
+    Dir.chdir(project_folder) {
+      stdout_str, stderr_str, status = Open3.capture3("#{mtbuildcli} --super-dry-run")
+      expect(status).to eq(0)
+      expect(stderr_str.gsub(project_folder,'')).to eq(
+                                                        <<result
+mkdir -p /build/NestedWorkspacePush/SDK/Library/Cfg1/src
+mkdir -p /build/NestedWorkspacePush/SDK/Library/Cfg1
+mkdir -p /build/NestedWorkspacePush/SDK/Library/Cfg1
+"gcc" -DHappyLib -std=c99 -Wall -Werror -Wextra "/SDK/Library/src/Library.c" -I"/SDK/Library/src" -I"/SDK/Library/include" -MMD -c -o "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/Library.o"
+"gcc" -DHappyLib -std=c99 -Wall -Werror -Wextra "/SDK/Library/src/LibraryFoo.c" -I"/SDK/Library/src" -I"/SDK/Library/include" -MMD -c -o "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/LibraryFoo.o"
+"ar" rcs "/build/NestedWorkspacePush/SDK/Library/Cfg1/libNestedWorkspacePush-SDK-Library-Cfg1.a"  "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/Library.o" "/build/NestedWorkspacePush/SDK/Library/Cfg1/src/LibraryFoo.o"
+mkdir -p /build/NestedWorkspacePush/App1/Cfg1/
+mkdir -p /build/NestedWorkspacePush/App1/Cfg1
+"gcc" -DHappyApp -std=c99 -Wall -Werror -Wextra "/App/main.c" -I"/SDK/Library/include" -MMD -c -o "/build/NestedWorkspacePush/App1/Cfg1/main.o"
+"gcc" -DHappyApp -std=c99 -Wall -Werror -Wextra -I"/SDK/Library/include" "/build/NestedWorkspacePush/App1/Cfg1/main.o" "/build/NestedWorkspacePush/SDK/Library/Cfg1/libNestedWorkspacePush-SDK-Library-Cfg1.a" -Wl,-map,"/build/NestedWorkspacePush/App1/Cfg1/NestedWorkspacePush-App1-Cfg1.map" -o "/build/NestedWorkspacePush/App1/Cfg1/NestedWorkspacePush-App1-Cfg1"
+result
+                                                    )
+      expect(stdout_str).to eq(
+                                <<result
+built library NestedWorkspacePush:SDK:Library:Cfg1.
+built application NestedWorkspacePush:App1:Cfg1.
+result
+                            )
+    }
+  end
+
 
 end

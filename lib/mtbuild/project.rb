@@ -24,7 +24,8 @@ module MTBuild
     # If supplied, the configuration_block will be passed the
     # newly-constructed Project object.
     def initialize(project_name, project_folder, &configuration_block)
-      @configurations = []
+      @default_configuration = nil
+      @configurations = {}
       @project_folder = File.expand_path(project_folder)
       @output_folder = File.expand_path(File.join(@project_folder, MTBuild.default_output_folder))
       @project_name, @parent_workspace = MTBuild::BuildRegistry.enter_project(project_name, self)
@@ -32,8 +33,10 @@ module MTBuild
 
       configuration_block.call(self) if configuration_block
 
+      generate_implicit_workspace_configurations
+
       namespace @project_name do
-        @configurations.each do |configuration|
+        @configurations.each_value do |configuration|
           configuration.configure_tasks
         end
 
@@ -46,6 +49,11 @@ module MTBuild
     # Get the fully-qualified task name for a configuration
     def task_for_configuration(config_name)
       "#{@project_name}:#{config_name}"
+    end
+
+    # Get the list of fully-qualified task names for all configurations
+    def tasks_for_all_configurations
+      @configurations.keys.collect{ |name| "#{@project_name}:#{name}"}
     end
 
     # Set the project's output folder.
@@ -71,18 +79,36 @@ module MTBuild
     end
 
     def add_configuration(configuration_name, configuration)
-      default_configuration = {}
-      default_configuration = @parent_workspace.configuration_defaults.fetch(configuration_name, {}) unless @parent_workspace.nil?
-      merged_configuration = Utils.merge_configurations(default_configuration, configuration)
+      merged_configuration = {}
+      unless @default_configuration.nil?
+        merged_configuration = @default_configuration
+      end
+      unless @parent_workspace.nil?
+        configuration_defaults = @parent_workspace.configuration_defaults.fetch(configuration_name, {})
+        merged_configuration = Utils.merge_configurations(configuration_defaults, merged_configuration)
+      end
+      merged_configuration = Utils.merge_configurations(merged_configuration, configuration)
       cfg = create_configuration(configuration_name, merged_configuration)
-      @configurations << cfg
+      @configurations[configuration_name] = cfg
       cfg
+    end
+
+    def set_default_configuration(configuration)
+      @default_configuration = configuration
     end
 
     private
 
     def create_configuration(configuration_name, configuration)
       nil
+    end
+
+    def generate_implicit_workspace_configurations
+      if not @default_configuration.nil? and not @parent_workspace.nil?
+        @parent_workspace.configuration_defaults.each do |configuration_name, configuration|
+          add_configuration(configuration_name, configuration) unless @configurations.has_key? configuration_name
+        end
+      end
     end
 
     include Rake::DSL

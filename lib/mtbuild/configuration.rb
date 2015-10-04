@@ -43,6 +43,10 @@ module MTBuild
       return task_list
     end
 
+    def expand_configuration_wildcards(task_list)
+      return task_list.collect {|task| task.sub('*', @configuration_name.to_s) }
+    end
+
     include Rake::DSL
   end
 

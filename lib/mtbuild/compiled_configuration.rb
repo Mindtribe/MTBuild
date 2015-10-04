@@ -17,7 +17,7 @@ module MTBuild
 
     def initialize(parent_project, output_folder, configuration_name, configuration)
       super
-      @dependencies = namespace_tasks(configuration.fetch(:dependencies, []))
+      @dependencies = expand_configuration_wildcards(namespace_tasks(configuration.fetch(:dependencies, [])))
       @dependencies |= configuration.fetch(:rake_dependencies, [])
       @default_toolchain_config = configuration[:toolchain]
       @default_toolchain = Toolchain.create_toolchain(self, @default_toolchain_config)

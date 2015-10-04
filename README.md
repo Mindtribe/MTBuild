@@ -343,9 +343,11 @@ workspace(workspace_name, workspace_folder, &configuration_block)
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a Workspace object as this parameter. Inside the block, you can make Workspace calls on this object to add projects, set configuration defaults, etc.
 
 #### add_project ####
+
 Use ```add_project(project_location)``` inside of a workspace configuration block to add a project that lives inside a subfolder. The ```project_location``` parameter must be a subfolder of the workspace. If the project lives at the same level as the workspace, you should define it in the same mtbuildfile as the workspace. In this case, the project will be implicitly added and you do not need to use ```add_project``` inside the workspace. See the **Project Plus Workspace Example** above for an example of a workspace and project that live at the same folder level.
 
 #### add_workspace ####
+
 Use ```add_workspace(workspace_location, pull_default_tasks: false, pull_configurations: [], push_configurations: [])``` inside of a workspace configuration block to add a child workspace that lives inside a subfolder. The ```workspace_location``` parameter must be a subfolder of the workspace.
 
 The optional, named parameter, ```pull_default_tasks``` determines whether the parent workspace should pull in the child workspace's default tasks. If this is ```true```, then when ```mtbuild``` is run on the parent workspace with no specified build targets, the child workspace's default targets will be built. If this is ```false```, then only targets that are referenced from the child workspace will be built as needed.
@@ -355,15 +357,19 @@ The optional, named parameter ```pull_configurations``` specifies a list of conf
 The optional, named parameter ```push_configurations``` specifies a list of configurations to push down to the child workspace. Pushing down configurations allows you to add to a child workspace's configuration settings or, if the child has a default configuration set via ```set_default_configuration()```, you can auto-generate a new configuration.
 
 #### add_default_tasks ####
+
 Use ```add_default_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) project task names. The project tasks should be qualified relative to the current workspace. For example, if a workspace includes a project called ```MyApp```, which has a configuration called ```Debug```, you can add this by referring to it as ```MyApp:Debug```. If no default tasks are specified, then invoking MTBuild with no arguments will effectively do nothing.
 
 #### add_default_rake_tasks ####
+
 Use ```add_default_rake_tasks(default_tasks)``` inside of a workspace configuration block to add tasks that run when you invoke MTBuild with no arguments. The ```default_tasks``` parameter expects one or more (in an array) Rake task names. Unlike ```add_default_tasks()```, this method expects "raw" Rake task names. This lets you specify that MTBuild should run any Rake task by default when building this workspace.
 
 #### MTBuild::Workspace.add_default_tasks ####
+
 Use the class method ```MTBuild::Workspace.add_default_tasks(default_tasks)``` to add a default task outside of a workspace configuration block. This is useful for letting projects register default tasks in the project's mtbuildfile.rb. Note that the tasks specified in the ```default_tasks``` list must be fully-qualified ```mtbuild``` names that take workspace nesting into account. You should use the project method ```task_for_configuration``` to get the correct task names.
 
 #### set_configuration_defaults ####
+
 Use ```set_configuration_defaults(configuration_name, defaults_hash)``` inside of a workspace configuration block to add default settings for a configuration. This is how you would select, for instance, a default toolchain for all projects with a specific configuration.
 
 The following example selects the "gcc" toolchain and sets the C standard to C99 for any projects with a configuration named "Debug":
@@ -403,6 +409,7 @@ end
 ```
 
 #### set_output_folder ####
+
 Use ```set_output_folder(output_folder)``` inside of a workspace configuration block to change the build output folder. By default, this folder is set to "build" underneath the workspace folder. The ```output_folder``` parameter expects the name of a folder relative to the workspace. If the folder does not exist, MTBuild will create it.
 
 ### MTBuild::Project ###
@@ -410,9 +417,11 @@ Use ```set_output_folder(output_folder)``` inside of a workspace configuration b
 This is a base class for projects. You won't typically use it directly, but it provides some useful methods for all project types.
 
 #### task_for_configuration ####
+
 Use ```task_for_configuration(config_name)``` to get the fully qualified task name for the project configuration called ```config_name```. This is useful for getting fully qualified task names to register as default tasks using ```MTBuild::Workspace.add_default_tasks```
 
 #### tasks_for_all_configurations ####
+
 Use ```tasks_for_all_configurations``` to get a list of the fully qualified task names for all of the project's configurations. This is useful for getting fully qualified task names to register as default tasks using ```MTBuild::Workspace.add_default_tasks```
 
 
@@ -430,15 +439,18 @@ application_project(application_name, project_folder, &configuration_block)
 
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass an ApplicationProject object as this parameter. Inside the block, you can make ApplicationProject calls on this object to add configurations.
 
-#### set_default_configuration #### 
+#### set_default_configuration ####
+
 Use ```set_default_configuration(configuration)``` inside of an application project configuration block to add a default build configuration for the application. The ```configuration``` parameter expects a hash that contains settings for the configuration. Default project configurations allow you to specify a base set of toolchain settings, source files, dependencies, etc. for a project. Any project configurations that are explicitly added with ```add_configuration()``` will be merged with the project default.
  
 You can also use ```set_default_configuration()``` in a project along with ```set_configuration_defaults()``` in the parent workspace to auto-generate project configurations without needing to explicitly add each configuration to a project with ```add_configuration()```. If a project contains a default configuration, then any configurations added with ```set_configuration_defaults()``` in a parent workspace will be auto-generated for the project by merging the workspace configuration with the default configuration. Note that you can use all three mechanisms together: ```set_default_configuration()```, ```set_configuration_defaults()```, and ```add_configuration()```. When you do so, the configuration results from the merging of all three tiers of settings.      
 
 #### add_configuration ####
+
 Use ```add_configuration(configuration_name, configuration)``` inside of an application project configuration block to add a build configuration for the application. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyApplication" would be "MyApplication:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
 
 ##### Application Project configuration settings #####
+
 Application Project configurations require the following settings:
 
 * ```:toolchain``` - A toolchain hash constructed with the ```toolchain``` DSL method (detailed in a later section).
@@ -482,15 +494,19 @@ static_library_project(library_name, project_folder, &configuration_block)
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a StaticLibraryProject object as this parameter. Inside the block, you can make StaticLibraryProject calls on this object to add configurations.
 
 #### add_configuration ####
+
 Use ```add_configuration(configuration_name, configuration)``` inside of a static library project configuration block to add a build configuration for the library. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyLibrary" would be "MyLibrary:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
 
 #### add_api_headers ####
+
 Use ```add_api_headers(api_headers)``` inside of a static library project configuration block--before adding configurations--to set the location(s) of the library's API headers. The ```api_headers``` parameter should be one or more API header paths. For example, ```'include'``` or ```['include', 'plugins']```. Note that the API header paths should be relative to the project folder. API header paths should NOT contain one another. For example, do not do this: ```['include', 'include/things']```. You can have subfolders inside of an API header location, but you should only add the topmost folder.
 
 #### build_framework_package ####
+
 Use ```build_framework_package(configuration_names)``` inside of a static library project configuration block to specify that the library should provide a framework package target. Use ```configuration_names``` to provide a list of configuration names to include in the package. For example, ```'Configuration1'``` or ```['Configuration1', 'Configuration2']```.
 
 ##### Static Library Project configuration settings #####
+
 Static Library Project configurations use the same settings as Application Project configurations.
 
 Additionally, Static Library Project configurations offer the following optional settings:
@@ -498,6 +514,7 @@ Additionally, Static Library Project configurations offer the following optional
 * ```:configuration_headers``` - One or more configuration header paths. For example, ```'config/Debug'``` or ```['config/Debug', 'config/common']```.
 
 ### MTBuild::TestApplicationProject ###
+
 Define a Test Application Project with the following DSL method:
 
 ```Ruby
@@ -511,9 +528,11 @@ test_application_project(application_name, project_folder, &configuration_block)
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass a TestApplicationProject object as this parameter. Inside the block, you can make TestApplicationProject calls on this object to add configurations.
 
 #### add_configuration ####
+
 Use ```add_configuration(configuration_name, configuration)``` inside of a test application project configuration block to add a build configuration for the application. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyTestApplication" would be "MyTestApplication:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
 
 ##### Test Application Project configuration settings #####
+
 Test Application Project configurations use the same settings as Application Library Project configurations.
 
 ### MTBuild::FrameworkProject ###
@@ -531,12 +550,15 @@ framework_project(framework_name, project_folder, &configuration_block)
 For ```configuration_block```, you supply a block that takes one parameter. When MTBuild invokes the block, it will pass an FrameworkProject object as this parameter. Inside the block, you can make FrameworkProject calls on this object to add configurations.
 
 #### add_configuration ####
+
 Use ```add_configuration(configuration_name, configuration)``` inside of a framework project configuration block to add a configuration for the framework. The ```configuration_name``` parameter expects a symbol that serves as a human-readable name for the configuration. Rake tasks related to this configuration will be namespaced with this symbol. For example, the top-level Rake task for building the "Debug" configuration of "MyLibrary" would be "MyLibrary:Debug". The ```configuration``` parameter expects a hash that contains settings for the configuration.
 
 #### add_api_headers ####
+
 Use ```add_api_headers(api_headers)``` inside of a framework project configuration block--before adding configurations--to set the location(s) of the framework's API headers. The ```api_headers``` parameter should be one or more API header paths. For example, ```'include'``` or ```['include', 'plugins']```. Note that the API header paths should be relative to the project folder. API header paths should NOT contain one another. For example, do not do this: ```['include', 'include/things']```. You can have subfolders inside of an API header location, but you should only add the topmost folder.
 
 ##### Framework Project configuration settings #####
+
 Framework Project configurations require the following settings:
 
 * ```:objects``` - One or more framework object files. For example, ```'MyLibrary.a'```
@@ -546,6 +568,7 @@ Framework Project configurations offer the following optional settings:
 * ```:configuration_headers``` - One or more configuration header paths. For example, ```'config/Debug'``` or ```['config/Debug', 'config/common']```.
 
 ### MTBuild::Toolchain ###
+
 Define a Toolchain with the following DSL method:
 
 ```Ruby
@@ -557,6 +580,7 @@ def toolchain(toolchain_name, toolchain_configuration={})
 ```toolchain_configuration``` expects a hash that contains settings for the toolchain.
 
 ##### Toolchain settings #####
+
 All toolchains offer the following optional settings:
 
 * ```:include_paths``` - One or more include folders to use while compiling. For example, ```'include'``` or ```['include', 'include/plugins']```. Note that the paths should be relative to the project folder.
@@ -567,9 +591,11 @@ All toolchains offer the following optional settings:
 
 
 ### MTBuild::ToolchainGcc ###
+
 Define a gcc toolchain by passing ```:gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
 
 ##### ToolchainGcc settings #####
+
 On top of the base Toolchain settings, the ToolchainGcc toolchain offers the following optional settings:
 
 * ```:cppflags``` - A string or array of strings representing C Preprocessor flags to be used in all compilation and link steps
@@ -586,7 +612,9 @@ On top of the base Toolchain settings, the ToolchainGcc toolchain offers the fol
 
 
 ### MTBuild::ToolchainArmNoneEabiGcc ###
+
 Define an arm-none-eabi-gcc toolchain by passing ```:arm_none_eabi_gcc``` as the ```toolchain_name``` when invoking the ```toolchain()``` method.
 
 ##### ToolchainArmNoneEabiGcc settings #####
+
 The ToolchainArmNoneEabiGcc toolchain uses the same settings as the ToolchainGcc toolchain.

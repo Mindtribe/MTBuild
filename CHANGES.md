@@ -1,6 +1,15 @@
 # Release Notes #
 
 
+## MTBuild 0.1.6 ##
+
+### Changes ###
+
+* Fixed issue where the project path was always prepended to paths, even
+  absolute paths. This prevented workspaces from specifying absolute paths
+  in default configurations.
+
+
 ## MTBuild 0.1.5 ##
 
 ### Changes ###

@@ -1,6 +1,14 @@
 # Release Notes #
 
 
+## MTBuild 0.1.7 ##
+
+### Changes ###
+
+* Fixed bug that prevented projects or workspaces from specifying absolute
+  library paths.
+
+
 ## MTBuild 0.1.6 ##
 
 ### Changes ###

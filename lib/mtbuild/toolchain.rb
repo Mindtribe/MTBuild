@@ -85,7 +85,7 @@ module MTBuild
     private
 
     def expand_project_relative_paths(paths)
-      return Utils.ensure_array(paths).to_a.flatten.collect{ |p| (File.join('$(PROJECT_DIR)', p))}
+      return Utils.ensure_array(paths).to_a.flatten.collect{ |p| ((Pathname.new p).relative?) ? (File.join('$(PROJECT_DIR)', p)) : p}
     end
 
     @registered_toolchains = {}

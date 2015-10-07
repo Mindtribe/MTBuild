@@ -1,5 +1,7 @@
 module MTBuild
 
+  require 'pathname'
+
   # This is the base class for all toolchain types.
   class Toolchain
 

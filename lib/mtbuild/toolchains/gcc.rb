@@ -4,6 +4,8 @@ module MTBuild
   require 'mtbuild/toolchain'
   require 'mtbuild/utils'
 
+  require 'pathname'
+
   Toolchain.register_toolchain(:gcc, 'MTBuild::ToolchainGcc')
 
   # This Toolchain subclass can build using GCC
@@ -157,7 +159,11 @@ module MTBuild
       cflags_s = @cflags.empty? ? '' : " #{@cflags}"
       cxxflags_s = @cxxflags.empty? ? '' : " #{@cxxflags}"
       ldflags_s = @ldflags.empty? ? '' : " #{@ldflags}"
-      linker_script_s = @linker_script.empty? ? '' : " -Wl,-T\"#{File.join(@project_folder,@linker_script)}\""
+      linker_script_s = if @linker_script.empty? then
+                          ''
+                        else
+                          " -Wl,-T\"#{((Pathname.new @linker_script).relative?) ? File.join(@project_folder, @linker_script) : @linker_script}\""
+                        end
       return "\"#{compiler_cpp}\"#{cppflags_s}#{cxxflags_s}#{ldflags_s}#{include_paths_s}#{library_paths_s}#{linker_script_s}#{prerequisites_s} #{map_flag(map_name)} -o \"#{output_name}\"" if @link_as_cpp
       return "\"#{compiler_c}\"#{cppflags_s}#{cflags_s}#{ldflags_s}#{include_paths_s}#{library_paths_s}#{linker_script_s}#{prerequisites_s} #{map_flag(map_name)} -o \"#{output_name}\""
     end

@@ -1,6 +1,13 @@
 # Release Notes #
 
 
+## MTBuild 0.1.8 ##
+
+### Changes ###
+
+* Fixed bug that prevented projects absolute linker script paths.
+
+
 ## MTBuild 0.1.7 ##
 
 ### Changes ###
